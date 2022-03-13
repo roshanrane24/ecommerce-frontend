@@ -1,5 +1,3 @@
-
-
 const home = () => {
     return (
         <>
