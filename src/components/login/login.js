@@ -1,4 +1,4 @@
-import header from "../commons/header";
+
 
 import React from "react";
 import {
@@ -7,7 +7,7 @@ import {
   TextField,
   Button,
   Typography,
-  FormControlLabel, 
+  FormControlLabel,
   Checkbox,
   Avatar,
   Link
