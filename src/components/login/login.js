@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Grid,
@@ -6,7 +5,7 @@ import {
   TextField,
   Button,
   Typography,
-  FormControlLabel, 
+  FormControlLabel,
   Checkbox,
   Avatar,
   Link
