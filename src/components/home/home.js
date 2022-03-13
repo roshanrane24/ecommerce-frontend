@@ -1,5 +1,3 @@
-import header from "../commons/header";
-
 const home = () => {
     return (
         <>
