@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import './Register.css'
+import authService from '../../api/AuthService';
+
 const Register = () => {
     const [enteredFirstName, setEnteredFirstName] = useState('');
     const [enteredLastName, setEnteredLastName] = useState('');
@@ -8,7 +10,7 @@ const Register = () => {
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
     const [enteredConfirmPassword, setEnteredConfirmPassword] = useState('');
-    useState('');
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
     const firstNameChangeHandler = (event) => {
         setEnteredFirstName(event.target.value);
@@ -31,24 +33,31 @@ const Register = () => {
     const submitHandler = (event) => {
         event.preventDefault();
 
+        setErrorMessage('');
+
         const userRegistrationData = {
             firstName: enteredFirstName,
             lastName: enteredLastName,
-            mobileNumber: enteredMobileNumber,
             email: enteredEmail,
             password: enteredPassword,
             confirmPassword: enteredConfirmPassword
         };
 
-        console.log(userRegistrationData);
+        authService.register(userRegistrationData).then(() => {
+            console.log(userRegistrationData)
 
-        setEnteredFirstName('');
-        setEnteredLastName('');
-        setEnteredMobileNumber('');
-        setEnteredEmail('');
-        setEnteredPassword('');
-        setEnteredConfirmPassword('');
-        navigate('/login');
+            setEnteredFirstName('');
+            setEnteredLastName('');
+            setEnteredMobileNumber('');
+            setEnteredEmail('');
+            setEnteredPassword('');
+            setEnteredConfirmPassword('');
+
+            navigate('/login');
+        }).catch((reason) => {
+            setErrorMessage(reason);
+            console.log(reason)
+        })
     };
     return (
         <div className="new-expense">
