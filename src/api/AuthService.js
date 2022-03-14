@@ -2,30 +2,28 @@ import client from './HttpClient';
 
 class AuthService {
     login(email, password) {
-        return client
-            .post("/auth/signin", {
-                email,
-                password
-            })
-            .then(response => {
-                if (response.data.accessToken) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
-                }
-                return response.data;
-            });
+        return client.post("/auth/signin", {
+            email,
+            password
+        }).then(response => {
+            if (response.data.accessToken) {
+                localStorage.setItem("user", JSON.stringify(response.data));
+            }
+            return response.data;
+        });
     }
 
     logout() {
         localStorage.removeItem("user");
     }
 
-    register({first_name, last_name, email, password, confirm_password}) {
-        return axios.post("/auth/signup", {
-            first_name,
-            last_name,
+    register({firstName, lastName, email, password, confirmPassword}) {
+        return client.post("/auth/signup", {
+            firstName,
+            lastName,
             email,
             password,
-            confirm_password
+            confirmPassword
         });
     }
 
