@@ -1,8 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import Login from './components/login/login.js';
+import Login from './components/login/Login.js';
 import Register from './components/register/Register';
-import Home from './components/home/home';
+import Home from './components/home/Home';
 import Header from './components/commons/Header';
 import NotFound from './components/commons/NotFound';
 
