@@ -3,7 +3,7 @@ const home = () => {
         <>
             <h1>Home</h1>
             <h3>
-                {localStorage.getItem('user') ? localStorage.getItem('user') : ""}
+                {localStorage.getItem('user') ? `Welcome ${JSON.parse(localStorage.getItem('user')).firstname}` : ""}
             </h3>
         </>
     );

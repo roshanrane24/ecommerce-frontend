@@ -36,11 +36,10 @@ const Register = () => {
         setErrorMessage('');
 
         const userRegistrationData = {
-            firstName: enteredFirstName,
-            lastName: enteredLastName,
+            firstname: enteredFirstName,
+            lastname: enteredLastName,
             email: enteredEmail,
             password: enteredPassword,
-            confirmPassword: enteredConfirmPassword
         };
 
         authService.register(userRegistrationData).then(() => {

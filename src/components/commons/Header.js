@@ -1,12 +1,14 @@
 import {Box, Stack, Container, AppBar, Typography, Button, IconButton} from '@mui/material';
 import {ShoppingCart, Favorite} from '@mui/icons-material';
-import {Link, Outlet} from 'react-router-dom';
+import {Link, Outlet, useNavigate} from 'react-router-dom';
 import CategoryList from "./CategoryList";
 import SearchBox from "./SearchBox";
 import React, {useEffect, useState} from 'react';
+import authService from '../../api/AuthService';
 
 const UserButtons = () => {
     const [userLoggedIn, setUserLoggedIn] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (localStorage.getItem('user'))
@@ -28,14 +30,18 @@ const UserButtons = () => {
                         Track Order
                     </Button>
                 </Link>
-                <Link to={"profile"}>
-                    <Button
-                        variant={"contained"}
-                        size="large"
-                        sx={{p: 1, minwidth: 150}}>
-                        Show Profile
-                    </Button>
-                </Link>
+                {/*<Link to={"profile"}>*/}
+                <Button
+                    variant={"contained"}
+                    size="large"
+                    onClick={() => {
+                        authService.logout();
+                        window.location.reload(false);
+                    }}
+                    sx={{p: 1, minwidth: 150}}>
+                    Logout
+                </Button>
+                {/*</Link>*/}
             </Stack>
         )
             ;

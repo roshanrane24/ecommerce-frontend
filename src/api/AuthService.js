@@ -6,7 +6,9 @@ class AuthService {
             email,
             password
         }).then(response => {
-            if (response.data.accessToken) {
+            console.log(response.data)
+            if (response.data.token) {
+                console.log(response.data)
                 localStorage.setItem("user", JSON.stringify(response.data));
             }
             return response.data;
@@ -17,14 +19,8 @@ class AuthService {
         localStorage.removeItem("user");
     }
 
-    register({firstName, lastName, email, password, confirmPassword}) {
-        return client.post("/auth/signup", {
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword
-        });
+    register(userDetails) {
+        return client.post("/auth/signup", userDetails);
     }
 
     getCurrentUser() {
