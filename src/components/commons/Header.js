@@ -3,10 +3,17 @@ import {ShoppingCart, Favorite} from '@mui/icons-material';
 import {Link, Outlet} from 'react-router-dom';
 import CategoryList from "./CategoryList";
 import SearchBox from "./SearchBox";
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 const UserButtons = () => {
-    const [userLoggedIn, setUserLoggedIn] = useState(false);
+    const [userLoggedIn, setUserLoggedIn] = useState(true);
+
+    useEffect(() => {
+        if (localStorage.getItem('user'))
+            setUserLoggedIn(true);
+        else
+            setUserLoggedIn(false);
+    })
 
 
     // Componnent for user auth part
