@@ -1,109 +1,85 @@
-import {Box, Stack, Container, AppBar, Typography, Button, IconButton} from '@mui/material';
+import {Box, Stack, AppBar, Typography, Button, Toolbar, IconButton} from '@mui/material';
 import {ShoppingCart, Favorite} from '@mui/icons-material';
-import {Link, Outlet, useNavigate} from 'react-router-dom';
+import {Outlet, useNavigate} from 'react-router-dom';
 import CategoryList from "./CategoryList";
 import SearchBox from "./SearchBox";
-import React, {useEffect, useState} from 'react';
-import authService from '../../api/AuthService';
-
-const UserButtons = () => {
-    const [userLoggedIn, setUserLoggedIn] = useState(true);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (localStorage.getItem('user'))
-            setUserLoggedIn(true);
-        else
-            setUserLoggedIn(false);
-    })
-
-
-    // Componnent for user auth part
-    if (userLoggedIn)
-        return (
-            <Stack spacing={2} direction={"row"}>
-                <Link to={"order"}>
-                    <Button
-                        variant={"contained"}
-                        size="large"
-                        sx={{p: 1, minwidth: 150}}>
-                        Track Order
-                    </Button>
-                </Link>
-                {/*<Link to={"profile"}>*/}
-                <Button
-                    variant={"contained"}
-                    size="large"
-                    onClick={() => {
-                        authService.logout();
-                        window.location.reload(false);
-                    }}
-                    sx={{p: 1, minwidth: 150}}>
-                    Logout
-                </Button>
-                {/*</Link>*/}
-            </Stack>
-        )
-            ;
-    else
-        return (
-            <Link to={"login"}>
-                <Button
-                    variant={"contained"}
-                    size="large"
-                    sx={{p: 1, minwidth: 150}}>
-                    Login/SignUp
-                </Button>
-            </Link>
-        );
-}
+import UserButton from "./UserButton";
+import React from 'react';
 
 const Header = () => {
+    // hooks
+    const navigate = useNavigate();
+
     return (
         <>
             <Box component="header" sx={{flexGrow: 1,}}>
-                <AppBar position={"sticky"} sx={{p: 2, backgroundColor: "primary.light"}}>
-                    <Stack spacing={1}>
-                        <Stack direction='row' spacing={1} sx={{justifyContent: "space-between"}}>
-                            <Link to={"/"}>
-                                <Typography
-                                    variant="h5"
-                                    noWrap
-                                    component="div"
-                                    sx={{display: {xs: 'none', sm: 'block'}}}>
-                                    E-STORE
-                                </Typography>
-                            </Link>
-                            {/*User Login Logout & Order Tracking Button*/}
-                            <UserButtons/>
-                        </Stack>
-                        <Stack direction='row' spacing={1}>
-                            {/*Category Dropdown */}
-                            <CategoryList/>
-                            {/* Search Box*/}
-                            <SearchBox/>
+                <AppBar position={"fixed"}>
+                    <Toolbar>
+                        {/*Logo with home button*/}
+                        <Button onClick={() => navigate('/')}>
+                            <img src="logo192.png" alt="logo" width={32}/>
+                        </Button>
+
+                        {/*Categories menu*/}
+                        <CategoryList/>
+
+                        {/*Search Box*/}
+                        <Box sx={{flexGrow: 1}}/>
+                        <SearchBox/>
+                        <Box sx={{flexGrow: 1}}/>
+
+                        <Stack direction='row' spacing={2}>
                             {/*Right Side Buttons*/}
-                            <Link to={"whishlist"}>
-                                <IconButton
-                                    size="large"
-                                    sx={{p: 1, minwidth: 150}}>
-                                    <Favorite/>
-                                </IconButton>
-                            </Link>
-                            <Link to={"cart"}>
-                                <IconButton
-                                    size="large"
-                                    sx={{p: 1, minwidth: 150}}>
-                                    <ShoppingCart/>
-                                </IconButton>
-                            </Link>
+                            <Button
+                                size="medium"
+                                sx={{
+                                    color: theme => theme.palette.primary.contrastText,
+                                    ':hover': theme => {
+                                        return {bgcolor: theme.palette.primary.dark}
+                                    }
+                                }}
+                                onClick={() => {
+                                    if (localStorage.getItem('user'))
+                                        navigate('/wishlist');
+                                    else
+                                        navigate('login');
+                                }}
+                                startIcon={<Favorite/>}
+                            >
+                                <Typography
+                                    variant={'subtitle1'}
+                                    sx={{textTransform: 'capitalize'}}
+                                >
+                                    WishList
+                                </Typography>
+                            </Button>
+                            <Button
+                                size="medium"
+                                sx={{
+                                    color: theme => theme.palette.primary.contrastText,
+                                    ':hover': theme => {
+                                        return {bgcolor: theme.palette.primary.dark}
+                                    }
+                                }}
+                                onClick={() => navigate('/cart')}
+                                startIcon={<ShoppingCart/>}
+                            >
+                                <Typography
+                                    variant={'subtitle1'}
+                                    sx={{textTransform: 'capitalize'}}
+                                >
+                                    Cart
+                                </Typography>
+                            </Button>
+                            {/*Authorized button*/}
+                            <UserButton/>
                         </Stack>
-                    </Stack>
+                    </Toolbar>
                 </AppBar>
             </Box>
-            <Container>
+            <Box sx={{marginTop: theme => theme.mixins.toolbar.minHeight + 10 + 'px'}}>
                 <Outlet/>
-            </Container>
+            </Box>
         </>
     );
 }
