@@ -1,12 +1,18 @@
-import {Button, IconButton, Menu, MenuItem, Stack, Typography} from "@mui/material";
+import {Button, Menu, MenuItem, Typography} from "@mui/material";
 import {KeyboardArrowDown} from "@mui/icons-material";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {UserContext} from "../../Context/UserContext";
 
 const UserButton = () => {
+    // Hooks
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
 
+    // Context
+    const [userDetails, setUserDetails] = useContext(UserContext);
+
+    // Handler Function
     const handleMenu = event => {
         setAnchorEl(event.currentTarget);
     };
@@ -18,13 +24,13 @@ const UserButton = () => {
     // Handle Logout
     const handleLogout = () => {
         handleClose();
-        localStorage.removeItem('user');
+        setUserDetails(null);
     }
 
     return (
         <>
             {
-                localStorage.getItem('user') &&
+                userDetails &&
                 <>
                     <Button
                         size="medium"
@@ -42,7 +48,7 @@ const UserButton = () => {
                                 marginLeft: 1
                             }}
                         >
-                            {JSON.parse(localStorage.getItem('user')).firstname}
+                            {userDetails.firstname}
                         </Typography>
                     </Button>
                     <Menu
@@ -70,17 +76,19 @@ const UserButton = () => {
                             navigate('/profile')
                         }}>My Profile</MenuItem>
 
-                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                        <MenuItem onClick={handleLogout}>
+                            Logout
+                        </MenuItem>
                     </Menu>
                 </>
             }
             {
-                !localStorage.getItem('user') &&
+                !userDetails &&
                 <Button
                     size="medium"
                     color="inherit"
                     onClick={() => {
-                        navigate('/login')
+                        navigate('/login');
                     }}
                     sx={{
                         backgroundColor: theme => theme.palette.primary.contrastText,

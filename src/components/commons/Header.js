@@ -4,11 +4,15 @@ import {Outlet, useNavigate} from 'react-router-dom';
 import CategoryList from "./CategoryList";
 import SearchBox from "./SearchBox";
 import UserButton from "./UserButton";
-import React from 'react';
+import React, {useContext} from 'react';
+import {UserContext} from "../../Context/UserContext";
 
 const Header = () => {
     // hooks
     const navigate = useNavigate();
+
+    // Context
+    const [userDetails,] = useContext(UserContext);
 
     return (
         <>
@@ -17,7 +21,7 @@ const Header = () => {
                     <Toolbar>
                         {/*Logo with home button*/}
                         <Button onClick={() => navigate('/')}>
-                            <img src="logo192.png" alt="logo" width={32}/>
+                            <img src={"logo192.png"} alt="logo" width={32}/>
                         </Button>
 
                         {/*Categories menu*/}
@@ -39,7 +43,7 @@ const Header = () => {
                                     }
                                 }}
                                 onClick={() => {
-                                    if (localStorage.getItem('user'))
+                                    if (userDetails)
                                         navigate('/wishlist');
                                     else
                                         navigate('login');
