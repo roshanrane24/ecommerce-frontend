@@ -1,4 +1,4 @@
-import {Box, Stack, AppBar, Typography, Button, Toolbar, IconButton} from '@mui/material';
+import {Box, Stack, AppBar, Typography, Button, Toolbar} from '@mui/material';
 import {ShoppingCart, Favorite} from '@mui/icons-material';
 import {Outlet, useNavigate} from 'react-router-dom';
 import CategoryList from "./CategoryList";
