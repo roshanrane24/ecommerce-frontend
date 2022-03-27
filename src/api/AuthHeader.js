@@ -1,6 +1,6 @@
-export default function authHeader() {
+export default function authHeader(userDetails) {
     // Get user from store
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = userDetails;
 
     if (user && user.accessToken) {
         return {Authorization: 'Bearer ' + user.accessToken}; // for Spring Boot back-end
