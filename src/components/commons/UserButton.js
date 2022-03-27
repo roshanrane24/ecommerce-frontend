@@ -3,6 +3,7 @@ import {KeyboardArrowDown} from "@mui/icons-material";
 import React, {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {UserContext} from "../../Context/UserContext";
+import AuthService from "../../api/AuthService";
 
 const UserButton = () => {
     // Hooks
@@ -20,12 +21,6 @@ const UserButton = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
-    // Handle Logout
-    const handleLogout = () => {
-        handleClose();
-        setUserDetails(null);
-    }
 
     return (
         <>
@@ -76,7 +71,7 @@ const UserButton = () => {
                             navigate('/profile')
                         }}>My Profile</MenuItem>
 
-                        <MenuItem onClick={handleLogout}>
+                        <MenuItem onClick={() => AuthService.logout(setUserDetails)}>
                             Logout
                         </MenuItem>
                     </Menu>

@@ -1,30 +1,26 @@
 import client from './HttpClient';
 
 class AuthService {
-    login(email, password) {
+
+    login(email, password, setUserDetails) {
         return client.post("/auth/signin", {
             email,
             password
         }).then(response => {
-            console.log(response.data)
-            if (response.data.token) {
-                console.log(response.data)
-                localStorage.setItem("user", JSON.stringify(response.data));
-            }
+            // Valid Login
+            if (response.data.token)
+                // Save user
+                setUserDetails(response.data)
             return response.data;
         });
     }
 
-    logout() {
-        localStorage.removeItem("user");
+    logout(setUserDetails) {
+        setUserDetails(null);
     }
 
     register(userDetails) {
         return client.post("/auth/signup", userDetails);
-    }
-
-    getCurrentUser() {
-        return JSON.parse(localStorage.getItem('user'));
     }
 }
 
