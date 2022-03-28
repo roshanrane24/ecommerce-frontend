@@ -88,7 +88,8 @@ const UserButton = () => {
                     size="medium"
                     color="inherit"
                     onClick={() => {
-                        navigate('/login');
+                        // navigate('/login');
+                        setUserDetails({firstname: "Roshan"});
                     }}
                     sx={{
                         backgroundColor: theme => theme.palette.primary.contrastText,

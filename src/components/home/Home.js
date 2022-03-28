@@ -1,11 +1,16 @@
-const home = () => {
+import Container from "@mui/material/Container";
+import React from "react";
+import CategoryBar from "./CategoryBar";
+import NewProducts from "./NewProducts";
+
+const Home = () => {
     return (
         <>
-            <h1>Home</h1>
-            <h3>
-                {localStorage.getItem('user') ? `Welcome ${JSON.parse(localStorage.getItem('user')).firstname}` : ""}
-            </h3>
+            <Container>
+                <CategoryBar/>
+                <NewProducts/>
+            </Container>
         </>
     );
 }
-export default home;
+export default Home;
