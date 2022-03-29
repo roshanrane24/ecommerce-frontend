@@ -1,11 +1,9 @@
 import client from './HttpClient';
 
 class ProductService {
-    getNewProducts = () => {
-        // TODO use backend
-        return [
-            {},
-        ];
+    getRecentlyAddedProducts = () => {
+        return client.get("/products/latest")
+            .then(response => response.data);
     }
 }
 

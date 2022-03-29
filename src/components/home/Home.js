@@ -4,16 +4,27 @@ import CategoryBar from "./CategoryBar";
 import NewProducts from "./NewProducts";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 
 const Home = () => {
     return (
         <>
-            <Box>
-                <Paper>
-                    <CategoryBar/>
-                </Paper>
-            </Box>
-            <NewProducts/>
+            <Stack
+                spacing={2}
+            >
+                <Box>
+                    <Paper>
+                        <CategoryBar/>
+                    </Paper>
+                </Box>
+                <Container maxWidth="xl" disableGutters sx={{paddingX: 2}}>
+                    <Paper
+                        elevation={1}
+                    >
+                        <NewProducts/>
+                    </Paper>
+                </Container>
+            </Stack>
         </>
     );
 }

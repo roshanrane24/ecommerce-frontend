@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import CategoryService from "../../api/CategoryService";
-import CategoryCard from "../commons/CategoryCard";
+import CategoryCard from "./CategoryCard";
 import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
