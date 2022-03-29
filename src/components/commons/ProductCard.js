@@ -32,8 +32,9 @@ const ProductCard = (props) => {
                     component="img"
                     height="200"
                     width="160"
-                    image={`http://localhost:8080/api/products/image/${props.product._id}`}
+                    image={<img src={`http://localhost:8080/api/products/image/${props.product._id}`} loading="lazy"/>}
                     alt={props.product.name}
+
                 />
                 <CardContent
                     sx={{p: 0, width: 170,}}
