@@ -42,7 +42,7 @@ const CategoryCard = (props) => {
                 >
                     <img
                         alt={props.category.categoryName}
-                        src={`http://localhost:8080/api/categories/image/${props.category._id}`}
+                        src={`http://localhost:8080/api/categories/image/${props.category.id}`}
                         height={60}
                     />
                 </Stack>
