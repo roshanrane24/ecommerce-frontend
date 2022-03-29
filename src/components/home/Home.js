@@ -8,22 +8,18 @@ import Stack from "@mui/material/Stack";
 
 const Home = () => {
     return (
-        <>
-            <Stack
-                spacing={2}
-            >
-                <Box>
-                    <Paper>
-                        <CategoryBar/>
-                    </Paper>
-                </Box>
-                <Container maxWidth="xl" disableGutters sx={{paddingX: 1}}>
-                    <Paper elevation={1} sx={{p: 2}}>
-                        <NewProducts/>
-                    </Paper>
-                </Container>
+        <Stack spacing={1}>
+            <Box>
+                <Paper>
+                    <CategoryBar/>
+                </Paper>
+            </Box>
+            <Stack sx={{paddingX: 2, flexGrow: 1}}>
+                <Paper elevation={1} sx={{p: 2}}>
+                    <NewProducts/>
+                </Paper>
             </Stack>
-        </>
+        </Stack>
     );
 }
 export default Home;

@@ -5,11 +5,13 @@ import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
 import CardMedia from "@mui/material/CardMedia";
 import {useNavigate} from "react-router-dom";
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 
 const ProductCard = (props) => {
+    // Navigation
     const navigate = useNavigate();
+
+    // For Card Animation
     const [variant, setVariant] = useState("outlined");
 
     return (
@@ -26,30 +28,37 @@ const ProductCard = (props) => {
                 onMouseLeave={() => setVariant("outlined")}
                 onClick={() => navigate(`/product/${props.product._id}`)}
                 variant={variant}
-                elevation={15}
+                elevation={7}
             >
-                <CardMedia
-                    component="img"
-                    height="200"
-                    width="160"
-                    image={<img src={`http://localhost:8080/api/products/image/${props.product._id}`} loading="lazy"/>}
-                    alt={props.product.name}
-
-                />
-                <CardContent
-                    sx={{p: 0, width: 170,}}
-                    style={{
-                        "display": "-webkit-box",
-                        "-webkit-line-clamp": "2",
-                        "-webkit-box-orient": "vertical",
-                        "overflow": "clip",
-                        "text-overflow": "ellipsis",
+                <Stack
+                    component="div"
+                    sx={{
+                        height: 200,
+                        width: 160,
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    <Typography
-                        sx={{fontSize: 14,}}
-                        color="text.primary"
-                    >
+                    <CardMedia
+                        component="img"
+                        height="auto"
+                        width="160"
+                        image={`http://localhost:8080/api/products/image/${props.product._id}`}
+                        alt={props.product.name}
+                    />
+                </Stack>
+                <CardContent
+                    sx={{
+                        p: 0,
+                        width: 170,
+                        "display": "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 2,
+                        "overflow": "clip",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    <Typography sx={{fontSize: 14,}} color="text.primary">
                         {props.product.name}
                     </Typography>
                 </CardContent>
@@ -64,7 +73,6 @@ const ProductCard = (props) => {
                         </Typography>
                     </Stack>
                 </CardActions>
-
             </Card>
         </>
     );
