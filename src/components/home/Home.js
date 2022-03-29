@@ -17,10 +17,8 @@ const Home = () => {
                         <CategoryBar/>
                     </Paper>
                 </Box>
-                <Container maxWidth="xl" disableGutters sx={{paddingX: 2}}>
-                    <Paper
-                        elevation={1}
-                    >
+                <Container maxWidth="xl" disableGutters sx={{paddingX: 1}}>
+                    <Paper elevation={1} sx={{p: 2}}>
                         <NewProducts/>
                     </Paper>
                 </Container>

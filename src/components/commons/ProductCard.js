@@ -1,51 +1,67 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
 import CardMedia from "@mui/material/CardMedia";
+import {useNavigate} from "react-router-dom";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 
 const ProductCard = (props) => {
+    const navigate = useNavigate();
+    const [variant, setVariant] = useState("outlined");
+
     return (
         <>
-            <Card sx={{
-                maxWidth: 180,
-                maxHeight: 350,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-            }}>
+            <Card
+                sx={{
+                    maxWidth: 200,
+                    minWidth: 200,
+                    maxHeight: 300,
+                    minHeight: 300,
+                    p: 2
+                }}
+                onMouseOver={() => setVariant("elevation")}
+                onMouseLeave={() => setVariant("outlined")}
+                onClick={() => navigate(`/product/${props.product._id}`)}
+                variant={variant}
+                elevation={15}
+            >
                 <CardMedia
                     component="img"
-                    height="140"
+                    height="200"
+                    width="160"
                     image={`http://localhost:8080/api/products/image/${props.product._id}`}
                     alt={props.product.name}
                 />
                 <CardContent
-                    sx={{
-                        width: "100%",
-                        display: "flex",
-                        overflow: "auto",
-                        textOverflow: "ellipsis",
+                    sx={{p: 0, width: 170,}}
+                    style={{
+                        "display": "-webkit-box",
+                        "-webkit-line-clamp": "2",
+                        "-webkit-box-orient": "vertical",
+                        "overflow": "clip",
+                        "text-overflow": "ellipsis",
                     }}
                 >
                     <Typography
-                        sx={{
-                            fontSize: 14,
-                            overflow: "hidden",
-                        }}
+                        sx={{fontSize: 14,}}
                         color="text.primary"
-                        gutterBottom
                     >
                         {props.product.name}
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small">
-                        <Typography sx={{fontSize: 14}} color="text.primary" gutterBottom>
-                            {props.product.price}
+                    <Stack sx={{flexGrow: 1}} alignItems="center">
+                        <Typography sx={{fontSize: 13}} color="text.primary">
+                            {props.product.price.toLocaleString('en-IN', {
+                                style: 'currency',
+                                currency: 'INR',
+                                maximumSignificantDigits: 3,
+                            })}
                         </Typography>
-                    </Button>
+                    </Stack>
                 </CardActions>
 
             </Card>
