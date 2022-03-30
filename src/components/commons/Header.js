@@ -6,6 +6,7 @@ import SearchBox from "./SearchBox";
 import UserButton from "./UserButton";
 import React, {useContext} from 'react';
 import {UserContext} from "../../Context/UserContext";
+import Footer from "./Footer";
 
 const Header = () => {
     // hooks
@@ -81,9 +82,13 @@ const Header = () => {
                     </Toolbar>
                 </AppBar>
             </Box>
-            <Box sx={{marginTop: theme => theme.mixins.toolbar.minHeight + 10 + 'px'}}>
+            <Box sx={{
+                marginTop: theme => theme.mixins.toolbar.minHeight + 10 + 'px',
+                marginBottom: theme => theme.mixins.toolbar.minHeight - 10 + 'px'
+            }}>
                 <Outlet/>
             </Box>
+            <Footer/>
         </>
     );
 }
