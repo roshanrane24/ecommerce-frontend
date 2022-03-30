@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const client = axios.create({
-    baseURL: 'http://localhost:8080/api',
-    timeout: 5000
+    baseURL: 'https://ecommerce-app-cdac-acts.herokuapp.com/api',
+    timeout: 10000
 })
 export default client;

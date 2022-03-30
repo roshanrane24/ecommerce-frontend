@@ -6,6 +6,7 @@ import CardActions from "@mui/material/CardActions";
 import CardMedia from "@mui/material/CardMedia";
 import {useNavigate} from "react-router-dom";
 import Stack from "@mui/material/Stack";
+import client from "../../api/HttpClient";
 
 const ProductCard = (props) => {
     // Navigation
@@ -43,8 +44,8 @@ const ProductCard = (props) => {
                         component="img"
                         height="auto"
                         width="160"
-                        image={`http://localhost:8080/api/products/image/${props.product._id}`}
-                        alt={props.product.name}
+                        image={`${client.defaults.baseURL}/products/image/${props.product._id}`}
+                        alt={`${props.product.name}`}
                     />
                 </Stack>
                 <CardContent
