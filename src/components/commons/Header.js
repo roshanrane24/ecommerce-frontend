@@ -1,11 +1,11 @@
-import {Box, Stack, AppBar, Typography, Button, Toolbar} from '@mui/material';
-import {ShoppingCart, Favorite} from '@mui/icons-material';
+import {AppBar, Box, Button, Stack, Toolbar, Typography} from '@mui/material';
+import {Favorite, ShoppingCart} from '@mui/icons-material';
 import {Outlet, useNavigate} from 'react-router-dom';
-import CategoryList from "./CategoryList";
 import SearchBox from "./SearchBox";
 import UserButton from "./UserButton";
 import React, {useContext} from 'react';
 import {UserContext} from "../../Context/UserContext";
+import Footer from "./Footer";
 
 const Header = () => {
     // hooks
@@ -23,9 +23,6 @@ const Header = () => {
                         <Button onClick={() => navigate('/')}>
                             <img src={"logo192.png"} alt="logo" width={32}/>
                         </Button>
-
-                        {/*Categories menu*/}
-                        <CategoryList/>
 
                         {/*Search Box*/}
                         <Box sx={{flexGrow: 1}}/>
@@ -46,7 +43,7 @@ const Header = () => {
                                     if (userDetails)
                                         navigate('/wishlist');
                                     else
-                                        navigate('login');
+                                        navigate('/login?ref=/wishlist');
                                 }}
                                 startIcon={<Favorite/>}
                             >
@@ -81,9 +78,13 @@ const Header = () => {
                     </Toolbar>
                 </AppBar>
             </Box>
-            <Box sx={{marginTop: theme => theme.mixins.toolbar.minHeight + 10 + 'px'}}>
+            <Box sx={{
+                marginTop: theme => theme.mixins.toolbar.minHeight + 10 + 'px',
+                marginBottom: theme => theme.mixins.toolbar.minHeight - 10 + 'px'
+            }}>
                 <Outlet/>
             </Box>
+            <Footer/>
         </>
     );
 }

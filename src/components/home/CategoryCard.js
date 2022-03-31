@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import {useNavigate} from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import client from "../../api/HttpClient";
 
 const CategoryCard = (props) => {
     // Navigation Hooks
@@ -42,7 +43,7 @@ const CategoryCard = (props) => {
                 >
                     <img
                         alt={props.category.categoryName}
-                        src={`http://localhost:8080/api/categories/image/${props.category.id}`}
+                        src={`${client.defaults.baseURL}/categories/image/${props.category.id}`}
                         height={60}
                     />
                 </Stack>
