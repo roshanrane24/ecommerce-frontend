@@ -1,6 +1,6 @@
-import {Route, Routes} from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Login from './components/login/Login.js';
-import Register from './components/register/Register';
+import SignUp from './components/SignUp/SignUp';
 import Home from './components/home/Home';
 import Header from './components/commons/Header';
 import NotFound from './components/commons/NotFound';
@@ -24,7 +24,7 @@ const theme = createTheme({
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline/>
+            <CssBaseline />
             <UserProvider>
                 <ErrorBoundary>
                     <Routes>
@@ -33,8 +33,8 @@ function App() {
                             <Route path='product/:product_id' element={<ProductPage/>}/>
                             <Route path='*' element={<NotFound/>}/>
                         </Route>
-                        <Route path='/login' element={<Login/>}/>
-                        <Route path='/register' element={<Register/>}/>
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/signup' element={<SignUp />} />
                     </Routes>
                 </ErrorBoundary>
             </UserProvider>
