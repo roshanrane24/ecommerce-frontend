@@ -86,8 +86,8 @@ const SignUp = () => {
         event.preventDefault();
         if (validateFirstName() && validatLastName() && validateEmail() && validatePassword() && validateConfirmPassword()) {
             const userRegistrationData = {
-                firstName: firstName,
-                lastName: lastName,
+                firstname: firstName,
+                lastname: lastName,
                 email: email,
                 password: password,
 
