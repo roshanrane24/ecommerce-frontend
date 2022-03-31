@@ -12,8 +12,19 @@ class ProductService {
     }
 
     getProductDetails = (product_id) => {
-        return client.get(`/products/${product_id}`).
-            then(response => response.data);
+        return client.get(`/products/${product_id}`).then(response => response.data);
+    }
+
+    productInWishlist() {
+        return false;
+    }
+
+    addToWishList() {
+
+    }
+
+    removeToWishList() {
+
     }
 }
 
