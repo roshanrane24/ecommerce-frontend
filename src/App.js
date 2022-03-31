@@ -5,6 +5,7 @@ import Home from './components/home/Home';
 import Header from './components/commons/Header';
 import NotFound from './components/commons/NotFound';
 import UserProvider from "./Context/UserContext";
+import ErrorBoundary from "./components/commons/ErrorBoundary";
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -24,14 +25,16 @@ function App() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <UserProvider>
-                <Routes>
-                    <Route path='/' element={<Header />}>
-                        <Route index element={<Home />} />
-                        <Route path='*' element={<NotFound />} />
-                    </Route>
-                    <Route path='/login' element={<Login />} />
-                    <Route path='/signup' element={<SignUp />} />
-                </Routes>
+                <ErrorBoundary>
+                    <Routes>
+                        <Route path='/' element={<Header />}>
+                            <Route index element={<Home />} />
+                            <Route path='*' element={<NotFound />} />
+                        </Route>
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/signup' element={<SignUp />} />
+                    </Routes>
+                </ErrorBoundary>
             </UserProvider>
         </ThemeProvider>
     )
