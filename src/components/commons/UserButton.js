@@ -1,17 +1,14 @@
 import {Button, Menu, MenuItem, Typography} from "@mui/material";
 import {KeyboardArrowDown} from "@mui/icons-material";
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {UserContext} from "../../Context/UserContext";
 import AuthService from "../../api/AuthService";
 
 const UserButton = () => {
     // Hooks
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
-
-    // Context
-    const [userDetails, setUserDetails] = useContext(UserContext);
+    const [userDetails, setUserDetails] = useState(AuthService.getUserDetails());
 
     // Handler Function
     const handleMenu = event => {
@@ -71,7 +68,10 @@ const UserButton = () => {
                             navigate('/profile')
                         }}>My Profile</MenuItem>
 
-                        <MenuItem onClick={() => AuthService.logout(setUserDetails)}>
+                        <MenuItem onClick={() => {
+                            AuthService.logout(setUserDetails);
+                            setUserDetails(null);
+                        }}>
                             Logout
                         </MenuItem>
                     </Menu>
@@ -83,8 +83,7 @@ const UserButton = () => {
                     size="medium"
                     color="inherit"
                     onClick={() => {
-                        // navigate('/login');
-                        setUserDetails({firstname: "Roshan"});
+                        navigate('/login');
                     }}
                     sx={{
                         backgroundColor: theme => theme.palette.primary.contrastText,
