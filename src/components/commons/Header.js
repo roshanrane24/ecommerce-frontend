@@ -3,16 +3,16 @@ import {Favorite, ShoppingCart} from '@mui/icons-material';
 import {Outlet, useNavigate} from 'react-router-dom';
 import SearchBox from "./SearchBox";
 import UserButton from "./UserButton";
-import React, {useContext} from 'react';
-import {UserContext} from "../../Context/UserContext";
+import React, {useState} from 'react';
 import Footer from "./Footer";
+import AuthService from "../../api/AuthService";
 
 const Header = () => {
     // hooks
     const navigate = useNavigate();
 
-    // Context
-    const [userDetails,] = useContext(UserContext);
+    // States
+    const [userDetails,] = useState(AuthService.getUserDetails());
 
     return (
         <>
