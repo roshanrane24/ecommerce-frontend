@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import Copyright from "./Copyright";
@@ -66,7 +66,7 @@ export default () => {
                     setLoginIn(false);
 
                     // Set error message
-                    let err = {statusCode: error.response.status}
+                    let err = { statusCode: error.response.status }
 
                     if (err.statusCode === 401)
                         err.message = "The username or password is incorrect.";
@@ -114,18 +114,18 @@ export default () => {
     return (
         <>
             <Stack direction="row"
-                   sx={{
-                       justifyContent: 'flex-end;',
-                       flexGrow: 1,
-                   }}
+                sx={{
+                    justifyContent: 'flex-end;',
+                    flexGrow: 1,
+                }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon/>
+                    <CloseIcon />
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Collapse in={error} sx={{mb: -6}}>
+                <CssBaseline />
+                <Collapse in={error} sx={{ mb: -6 }}>
                     <Alert
                         severity="error"
                         action={
@@ -135,10 +135,10 @@ export default () => {
                                 size="small"
                                 onClick={() => setError(false)}
                             >
-                                <CloseIcon fontSize="inherit"/>
+                                <CloseIcon fontSize="inherit" />
                             </IconButton>
                         }
-                        sx={{mb: 2}}
+                        sx={{ mb: 2 }}
                     >
                         <AlertTitle>Error : <strong>{errorData && errorData.statusCode}</strong></AlertTitle>
                         {errorData && errorData.message}
@@ -152,13 +152,13 @@ export default () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <LockOutlinedIcon/>
+                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
                             error={emailHelperText}
                             margin="normal"
@@ -192,7 +192,7 @@ export default () => {
                             helperText={passwordHelperText}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
+                            control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         />
                         <LoadingButton
@@ -201,7 +201,7 @@ export default () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{mt: 3, mb: 2}}
+                            sx={{ mt: 3, mb: 2 }}
                         >
                             Sign In
                         </LoadingButton>
@@ -214,7 +214,7 @@ export default () => {
                                 </RouterLink>
                             </Grid>
                             <Grid item>
-                                <RouterLink to='/register'>
+                                <RouterLink to='/signup'>
                                     <Link variant="body2">
                                         {"Don't have an account? Sign Up"}
                                     </Link>
@@ -223,7 +223,7 @@ export default () => {
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{mt: 8, mb: 4}}/>
+                <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
         </>
     );
