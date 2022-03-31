@@ -43,7 +43,7 @@ const Header = () => {
                                     if (userDetails)
                                         navigate('/wishlist');
                                     else
-                                        navigate('login');
+                                        navigate('/login?ref=/wishlist');
                                 }}
                                 startIcon={<Favorite/>}
                             >
