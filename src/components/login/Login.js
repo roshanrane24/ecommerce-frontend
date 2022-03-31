@@ -1,93 +1,230 @@
-import React from "react";
-import {
-    Grid,
-    Paper,
-    TextField,
-    Button,
-    Typography,
-    FormControlLabel,
-    Checkbox,
-    Link
-} from "@mui/material";
-import {useState} from "react";
-import authService from '../../api/AuthService'
-import {useNavigate} from "react-router-dom";
+import React, {useState} from 'react';
+import Avatar from '@mui/material/Avatar';
+import LoadingButton from '@mui/lab/LoadingButton';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
+import Stack from "@mui/material/Stack";
+import IconButton from "@mui/material/IconButton";
+import Copyright from "./Copyright";
+import CloseIcon from '@mui/icons-material/Close';
+import AuthService from "../../api/AuthService";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Collapse from "@mui/material/Collapse";
 
 
-const Login = () => {
-    const paperStyle = {
-        padding: 20,
-        height: "70vh",
-        width: 280,
-        margin: "20px auto"
-    };
+export default () => {
+    // states
+    const [email, setEmail] = useState("");
+    const [emailHelperText, setEmailHelperText] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordHelperText, setPasswordHelperText] = useState("");
+    const [loginIn, setLoginIn] = useState(false);
+    const [errorData, setErrorData] = useState(null);
+    const [error, setError] = useState(false);
+    const [searchParams,] = useSearchParams();
 
+    // Navigation
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    // Submission
+    const handleSubmit = (event) => {
+        event.preventDefault();
 
-    const handleSubmit = async () => {
-        // Try to login user
-        await authService.login(email, password).catch(reason => {
-            // Log message when user login failed
-            console.log(reason)
-        });
+        // When validated
+        if (validateEmail() && validatePassword()) {
+            // Form Data
+            const data = new FormData(event.currentTarget)
+            setLoginIn(true);
+            setErrorData(null)
 
-        // Check if user logged in
-        if (localStorage.getItem("user"))
-            navigate('/');
+            // Login Request
+            AuthService.login({
+                email: data.get('email'),
+                password: data.get('password'),
+            })
+                .then(() => {
+                    // check if to redirect
+                    if (searchParams.get('ref')) {
+                        navigate(searchParams.get('ref'));
+                        return;
+                    }
+                    // Redirect to home
+                    navigate('/');
+                })
+                .catch(error => {
+                    // Stop loading animation
+                    setLoginIn(false);
 
-        // alert(`Email : ${email} Password : ${password}`);
+                    // Set error message
+                    let err = {statusCode: error.response.status}
+
+                    if (err.statusCode === 401)
+                        err.message = "The username or password is incorrect.";
+                    else
+                        err.message = "Error has occured while login";
+
+                    // Set Alert
+                    setErrorData(err);
+                    setError(true);
+                });
+        }
+    };
+
+    // Validation
+    function validatePassword() {
+        // Reset error
+        setPasswordHelperText("");
+
+        // Password validations
+        if (password.length < 8) {
+            setPasswordHelperText("Password length must be at least 8 characters");
+            return false;
+        } else if (password.length > 32) {
+            setPasswordHelperText("Password length must not exceed 32 characters");
+            return false;
+        } else if (!(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@#$%^&,?~_+-=|]).{8,32}$/.test(password))) {
+            setPasswordHelperText("Your password must be contain at least 1 number, 1 uppercase & 1 lowercase character & 1 special character.");
+            return false;
+        }
+        return true;
     }
 
-    const btnstyle = {margin: "8px 0"};
+    function validateEmail() {
+        // Reset Error
+        setEmailHelperText("");
+
+        // Email Validation
+        if (!(/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(email))) {
+            setEmailHelperText("Enter a valid email address");
+            return false;
+        }
+        return true;
+    }
+
     return (
-        <Grid>
-            <Paper elevation={10} style={paperStyle}>
-                <Grid align="center">
-
-                    <h2>Sign In</h2>
-                </Grid>
-                <TextField
-                    label="Email"
-                    fullWidth
-                    type={"email"}
-                    required
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <TextField
-                    label="Password"
-                    type="password"
-                    fullWidth
-                    required
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <FormControlLabel
-                    control={<Checkbox name="checkedB" color="primary"/>}
-                    label="Remember me"
-                />
-                <Button
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    style={btnstyle}
-                    fullWidth
-                    onClick={handleSubmit}
+        <>
+            <Stack direction="row"
+                   sx={{
+                       justifyContent: 'flex-end;',
+                       flexGrow: 1,
+                   }}
+            >
+                <IconButton onClick={() => navigate('/')}>
+                    <CloseIcon/>
+                </IconButton>
+            </Stack>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline/>
+                <Collapse in={error} sx={{mb: -6}}>
+                    <Alert
+                        severity="error"
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={() => setError(false)}
+                            >
+                                <CloseIcon fontSize="inherit"/>
+                            </IconButton>
+                        }
+                        sx={{mb: 2}}
+                    >
+                        <AlertTitle>Error : <strong>{errorData && errorData.statusCode}</strong></AlertTitle>
+                        {errorData && errorData.message}
+                    </Alert>
+                </Collapse>
+                <Box
+                    sx={{
+                        marginTop: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
                 >
-                    Sign in
-                </Button>
-                <Typography>
-                    <Link href="#">Forgot password ?</Link>
-                </Typography>
-                <Typography>
-                    {" "}
-                    Do you have an account ?<Link href="/register">Sign Up</Link>
-                </Typography>
-            </Paper>
-        </Grid>
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
+                    </Avatar>
+                    <Typography component="h1" variant="h5">
+                        Sign in
+                    </Typography>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                        <TextField
+                            error={emailHelperText}
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={email}
+                            onChange={(event) => setEmail(event.target.value)}
+                            onBlur={validateEmail}
+                            helperText={emailHelperText}
+                        />
+                        <TextField
+                            error={passwordHelperText}
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(event) => {
+                                setPassword(event.target.value);
+                                validatePassword(event);
+                            }}
+                            helperText={passwordHelperText}
+                        />
+                        <FormControlLabel
+                            control={<Checkbox value="remember" color="primary"/>}
+                            label="Remember me"
+                        />
+                        <LoadingButton
+                            loading={loginIn}
+                            loadingPosition="start"
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{mt: 3, mb: 2}}
+                        >
+                            Sign In
+                        </LoadingButton>
+                        <Grid container>
+                            <Grid item xs>
+                                <RouterLink to='/forgot'>
+                                    <Link variant="body2">
+                                        Forgot password?
+                                    </Link>
+                                </RouterLink>
+                            </Grid>
+                            <Grid item>
+                                <RouterLink to='/register'>
+                                    <Link variant="body2">
+                                        {"Don't have an account? Sign Up"}
+                                    </Link>
+                                </RouterLink>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
+                <Copyright sx={{mt: 8, mb: 4}}/>
+            </Container>
+        </>
     );
-};
-
-export default Login;
-
+}
