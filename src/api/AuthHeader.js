@@ -1,9 +1,12 @@
-export default function authHeader(userDetails) {
-    // Get user from store
-    const user = userDetails;
+import AuthService from "./AuthService";
 
-    if (user && user.accessToken) {
-        return {Authorization: 'Bearer ' + user.accessToken}; // for Spring Boot back-end
+export default function authHeader() {
+    // Get user from store
+    const user = AuthService.getUserDetails();
+
+    // check if user has a token
+    if (user && user.token) {
+        return {Authorization: 'Bearer ' + user.token}; // for Spring Boot back-end
     } else {
         return {};
     }
