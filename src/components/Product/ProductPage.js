@@ -16,7 +16,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StarIcon from "@mui/icons-material/Star";
 import ProductService from "../../api/ProductService";
-import {useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useState} from 'react';
 import client from "../../api/HttpClient";
 import Backdrop from "@mui/material/Backdrop";
@@ -24,6 +24,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
+import AuthService from "../../api/AuthService";
+import Alert from "@mui/material/Alert";
 
 const ProductPage = (props) => {
     // Theme
@@ -46,42 +48,89 @@ const ProductPage = (props) => {
     // Routing
     const navigate = useNavigate();
     const params = useParams()
+    const location = useLocation();
 
     // States
     const [productDetails, setProductDetails] = useState(null);
     const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder/>);
+    const [wishlistButtonState, setWishlistButtonState] = useState(false);
+    const [cartAlert, setCartAlert] = useState("");
+    const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
 
     // Product details handler
     const getProductDetails = () => {
-        ProductService.getProductDetails(params.product_id).then((result) => {
-            setProductDetails(result)
-        })
+        return ProductService.getProductDetails(params.product_id)
+            .then((result) => {
+                setProductDetails(result);
+            });
     }
 
     // Wishlist handler
-    const toggleWishList = () => {
-        if (ProductService.productInWishlist()) {
-            ProductService.addToWishList().then(() =>
-                setWishlistIcon(<Favorite/>)
-            )
+    const toggleWishList = (event) => {
+        // Authenticated user
+        if (AuthService.getUserDetails()) {
+            // disable button
+            setWishlistButtonState(true);
+
+            if (ProductService.productInWishlist(productDetails.id)) {
+                // Remove to wishlist
+                ProductService.removeToWishList(productDetails.id)
+                    .then(() => {
+                        setWishlistIcon(<FavoriteBorder/>)
+                        setWishlistButtonState(false);
+                    })
+                    .catch((error) => {
+                        console.log(error.response);
+                        setWishlistButtonState(false);
+                    });
+            } else {
+                // Add to wishlist
+                ProductService.addToWishList(productDetails.id)
+                    .then(() => {
+                        setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
+                        setWishlistButtonState(false);
+                    })
+                    .catch((error) => {
+                        console.log(error.response);
+                        setWishlistButtonState(false);
+                    });
+            }
         } else {
-            // Remove to wishlist
-            ProductService.removeToWishList().then(() =>
-                setWishlistIcon(<FavoriteBorder/>)
-            );
+            // User Login Page
+            navigate(`/login?ref=${location.pathname}`)
         }
+    }
+
+    // Cart Handlers
+    const addToCart = (event) => {
+        ProductService.addToCart(productDetails.id)
+            .then(message => {
+                setCartAlertSeverity("success");
+                setCartAlert(message);
+                setTimeout(() => setCartAlert(""), 10000);
+            })
+            .catch((error) => {
+                setCartAlertSeverity("error");
+                setCartAlert(error.response.status);
+                setTimeout(() => setCartAlert(""), 10000);
+            });
     }
 
 
     // init
     useEffect(() => {
         // Product details
-        getProductDetails();
+        getProductDetails()
+            .then((response) => {
+                // wishlist
+                if (ProductService.productInWishlist(productDetails.id)) {
+                    setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
+                }
+            })
+            .catch((error) => {
+                console.log(error.response);
+            })
 
-        // wishlist
-        if (ProductService.productInWishlist()) {
-            setWishlistIcon(<Favorite/>);
-        }
     }, []);
 
     return (
@@ -104,7 +153,9 @@ const ProductPage = (props) => {
                     <Box
                         sx={{
                             minWidth: '40vw',
-                            minHeight: '90vh',
+                            maxWidth: '40vw',
+                            minHeight: '80vh',
+                            maxHeight: '80vh',
                             position: "-webkit-sticky"
                         }}
                     >
@@ -112,7 +163,7 @@ const ProductPage = (props) => {
                             sx={{
                                 p: 3,
                                 width: '100%',
-                                height: '100%',
+                                height: '80vh',
                             }}
                         >
                             <Stack
@@ -165,7 +216,8 @@ const ProductPage = (props) => {
                                     width: 10,
                                     height: 10,
                                 }}
-                                onClick={() => toggleWishList()}
+                                disabled={wishlistButtonState}
+                                onClick={toggleWishList}
                             >
                                 {wishlistIcon}
                             </IconButton>
@@ -204,10 +256,16 @@ const ProductPage = (props) => {
                                         onClick={() => navigate(`/checkout/${productDetails.id}`)}>
                                     Buy Now
                                 </Button>
-                                <Button variant="outlined" endIcon={<AddShoppingCartIcon/>}>
+                                <Button variant="outlined" endIcon={<AddShoppingCartIcon/>} onClick={addToCart}>
                                     Add to Cart
                                 </Button>
                             </Stack>
+                            {
+                                cartAlert &&
+                                <Alert severity={cartAlertSeverity} sx={{flexShrink: 1, flexGrow: 1, mb: 2}}>
+                                    {cartAlert}
+                                </Alert>
+                            }
                         </ThemeProvider>
                         <Typography variant="subtitle1" sx={{fontWeight: "bold"}} gutterBottom>Description</Typography>
                         <Typography variant="body2" gutterBottom sx={{mb: 5}}>
