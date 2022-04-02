@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import Copyright from "./Copyright";
@@ -22,15 +22,16 @@ import AlertTitle from "@mui/material/AlertTitle";
 import Collapse from "@mui/material/Collapse";
 
 
-export default () => {
+const Login = () => {
     // states
     const [email, setEmail] = useState("");
     const [emailHelperText, setEmailHelperText] = useState("");
     const [password, setPassword] = useState("");
     const [passwordHelperText, setPasswordHelperText] = useState("");
     const [loginIn, setLoginIn] = useState(false);
-    const [errorData, setErrorData] = useState(null);
-    const [error, setError] = useState(false);
+    const [alertData, setAlertData] = useState(null);
+    const [alert, setAlert] = useState(false);
+    const [alertSeverity, setAlertSeverity] = useState("info");
     const [searchParams,] = useSearchParams();
 
     // Navigation
@@ -40,33 +41,46 @@ export default () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
+        // animations
+        setLoginIn(true);
+        setAlertData(null)
+
+        // Form Data
+        let data = new FormData(event.currentTarget)
+        data = {
+            email: data.get('email'),
+            password: data.get('password'),
+        }
+
         // When validated
-        if (validateEmail() && validatePassword()) {
-            // Form Data
-            const data = new FormData(event.currentTarget)
-            setLoginIn(true);
-            setErrorData(null)
+        if (validateEmail(data.email) && validatePassword(data.password)) {
 
             // Login Request
-            AuthService.login({
-                email: data.get('email'),
-                password: data.get('password'),
-            })
+            AuthService.login(data)
                 .then(() => {
-                    // check if to redirect
-                    if (searchParams.get('ref')) {
-                        navigate(searchParams.get('ref'));
-                        return;
-                    }
-                    // Redirect to home
-                    navigate('/');
+                    // Show Alert
+                    setAlertSeverity("success");
+                    setAlertData({message: "You have successfully logged in."});
+                    setAlert(true);
+                    setLoginIn(false);
+
+                    // Redirection
+                    setTimeout(() => {
+                        // check if to redirect
+                        if (searchParams.get('ref')) {
+                            navigate(searchParams.get('ref'));
+                            return;
+                        }
+                        // Redirect to home
+                        navigate('/');
+                    }, 1000);
                 })
                 .catch(error => {
                     // Stop loading animation
                     setLoginIn(false);
 
                     // Set error message
-                    let err = { statusCode: error.response.status }
+                    let err = {statusCode: error.response.status}
 
                     if (err.statusCode === 401)
                         err.message = "The username or password is incorrect.";
@@ -74,14 +88,15 @@ export default () => {
                         err.message = "Error has occured while login";
 
                     // Set Alert
-                    setErrorData(err);
-                    setError(true);
+                    setAlertSeverity("error");
+                    setAlertData(err);
+                    setAlert(true);
                 });
         }
     };
 
     // Validation
-    function validatePassword() {
+    function validatePassword(password) {
         // Reset error
         setPasswordHelperText("");
 
@@ -99,7 +114,7 @@ export default () => {
         return true;
     }
 
-    function validateEmail() {
+    function validateEmail(email) {
         // Reset Error
         setEmailHelperText("");
 
@@ -114,34 +129,34 @@ export default () => {
     return (
         <>
             <Stack direction="row"
-                sx={{
-                    justifyContent: 'flex-end;',
-                    flexGrow: 1,
-                }}
+                   sx={{
+                       justifyContent: 'flex-end;',
+                       flexGrow: 1,
+                   }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Collapse in={error} sx={{ mb: -6 }}>
+                <CssBaseline/>
+                <Collapse in={alert} sx={{mb: -6}}>
                     <Alert
-                        severity="error"
+                        severity={alertSeverity}
                         action={
                             <IconButton
                                 aria-label="close"
                                 color="inherit"
                                 size="small"
-                                onClick={() => setError(false)}
+                                onClick={() => setAlert(false)}
                             >
-                                <CloseIcon fontSize="inherit" />
+                                <CloseIcon fontSize="inherit"/>
                             </IconButton>
                         }
-                        sx={{ mb: 2 }}
+                        sx={{mb: 2}}
                     >
-                        <AlertTitle>Error : <strong>{errorData && errorData.statusCode}</strong></AlertTitle>
-                        {errorData && errorData.message}
+                        <AlertTitle sx={{textTransform: 'capitalize'}}>{alertData && alertSeverity}</AlertTitle>
+                        {alertData && alertData.message}
                     </Alert>
                 </Collapse>
                 <Box
@@ -152,13 +167,13 @@ export default () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
                             error={emailHelperText}
                             margin="normal"
@@ -170,8 +185,10 @@ export default () => {
                             autoComplete="email"
                             autoFocus
                             value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            onBlur={validateEmail}
+                            onChange={(event) => {
+                                setEmail(event.target.value);
+                                validateEmail(event.target.value);
+                            }}
                             helperText={emailHelperText}
                         />
                         <TextField
@@ -187,12 +204,12 @@ export default () => {
                             value={password}
                             onChange={(event) => {
                                 setPassword(event.target.value);
-                                validatePassword(event);
+                                validatePassword(event.target.value);
                             }}
                             helperText={passwordHelperText}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
+                            control={<Checkbox value="remember" color="primary"/>}
                             label="Remember me"
                         />
                         <LoadingButton
@@ -201,7 +218,7 @@ export default () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign In
                         </LoadingButton>
@@ -214,7 +231,7 @@ export default () => {
                                 </RouterLink>
                             </Grid>
                             <Grid item>
-                                <RouterLink to='/signup'>
+                                <RouterLink to={`/signup?ref=${searchParams.get('ref')}`}>
                                     <Link variant="body2">
                                         {"Don't have an account? Sign Up"}
                                     </Link>
@@ -223,8 +240,10 @@ export default () => {
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
+                <Copyright sx={{mt: 8, mb: 4}}/>
             </Container>
         </>
     );
 }
+
+export default Login;
