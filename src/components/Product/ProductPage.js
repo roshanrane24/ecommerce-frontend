@@ -26,8 +26,9 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import AuthService from "../../api/AuthService";
 import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
-const ProductPage = (props) => {
+const ProductPage = () => {
     // Theme
     const ThemeButton = createTheme({
         palette: {
@@ -56,6 +57,7 @@ const ProductPage = (props) => {
     const [wishlistButtonState, setWishlistButtonState] = useState(false);
     const [cartAlert, setCartAlert] = useState("");
     const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
+    const [productError, setProductError] = useState(null);
 
     // Product details handler
     const getProductDetails = () => {
@@ -66,7 +68,7 @@ const ProductPage = (props) => {
     }
 
     // Wishlist handler
-    const toggleWishList = (event) => {
+    const toggleWishList = () => {
         // Authenticated user
         if (AuthService.getUserDetails()) {
             // disable button
@@ -102,33 +104,39 @@ const ProductPage = (props) => {
     }
 
     // Cart Handlers
-    const addToCart = (event) => {
-        ProductService.addToCart(productDetails.id)
-            .then(message => {
-                setCartAlertSeverity("success");
-                setCartAlert(message);
-                setTimeout(() => setCartAlert(""), 10000);
-            })
-            .catch((error) => {
-                setCartAlertSeverity("error");
-                setCartAlert(error.response.status);
-                setTimeout(() => setCartAlert(""), 10000);
-            });
+    const addToCart = () => {
+        // Validate User
+        if (AuthService.getUserDetails()) {
+            ProductService.addToCart(productDetails.id)
+                .then(message => {
+                    setCartAlertSeverity("success");
+                    setCartAlert(message);
+                    setTimeout(() => setCartAlert(""), 10000);
+                })
+                .catch((error) => {
+                    setCartAlertSeverity("error");
+                    setCartAlert(error.response.status);
+                    setTimeout(() => setCartAlert(""), 10000);
+                });
+        } else {
+            // User Login Page
+            navigate(`/login?ref=${location.pathname}`)
+        }
     }
 
 
-    // init
+// init
     useEffect(() => {
         // Product details
         getProductDetails()
-            .then((response) => {
+            .then(() => {
                 // wishlist
                 if (ProductService.productInWishlist(productDetails.id)) {
                     setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
                 }
             })
-            .catch((error) => {
-                console.log(error.response);
+            .catch(() => {
+                setProductError({message: "Failed to load product details"})
             })
 
     }, []);
@@ -253,7 +261,12 @@ const ProductPage = (props) => {
                                 sx={{my: 3}}
                             >
                                 <Button variant="contained" endIcon={<ShoppingCartIcon/>}
-                                        onClick={() => navigate(`/checkout/${productDetails.id}`)}>
+                                        onClick={() => {
+                                            if (AuthService.getUserDetails())
+                                                navigate(`/checkout/${productDetails.id}`)
+                                            else
+                                                navigate(`/login?ref=${"/checkout/" + productDetails.id}`)
+                                        }}>
                                     Buy Now
                                 </Button>
                                 <Button variant="outlined" endIcon={<AddShoppingCartIcon/>} onClick={addToCart}>
@@ -284,14 +297,14 @@ const ProductPage = (props) => {
                                             >
                                                 Highlights
                                             </Typography>
-
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {
-                                        Object.keys(productDetails.additionalDetails).map((key) => (
+                                        Object.keys(productDetails.additionalDetails).map((key, idx) => (
                                             <TableRow
+                                                key={idx}
                                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
                                             >
                                                 <TableCell
@@ -321,13 +334,26 @@ const ProductPage = (props) => {
                 </>
             }
             {
-                !productDetails &&
-                <Backdrop
+                !productDetails && !productError &&
+                < Backdrop
                     sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
                     open={!productDetails}
                 >
                     <CircularProgress color="inherit"/>
                 </Backdrop>
+            }
+            {
+                !productDetails && productError &&
+                <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    {productError.message} -
+                    <strong
+                        onClick={(() => {
+                            setProductError(null);
+                            getProductDetails();
+                        })}
+                    > Reload</strong>
+                </Alert>
             }
         </Stack>
     );
