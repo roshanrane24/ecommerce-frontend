@@ -17,7 +17,8 @@ class ProductService {
 
     // get product by id
     getProductDetails(product_id) {
-        return client.get(`/products/${product_id}`).then(response => response.data);
+        return client.get(`/products/${product_id}`)
+            .then(response => response.data);
     }
 
     // Check if product in wishlist

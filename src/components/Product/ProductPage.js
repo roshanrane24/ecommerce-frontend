@@ -64,6 +64,7 @@ const ProductPage = () => {
         return ProductService.getProductDetails(params.product_id)
             .then((result) => {
                 setProductDetails(result);
+                return result;
             });
     }
 
@@ -129,17 +130,35 @@ const ProductPage = () => {
     useEffect(() => {
         // Product details
         getProductDetails()
-            .then(() => {
-                // wishlist
-                if (ProductService.productInWishlist(productDetails.id)) {
-                    setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
-                }
-            })
             .catch(() => {
                 setProductError({message: "Failed to load product details"})
             })
 
     }, []);
+
+    const Wishlist = (props) => {
+        useEffect(() => {
+            // wishlist check
+            if (ProductService.productInWishlist(productDetails.id)) {
+                setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
+            }
+        }, [props.initOn]);
+
+
+        return (
+            <IconButton
+                sx={{
+                    p: 2,
+                    width: 10,
+                    height: 10,
+                }}
+                disabled={wishlistButtonState}
+                onClick={toggleWishList}
+            >
+                {props.icon}
+            </IconButton>
+        );
+    }
 
     return (
         <Stack
@@ -218,17 +237,7 @@ const ProductPage = () => {
                             >
                                 {productDetails.name}
                             </Typography>
-                            <IconButton
-                                sx={{
-                                    p: 2,
-                                    width: 10,
-                                    height: 10,
-                                }}
-                                disabled={wishlistButtonState}
-                                onClick={toggleWishList}
-                            >
-                                {wishlistIcon}
-                            </IconButton>
+                            <Wishlist icon={wishlistIcon} initOn={productDetails}/>
                         </Stack>
                         <Typography variant="h4" sx={{mt: 1, fontWeight: "bold"}}>
                             {productDetails.price.toLocaleString('en-IN', {
@@ -286,7 +295,7 @@ const ProductPage = () => {
                                 {Object.values(productDetails.description)}
                             </p>
                         </Typography>
-                        <TableContainer component={Paper} disableElevation>
+                        <TableContainer component={Paper}>
                             <Table aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
