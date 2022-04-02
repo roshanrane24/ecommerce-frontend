@@ -17,15 +17,17 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StarIcon from "@mui/icons-material/Star";
 import ProductService from "../../api/ProductService";
 import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import client from "../../api/HttpClient";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
+import AuthService from "../../api/AuthService";
+import {CheckOutContext} from "../../Context/CheckOutContext";
 
-const ProductPage = (props) => {
+const ProductPage = () => {
     // Theme
     const ThemeButton = createTheme({
         palette: {
@@ -42,6 +44,9 @@ const ProductPage = (props) => {
             }
         }
     });
+
+    // Context
+    const checkout = useContext(CheckOutContext);
 
     // Routing
     const navigate = useNavigate();
@@ -201,7 +206,17 @@ const ProductPage = (props) => {
                                 sx={{my: 3}}
                             >
                                 <Button variant="contained" endIcon={<ShoppingCartIcon/>}
-                                        onClick={() => navigate(`/checkout/${productDetails.id}`)}>
+                                        onClick={() => {
+                                            // validate user to checkout else login
+                                            if (AuthService.getUserDetails()) {
+                                                navigate(`/checkout`);
+
+                                                // set contex details
+                                                checkout.products.set(products => [...products, productDetails]);
+                                            } else {
+                                                navigate(`/login?ref=/product/${productDetails.id}`);
+                                            }
+                                        }}>
                                     Buy Now
                                 </Button>
                                 <Button variant="outlined" endIcon={<AddShoppingCartIcon/>}>
