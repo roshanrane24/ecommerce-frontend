@@ -27,11 +27,10 @@ class ProductService {
         let wishlist = localStorage.getItem('wishlist');
 
         // check if wishlist available & parse list
-        if (wishlist) {
+        if (wishlist)
             wishlist = new Set(JSON.parse(wishlist));
-        } else {
+        else
             return false;
-        }
 
         // check item is in wishlist
         return wishlist.has(product_id)
