@@ -1,113 +1,231 @@
 import * as React from 'react';
+import {useContext, useEffect, useState} from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import {
-    Button,
-    Box,
-    Card,
-    FormControl,
-    FormLabel,
-    Radio,
-    RadioGroup
-} from '@mui/material';
-const ADDR = [
-    {
-        _id: 2090568637,
-        type_address: "HOME",
-        country: "INDIA",
-        state: "Rajasthan",
-        fullName: "Aman Gangwar",
-        mobile_number: 7068398252,
-        pincode: 302022,
-        line1: "Sitapura",
-        line2: "Amravati",
-        landmark: "Near Bank of India",
-        town_city: "Jaipur"
-    },
-    {
-        _id: 2090568638,
-        type_address: "HOME",
-        country: "INDIA",
-        state: "Rajasthan",
-        fullName: "Aman Gangwar",
-        mobile_number: 7068398252,
-        pincode: 302022,
-        line1: "Sitapura",
-        line2: "Amravati",
-        landmark: "Near Bank of India",
-        town_city: "Jaipur"
-    }
-]
+import {Box, Button, FormControl, FormLabel, Radio, RadioGroup} from '@mui/material';
+import {CheckOutContext} from "../../Context/CheckOutContext";
+import AddressCard from "./AddressCard";
+import UserService from "../../api/UserService";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Collapse from "@mui/material/Collapse";
+import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import AlertTitle from "@mui/material/AlertTitle";
 
 export default function AddressForm() {
-    const [fullName, setFullName] = React.useState('');
-    const [address1, setAddress1] = React.useState('');
-    const [address2, setAddress2] = React.useState('');
-    const [landmark, setLandmark] = React.useState('');
-    const [city, setCity] = React.useState('');
-    const [state, setState] = React.useState('');
-    const [pinCode, setPinCode] = React.useState('');
-    const [country, setCountry] = React.useState('');
-    const [show, setShow] = React.useState(false);
-    const [radioValue, setRadioValue] = React.useState('');
-    const [address, setAddress] = React.useState(ADDR)
+    // Context
+    const checkout = useContext(CheckOutContext);
+
+    // states
+    // Form field
+    const [fullName, setFullName] = useState('');
+    const [address1, setAddress1] = useState('');
+    const [address2, setAddress2] = useState('');
+    const [landmark, setLandmark] = useState('');
+    const [city, setCity] = useState('');
+    const [state, setState] = useState('');
+    const [pinCode, setPinCode] = useState('');
+    const [country, setCountry] = useState("INDIA");
+    const [addressType, setAddressType] = useState("HOME");
+    const [mobile, setMobile] = useState("");
+    const [show, setShow] = useState(false);
+    // Addresses
+    const [radioValue, setRadioValue] = useState('');
+    const [addresses, setAddresses] = useState([])
+    // ValidationText
+    const [fullNameHelperText, setFullNameHelperText] = React.useState('');
+    const [address1HelperText, setAddress1HelperText] = React.useState('');
+    const [cityHelperText, setCityHelperText] = React.useState('');
+    const [stateHelperText, setStateHelperText] = React.useState('');
+    const [pinCodeHelperText, setPinCodeHelperText] = React.useState('');
+    const [addingAddress, setAddingAddress] = useState(false);
+
+    // validations
+    function validateFullName(fullName) {
+        setFullNameHelperText('');
+        if (fullName.length < 1) {
+            setFullNameHelperText("This Field Cannot be Empty")
+            return false;
+        }
+        return true;
+    }
+
+    function validateAddress1(address1) {
+        setAddress1HelperText('');
+        if (address1.length < 1) {
+            setAddress1HelperText("This Field Cannot be Empty")
+            return false;
+        }
+        return true;
+    }
+
+    function validateCity(city) {
+        setCityHelperText('');
+        if (city.length < 1) {
+            setCityHelperText("This Field Cannot be Empty")
+            return false;
+        }
+        return true;
+    }
+
+    function validateState(state) {
+        setStateHelperText('');
+        if (state.length < 1) {
+            setStateHelperText("This field cannot be empty");
+            return false;
+        }
+        return true;
+    }
+
+    function validatePincode(pincode) {
+        setPinCodeHelperText('');
+        if (pincode.length < 3 || pincode.length > 6) {
+            setPinCodeHelperText("Not a valid pincode");
+            return false;
+        }
+        return true;
+    }
+
+    // address handler
+    const handleNewAddress = () => {
+        if (validateFullName(fullName) && validateAddress1(address1) && validateCity(city) && validateState(state) && validatePincode(pinCode)) {
+            // Animations
+            setAddresses(true);
+
+            // save new Address
+            UserService.saveNewAddress(
+                {
+                    typeOfAddress: addressType,
+                    country: country,
+                    state: state,
+                    fullName: fullName,
+                    pincode: pinCode,
+                    mobileNumber: mobile,
+                    line1: address1,
+                    line2: address2,
+                    landmark: landmark,
+                    town_city: city
+                }
+            )
+                .then(() => {
+                        setAddingAddress(false);
+
+                        // Reset Fields
+                        setFullName('');
+                        setAddress1('');
+                        setAddress2('');
+                        setLandmark('');
+                        setCity('');
+                        setPinCode('');
+                        setState('');
+                        setCountry('');
+                        setMobile('');
+
+                        // fetch addresses
+                        UserService.getSavedAddresses()
+                            .then((addrs) => {
+                                setAddresses(addrs);
+                            });
+                    }
+                )
+                .catch(error => {
+                    setAddingAddress(false);
+                    console.log(error.response);
+                });
+        }
+    }
+
+    // init
+    const init = new BroadcastChannel('init');
+    // select default address
+    init.onmessage = event => setRadioValue(Object.keys(event.data)[0]);
+
+    useEffect(() => {
+        UserService.getSavedAddresses()
+            .then((address) => {
+                if (Object.keys(address).length > 0)
+                    init.postMessage(address);
+
+                // set addresses
+                setAddresses(address);
+            });
+        // eslint
+    }, []);
+
 
     return (
-        <React.Fragment>
-            <Box sx={
-                {
-                    mb: 2,
-                    p: 2
-                }
-            }>
+        <>
+            <Box sx={{mb: 2, p: 2}}>
                 <FormControl>
                     <FormLabel id='address-group-label'>
                         Addresses:
                     </FormLabel>
-                    <RadioGroup name='address-group' aria-labelledby='address-group-label' value={radioValue}
-                        onChange={(event) => {
-                            setRadioValue(event.target.value)
-                            console.log(radioValue)
-                        }} row>
-
-                        {
-                            address.map((key) => (
-                                <FormControlLabel control={<Radio />}
-                                    label={<Card sx={{
-                                        mb: 2, p: 1
-                                    }} display='flex'
-                                        flexDirection='row'>
-                                        <strong> {key.fullName}</strong>
-                                        <br />
-                                        {key.line1},
-                                        <br />
-                                        {key.line2},
-                                        <br />
-                                        {key.landmark},
-                                        <br />
-                                        {key.town_city},
-                                        <br />
-                                        {key.pincode},
-                                        <br />
-                                        {key.state},
-                                        <br />
-                                        {key.country}.
-                                    </Card>}
-                                    value={key._id} />
-                            ))}
-                    </RadioGroup>
+                    {
+                        Object.keys(addresses).length > 0 ? (
+                            <RadioGroup
+                                name='address-group'
+                                aria-labelledby='address-group-label'
+                                value={radioValue}
+                                onChange={(event) => {
+                                    setRadioValue(event.target.value);
+                                    checkout.address.set(event.target.value);
+                                }}
+                                row
+                            >
+                                {
+                                    Object.keys(addresses).map((addressId, idx) => (
+                                        <FormControlLabel
+                                            key={idx}
+                                            control={<Radio sx={{display: 'none'}}/>}
+                                            label={<AddressCard address={addresses[addressId]}
+                                                                selectedAddress={radioValue}/>}
+                                            value={addressId}
+                                        />
+                                    ))
+                                }
+                            </RadioGroup>
+                        ) : (
+                            <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
+                                <CircularProgress sx={{m: 5}}/>
+                            </Stack>
+                        )}
                 </FormControl>
             </Box>
+            <Button variant='contained' onClick={() => setShow(!show)}>Add Address</Button>
 
-            <Button variant='contained' onClick={() => setShow(prev => !prev)}>Add Address</Button>
-            {show && <Box component='form'  >
-                <Typography variant="h6" gutterBottom>
+            <Collapse in={alert} sx={{mb: -6}}>
+                <Alert
+                    severity={alertSeverity}
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => setAlert(false)}
+                        >
+                            <CloseIcon fontSize="inherit"/>
+                        </IconButton>
+                    }
+                    sx={{mb: 2}}
+                >
+                    <AlertTitle sx={{textTransform: 'capitalize'}}>{alertData && alertSeverity}</AlertTitle>
+                    {alertData && alertData.message}
+                </Alert>
+            </Collapse>
+
+            {show && <Box component='form'>
+                <Typography variant="h6" sx={{mt: 1}} gutterBottom>
                     Shipping address
                 </Typography>
-                <Grid container spacing={3}  >
+                <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <TextField
                             required
@@ -118,8 +236,11 @@ export default function AddressForm() {
                             autoComplete="given-name"
                             variant="standard"
                             onChange={(event) => {
-                                setFullName(event.target.value)
+                                setFullName(event.target.value);
+                                validateFullName(event.target.value);
                             }}
+                            helperText={fullNameHelperText}
+                            error={fullNameHelperText}
                             value={fullName}
                         />
                     </Grid>
@@ -134,8 +255,11 @@ export default function AddressForm() {
                             autoComplete="shipping address-line1"
                             variant="standard"
                             onChange={(event) => {
-                                setAddress1(event.target.value)
+                                setAddress1(event.target.value);
+                                validateAddress1(event.target.value);
                             }}
+                            helperText={address1HelperText}
+                            error={address1HelperText}
                             value={address1}
                         />
                     </Grid>
@@ -148,14 +272,13 @@ export default function AddressForm() {
                             autoComplete="shipping address-line2"
                             variant="standard"
                             onChange={(event) => {
-                                setAddress2(event.target.value)
+                                setAddress2(event.target.value);
                             }}
                             value={address2}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-
                             id="landmark"
                             name="landmark"
                             label="Landmark"
@@ -163,7 +286,7 @@ export default function AddressForm() {
                             autoComplete="shipping landmark"
                             variant="standard"
                             onChange={(event) => {
-                                setLandmark(event.target.value)
+                                setLandmark(event.target.value);
                             }}
                             value={landmark}
                         />
@@ -178,8 +301,11 @@ export default function AddressForm() {
                             autoComplete="shipping address-level2"
                             variant="standard"
                             onChange={(event) => {
-                                setCity(event.target.value)
+                                setCity(event.target.value);
+                                validateCity(event.target.value);
                             }}
+                            helperText={cityHelperText}
+                            error={cityHelperText}
                             value={city}
                         />
                     </Grid>
@@ -192,8 +318,11 @@ export default function AddressForm() {
                             fullWidth
                             variant="standard"
                             onChange={(event) => {
-                                setState(event.target.value)
+                                setState(event.target.value);
+                                validateState(event.target.value);
                             }}
+                            helperText={stateHelperText}
+                            error={stateHelperText}
                             value={state}
                         />
                     </Grid>
@@ -204,66 +333,77 @@ export default function AddressForm() {
                             name="pinCode"
                             label="Pin code"
                             fullWidth
-                            autoComplete="shipping pin-code"
+                            autoComplete="pincode"
                             variant="standard"
                             onChange={(event) => {
-                                setPinCode(event.target.value)
+                                setPinCode(event.target.value);
+                                validatePincode(event.target.value);
                             }}
+                            helperText={pinCodeHelperText}
+                            error={pinCodeHelperText}
                             value={pinCode}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="countryLabel">Country</InputLabel>
+                            <Select
+                                labelId="countryLabel"
+                                id="country"
+                                value={country}
+                                label="Country"
+                                onChange={event => setCountry(event.target.value)}
+                            >
+                                <MenuItem value="INDIA">India</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
                         <TextField
                             required
-                            id="country"
-                            name="country"
-                            label="Country"
+                            id="mobile"
+                            name="mobile"
+                            label="Mobile"
                             fullWidth
-                            autoComplete="shipping country"
+                            type="tel"
+                            autoComplete="mobile no"
                             variant="standard"
                             onChange={(event) => {
-                                setCountry(event.target.value)
+                                setMobile(event.target.value);
                             }}
-                            value={country}
+                            value={mobile}
                         />
                     </Grid>
-                    <Grid item xs={12}>
-                        <FormControlLabel
-                            control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-                            label="Use this address for payment details"
-                        />
+                    <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="addressTypeLabel">Address Type</InputLabel>
+                            <Select
+                                labelId="addressTypeLabel"
+                                id="addressTypeSelect"
+                                value={addressType}
+                                label="Age"
+                                onChange={event => setAddressType(event.target.value)}
+                            >
+                                <MenuItem value="HOME">Home</MenuItem>
+                                <MenuItem value="OFFICE">Office</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={6}
-                        fullWidth>
-                        <Button variant='contained' onClick={() => {
-                            const newAddress = {
-                                _id: 2090568639,
-                                country: country,
-                                state: state,
-                                fullName: fullName,
-                                pincode: pinCode,
-                                line1: address1,
-                                line2: address2,
-                                landmark: landmark,
-                                town_city: city
-                            }
-                            console.log(newAddress)
-                            setAddress([...address, newAddress])
-                            setFullName('');
-                            setAddress1('');
-                            setAddress2('');
-                            setLandmark('');
-                            setCity('');
-                            setPinCode('');
-                            setState('');
-                            setCountry('');
-
-
-
-                        }}>Add</Button>
+                          fullWidth>
+                        <LoadingButton
+                            loading={addingAddress}
+                            loadingPosition="start"
+                            type="button"
+                            variant="contained"
+                            sx={{mt: 3, mb: 2}} o
+                            onClick={handleNewAddress}
+                        >
+                            Add
+                        </LoadingButton>
                     </Grid>
                 </Grid>
             </Box>}
-        </React.Fragment >
+        </>
     );
 }

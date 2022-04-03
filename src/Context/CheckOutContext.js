@@ -6,7 +6,6 @@ const CheckOutProvider = (props) => {
     // states
     const [products, setProducts] = useState([]);
     const [shippingAddress, setShippingAddress] = useState({});
-    const [payementDetails, setPayementDetails] = useState({});
 
     const data = {
         products: {
@@ -16,10 +15,6 @@ const CheckOutProvider = (props) => {
         address: {
             get: shippingAddress,
             set: setShippingAddress
-        },
-        payment: {
-            get: payementDetails,
-            set: setPayementDetails
         },
         clear: () => {
             this.products.set([]);

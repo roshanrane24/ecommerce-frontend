@@ -17,8 +17,6 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StarIcon from "@mui/icons-material/Star";
 import ProductService from "../../api/ProductService";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from 'react';
 import client from "../../api/HttpClient";
 import Backdrop from "@mui/material/Backdrop";
@@ -28,7 +26,6 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import AuthService from "../../api/AuthService";
 import {CheckOutContext} from "../../Context/CheckOutContext";
-import AuthService from "../../api/AuthService";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 
@@ -291,18 +288,22 @@ const ProductPage = () => {
                                 display="block"
                                 sx={{my: 3}}
                             >
-                                <Button variant="contained" endIcon={<ShoppingCartIcon/>}
-                                        onClick={() => {
-                                            // validate user to checkout else login
-                                            if (AuthService.getUserDetails()) {
-                                                navigate(`/checkout`);
+                                <Button
+                                    variant="contained"
+                                    endIcon={<ShoppingCartIcon/>}
+                                    onClick={() => {
+                                        // validate user to checkout else login
+                                        if (AuthService.getUserDetails()) {
+                                            navigate(`/checkout`);
 
-                                                // set contex details
-                                                checkout.products.set(products => [...products, productDetails]);
-                                            } else {
-                                                navigate(`/login?ref=/product/${productDetails.id}`);
-                                            }
-                                        }}>
+                                            // set contex details
+                                            checkout.products.set(products => [...products, productDetails]);
+                                        } else {
+                                            navigate(`/login?ref=/product/${productDetails.id}`);
+                                        }
+                                    }}
+                                    disabled={buyButtonState}
+                                >
                                     Buy Now
                                 </Button>
                                 <Button variant="outlined" endIcon={<AddShoppingCartIcon/>} onClick={addToCart}>
