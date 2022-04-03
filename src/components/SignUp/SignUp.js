@@ -1,19 +1,32 @@
-import { Stack, Box, Typography, Grid, TextField, Button, Link, CssBaseline, Container, Avatar, Alert, AlertTitle, Collapse } from "@mui/material"
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {
+    Alert,
+    AlertTitle,
+    Avatar,
+    Box,
+    Collapse,
+    Container,
+    CssBaseline,
+    Grid,
+    Link,
+    Stack,
+    TextField,
+    Typography
+} from "@mui/material"
+import {ThemeProvider} from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState } from "react";
+import React, {useState} from "react";
 import AuthService from "../../api/AuthService";
 import IconButton from "@mui/material/IconButton";
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
+import useTheme from "@mui/material/styles/useTheme";
+import LoadingButton from "@mui/lab/LoadingButton";
 
-
-
-
-const theme = createTheme();
 const SignUp = () => {
+    // Theme context object
+    const theme = useTheme();
 
-
+    // State
     const [firstName, setFirstName] = useState('');
     const [firstNameHelperText, setFirstNameHelperText] = useState('');
     const [lastName, setLastName] = useState('');
@@ -23,24 +36,34 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     const [passwordHelperText, setPasswordHelperText] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [confirmPasswordHelperText, setconfirmPasswordHelperText] = useState('');
-    const [errorData, setErrorData] = useState(null);
-    const [error, setError] = useState(false);
-    const [loginIn, setLoginIn] = useState(false);
+    const [confirmPasswordHelperText, setConfirmPasswordHelperText] = useState('');
+    const [alertData, setAlertData] = useState(null);
+    const [alert, setAlert] = useState(false);
+    const [alertSeverity, setAlertSeverity] = useState("info");
+    const [signInUp, setSignInUp] = useState(false);
     const [searchParams,] = useSearchParams();
     const navigate = useNavigate();
 
 
-    function validateFirstName() {
+    // Validations
+    // validate first name
+    function validateFirstName(firstName) {
+        // reset error message
         setFirstNameHelperText('');
+
         if (firstName === "") {
             setFirstNameHelperText("This Field Cannot be Empty")
+            return false;
+        } else if (firstName.lenght < 3) {
+            setFirstNameHelperText("First name must be at least 3 character long")
             return false;
         }
         return true;
     }
 
-    function validatLastName() {
+    // validate last name
+    function validatLastName(lastName) {
+        // reset error message
         setLastNameHelperText('');
         if (lastName === "") {
             setLastNameHelperText("This Field Cannot be empty");
@@ -49,15 +72,21 @@ const SignUp = () => {
         return true;
     }
 
-    function validateEmail() {
+    // validate email
+    function validateEmail(email) {
+        // reset error message
         setEmailHelperText('');
+
         if (!(/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(email))) {
             setEmailHelperText("Enter a valid email address");
             return false;
         }
         return true;
     }
-    function validatePassword() {
+
+    // validate password
+    function validatePassword(password) {
+        // reset error message
         setPasswordHelperText('');
 
         if (password.length < 8) {
@@ -73,94 +102,110 @@ const SignUp = () => {
         return true;
     }
 
-    function validateConfirmPassword() {
-        if (password == confirmPassword)
+    // validate confirm password
+    function validateConfirmPassword(confirmPassword) {
+        // reset error message
+        setConfirmPasswordHelperText('');
+        if (password === confirmPassword)
             return true;
         else {
-            setconfirmPasswordHelperText("Password and Confirm Password field should match");
+            setConfirmPasswordHelperText("Password and Confirm Password field should match");
             return false;
         }
     }
 
+    // Submit form handler
     const submitHandler = (event) => {
         event.preventDefault();
-        if (validateFirstName() && validatLastName() && validateEmail() && validatePassword() && validateConfirmPassword()) {
-            const userRegistrationData = {
-                firstname: firstName,
-                lastname: lastName,
-                email: email,
-                password: password,
 
-            };
-            AuthService.register(userRegistrationData).then(() => {
+        // animations
+        setSignInUp(true);
+        setAlertData(null)
 
-
-                setFirstName('');
-                setLastName('');
-                setEmail('');
-                setPassword('');
-                setConfirmPassword('');
-
-                navigate('/login');
-            }).catch(error => {
-                // Stop loading animation
-                setLoginIn(false);
-
-                // Set error message
-                let err = { statusCode: error.response.status }
-
-                if (err.statusCode === 401)
-                    err.message = "The username or password is incorrect.";
-                else
-                    err.message = "Error has occured while login";
-
-                // Set Alert
-                setErrorData(err);
-                setError(true);
-            });
-
-
+        // Form Data
+        let data = new FormData(event.currentTarget)
+        data = {
+            firstname: data.get('firstName'),
+            lastname: data.get('lastName'),
+            email: data.get('email'),
+            password: data.get('password'),
+            confirmPassword: data.get('confirmPassword'),
         }
 
+        // validate all fields
+        if (validateFirstName(data.firstname) && validatLastName(data.lastname) && validateEmail(data.email) && validatePassword(data.password) && validateConfirmPassword(data.confirmPassword)) {
+            AuthService.register(data)
+                .then(() => {
+                    // reset fields
+                    setFirstName('');
+                    setLastName('');
+                    setEmail('');
+                    setPassword('');
+                    setConfirmPassword('');
 
+                    // set alert
+                    setAlertSeverity("success");
+                    setAlertData({message: "You have successfully registered. You will be redirected to login page shortly."});
+                    setAlert(true);
+                    setSignInUp(false);
+
+                    // Redirection
+                    setTimeout(() => {
+                        // check if to redirect
+                        if (searchParams.get('ref')) {
+                            navigate(`/login?ref=${searchParams.get('ref')}`);
+                        } else {
+                            // Redirect to home
+                            navigate('/login');
+                        }
+                    }, 3000);
+                })
+                .catch(error => {
+                    // Stop loading animation
+                    setSignInUp(false);
+
+                    // Set error message
+                    let err = {message: error.response.data.message}
+
+                    // Set Alert
+                    setAlertSeverity("error");
+                    setAlertData(err);
+                    setAlert(true);
+                });
+        }
     }
 
-
-
-
-
     return (
-
         <ThemeProvider theme={theme}>
             <Stack direction="row"
-                sx={{
-                    justifyContent: 'flex-end;',
-                    flexGrow: 1,
-                }}
+                   sx={{
+                       justifyContent: 'flex-end;',
+                       flexGrow: 1,
+                   }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Collapse in={error} sx={{ mb: -6 }}>
+                <CssBaseline/>
+                <Collapse in={alert} sx={{mb: -6}}>
                     <Alert
-                        severity="error"
+                        severity={alertSeverity}
                         action={
                             <IconButton
                                 aria-label="close"
                                 color="inherit"
                                 size="small"
-                                onClick={() => setError(false)}
+                                onClick={() => setAlert(false)}
                             >
-                                <CloseIcon fontSize="inherit" />
+                                <CloseIcon fontSize="inherit"/>
                             </IconButton>
                         }
-                        sx={{ mb: 2 }}
+                        sx={{mb: 2}}
                     >
-                        <AlertTitle>Error : <strong>{errorData && errorData.statusCode}</strong></AlertTitle>
-                        {errorData && errorData.message}
+                        <AlertTitle sx={{textTransform: 'capitalize'}}>{alertData && alertSeverity}</AlertTitle>
+                        {alertData && alertData.message}
                     </Alert>
                 </Collapse>
                 <Box
@@ -171,35 +216,35 @@ const SignUp = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" onSubmit={submitHandler} sx={{ mt: 3 }}>
+                    <Box component="form" onSubmit={submitHandler} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-
+                                    autoFocus
                                     fullWidth
                                     label="First Name"
                                     name="firstName"
+                                    id="firstName"
                                     value={firstName}
                                     onChange={(event) => {
                                         setFirstName(event.target.value);
-                                        validateFirstName();
+                                        validateFirstName(event.target.value);
                                     }}
                                     error={firstNameHelperText}
                                     helperText={firstNameHelperText}
-
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     onChange={(event) => {
                                         setLastName(event.target.value);
-                                        validatLastName();
+                                        validatLastName(event.target.value);
                                     }}
                                     fullWidth
                                     id="lastName"
@@ -213,8 +258,8 @@ const SignUp = () => {
                             <Grid item xs={12}>
                                 <TextField
                                     onChange={(event) => {
-                                        setEmail(event.target.value);
-                                        validateEmail();
+                                        setEmail(event.target.value.toLowerCase());
+                                        validateEmail(event.target.value);
                                     }}
                                     fullWidth
                                     id="email"
@@ -229,7 +274,7 @@ const SignUp = () => {
                                 <TextField
                                     onChange={(event) => {
                                         setPassword(event.target.value);
-                                        validatePassword();
+                                        validatePassword(event.target.value);
                                     }}
                                     fullWidth
                                     name="password"
@@ -239,14 +284,13 @@ const SignUp = () => {
                                     value={password}
                                     error={passwordHelperText}
                                     helperText={passwordHelperText}
-
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     onChange={(event) => {
                                         setConfirmPassword(event.target.value);
-                                        validateConfirmPassword();
+                                        validateConfirmPassword(event.target.value);
                                     }}
                                     fullWidth
                                     name="confirmPassword"
@@ -256,21 +300,22 @@ const SignUp = () => {
                                     value={confirmPassword}
                                     error={confirmPasswordHelperText}
                                     helperText={confirmPasswordHelperText}
-
                                 />
                             </Grid>
                         </Grid>
-                        <Button
+                        <LoadingButton
+                            loading={signInUp}
+                            loadingPosition="start"
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign Up
-                        </Button>
+                        </LoadingButton>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <RouterLink to='/login'>
+                                <RouterLink to={`/login?ref=${searchParams.get('ref')}`}>
                                     <Link variant="body2">
                                         Already have an account? Sign in
                                     </Link>
@@ -280,7 +325,7 @@ const SignUp = () => {
                     </Box>
                 </Box>
             </Container>
-        </ThemeProvider >
+        </ThemeProvider>
 
     );
 }

@@ -16,6 +16,8 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StarIcon from "@mui/icons-material/Star";
 import ProductService from "../../api/ProductService";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from 'react';
 import client from "../../api/HttpClient";
@@ -26,8 +28,11 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import AuthService from "../../api/AuthService";
 import {CheckOutContext} from "../../Context/CheckOutContext";
+import AuthService from "../../api/AuthService";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
-const ProductPage = () => {
+const ProductPage = (props) => {
     // Theme
     const ThemeButton = createTheme({
         palette: {
@@ -51,43 +56,116 @@ const ProductPage = () => {
     // Routing
     const navigate = useNavigate();
     const params = useParams()
+    const location = useLocation();
 
     // States
     const [productDetails, setProductDetails] = useState(null);
     const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder/>);
+    const [wishlistButtonState, setWishlistButtonState] = useState(false);
+    const [cartAlert, setCartAlert] = useState("");
+    const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
+    const [productError, setProductError] = useState(null);
 
     // Product details handler
     const getProductDetails = () => {
-        ProductService.getProductDetails(params.product_id).then((result) => {
-            setProductDetails(result)
-        })
+        return ProductService.getProductDetails(params.product_id)
+            .then((result) => {
+                setProductDetails(result);
+                return result;
+            });
     }
 
     // Wishlist handler
     const toggleWishList = () => {
-        if (ProductService.productInWishlist()) {
-            ProductService.addToWishList().then(() =>
-                setWishlistIcon(<Favorite/>)
-            )
+        // Authenticated user
+        if (AuthService.getUserDetails()) {
+            // disable button
+            setWishlistButtonState(true);
+
+            if (ProductService.productInWishlist(productDetails.id)) {
+                // Remove to wishlist
+                ProductService.removeToWishList(productDetails.id)
+                    .then(() => {
+                        setWishlistIcon(<FavoriteBorder/>)
+                        setWishlistButtonState(false);
+                    })
+                    .catch((error) => {
+                        console.log(error.response);
+                        setWishlistButtonState(false);
+                    });
+            } else {
+                // Add to wishlist
+                ProductService.addToWishList(productDetails.id)
+                    .then(() => {
+                        setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
+                        setWishlistButtonState(false);
+                    })
+                    .catch((error) => {
+                        console.log(error.response);
+                        setWishlistButtonState(false);
+                    });
+            }
         } else {
-            // Remove to wishlist
-            ProductService.removeToWishList().then(() =>
-                setWishlistIcon(<FavoriteBorder/>)
-            );
+            // User Login Page
+            navigate(`/login?ref=${location.pathname}`)
+        }
+    }
+
+    // Cart Handlers
+    const addToCart = () => {
+        // Validate User
+        if (AuthService.getUserDetails()) {
+            ProductService.addToCart(productDetails.id)
+                .then(message => {
+                    setCartAlertSeverity("success");
+                    setCartAlert(message);
+                    setTimeout(() => setCartAlert(""), 10000);
+                })
+                .catch((error) => {
+                    setCartAlertSeverity("error");
+                    setCartAlert(error.response.status);
+                    setTimeout(() => setCartAlert(""), 10000);
+                });
+        } else {
+            // User Login Page
+            navigate(`/login?ref=${location.pathname}`)
         }
     }
 
 
-    // init
+// init
     useEffect(() => {
         // Product details
-        getProductDetails();
+        getProductDetails()
+            .catch(() => {
+                setProductError({message: "Failed to load product details"})
+            })
 
-        // wishlist
-        if (ProductService.productInWishlist()) {
-            setWishlistIcon(<Favorite/>);
-        }
     }, []);
+
+    const Wishlist = (props) => {
+        useEffect(() => {
+            // wishlist check
+            if (ProductService.productInWishlist(productDetails.id)) {
+                setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
+            }
+        }, [props.initOn]);
+
+
+        return (
+            <IconButton
+                sx={{
+                    p: 2,
+                    width: 10,
+                    height: 10,
+                }}
+                disabled={wishlistButtonState}
+                onClick={toggleWishList}
+            >
+                {props.icon}
+            </IconButton>
+        );
+    }
 
     return (
         <Stack
@@ -109,7 +187,9 @@ const ProductPage = () => {
                     <Box
                         sx={{
                             minWidth: '40vw',
-                            minHeight: '90vh',
+                            maxWidth: '40vw',
+                            minHeight: '80vh',
+                            maxHeight: '80vh',
                             position: "-webkit-sticky"
                         }}
                     >
@@ -117,7 +197,7 @@ const ProductPage = () => {
                             sx={{
                                 p: 3,
                                 width: '100%',
-                                height: '100%',
+                                height: '80vh',
                             }}
                         >
                             <Stack
@@ -164,16 +244,7 @@ const ProductPage = () => {
                             >
                                 {productDetails.name}
                             </Typography>
-                            <IconButton
-                                sx={{
-                                    p: 2,
-                                    width: 10,
-                                    height: 10,
-                                }}
-                                onClick={() => toggleWishList()}
-                            >
-                                {wishlistIcon}
-                            </IconButton>
+                            <Wishlist icon={wishlistIcon} initOn={productDetails}/>
                         </Stack>
                         <Typography variant="h4" sx={{mt: 1, fontWeight: "bold"}}>
                             {productDetails.price.toLocaleString('en-IN', {
@@ -219,10 +290,16 @@ const ProductPage = () => {
                                         }}>
                                     Buy Now
                                 </Button>
-                                <Button variant="outlined" endIcon={<AddShoppingCartIcon/>}>
+                                <Button variant="outlined" endIcon={<AddShoppingCartIcon/>} onClick={addToCart}>
                                     Add to Cart
                                 </Button>
                             </Stack>
+                            {
+                                cartAlert &&
+                                <Alert severity={cartAlertSeverity} sx={{flexShrink: 1, flexGrow: 1, mb: 2}}>
+                                    {cartAlert}
+                                </Alert>
+                            }
                         </ThemeProvider>
                         <Typography variant="subtitle1" sx={{fontWeight: "bold"}} gutterBottom>Description</Typography>
                         <Typography variant="body2" gutterBottom sx={{mb: 5}}>
@@ -230,7 +307,7 @@ const ProductPage = () => {
                                 {Object.values(productDetails.description)}
                             </p>
                         </Typography>
-                        <TableContainer component={Paper} disableElevation>
+                        <TableContainer component={Paper}>
                             <Table aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
@@ -247,8 +324,9 @@ const ProductPage = () => {
                                 </TableHead>
                                 <TableBody>
                                     {
-                                        Object.keys(productDetails.additionalDetails).map((key) => (
+                                        Object.keys(productDetails.additionalDetails).map((key, idx) => (
                                             <TableRow
+                                                key={idx}
                                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
                                             >
                                                 <TableCell
@@ -278,13 +356,26 @@ const ProductPage = () => {
                 </>
             }
             {
-                !productDetails &&
-                <Backdrop
+                !productDetails && !productError &&
+                < Backdrop
                     sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
                     open={!productDetails}
                 >
                     <CircularProgress color="inherit"/>
                 </Backdrop>
+            }
+            {
+                !productDetails && productError &&
+                <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    {productError.message} -
+                    <strong
+                        onClick={(() => {
+                            setProductError(null);
+                            getProductDetails();
+                        })}
+                    > Reload</strong>
+                </Alert>
             }
         </Stack>
     );

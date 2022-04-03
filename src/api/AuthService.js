@@ -1,4 +1,5 @@
 import client from './HttpClient';
+import ProductService from "./ProductService";
 
 class AuthService {
 
@@ -6,9 +7,15 @@ class AuthService {
         return client.post("/auth/signin", {email, password})
             .then(response => {
                 // Valid Login
-                if (response.data.token)
+                if (response.data.token) {
                     // Save user
                     localStorage.setItem('user', JSON.stringify(response.data));
+
+                    // fetch wishlist
+                    ProductService.getWishList().then(wishlist => {
+                        localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
+                    });
+                }
                 return response.data
             });
     }
