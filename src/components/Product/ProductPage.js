@@ -32,7 +32,7 @@ import AuthService from "../../api/AuthService";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 
-const ProductPage = (props) => {
+const ProductPage = () => {
     // Theme
     const ThemeButton = createTheme({
         palette: {
@@ -62,6 +62,7 @@ const ProductPage = (props) => {
     const [productDetails, setProductDetails] = useState(null);
     const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder/>);
     const [wishlistButtonState, setWishlistButtonState] = useState(false);
+    const [buyButtonState, setBuyButtonState] = useState(false);
     const [cartAlert, setCartAlert] = useState("");
     const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
     const [productError, setProductError] = useState(null);
@@ -132,40 +133,31 @@ const ProductPage = (props) => {
         }
     }
 
+    // load wish state on init
+    const init = new BroadcastChannel('wishProduct')
+    init.addEventListener('message',
+        () => {
+            // wishlist check
+            if (ProductService.productInWishlist(productDetails.id))
+                setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
 
-// init
+            // Stock Check
+            if (productDetails.stock < 1)
+                setBuyButtonState(true);
+        }, false)
+
+    // init
     useEffect(() => {
         // Product details
         getProductDetails()
+            .then(() => {
+                init.postMessage('run');
+            })
             .catch(() => {
                 setProductError({message: "Failed to load product details"})
             })
 
     }, []);
-
-    const Wishlist = (props) => {
-        useEffect(() => {
-            // wishlist check
-            if (ProductService.productInWishlist(productDetails.id)) {
-                setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
-            }
-        }, [props.initOn]);
-
-
-        return (
-            <IconButton
-                sx={{
-                    p: 2,
-                    width: 10,
-                    height: 10,
-                }}
-                disabled={wishlistButtonState}
-                onClick={toggleWishList}
-            >
-                {props.icon}
-            </IconButton>
-        );
-    }
 
     return (
         <Stack
@@ -244,7 +236,17 @@ const ProductPage = (props) => {
                             >
                                 {productDetails.name}
                             </Typography>
-                            <Wishlist icon={wishlistIcon} initOn={productDetails}/>
+                            <IconButton
+                                sx={{
+                                    p: 2,
+                                    width: 10,
+                                    height: 10,
+                                }}
+                                disabled={wishlistButtonState}
+                                onClick={toggleWishList}
+                            >
+                                {wishlistIcon}
+                            </IconButton>
                         </Stack>
                         <Typography variant="h4" sx={{mt: 1, fontWeight: "bold"}}>
                             {productDetails.price.toLocaleString('en-IN', {
@@ -269,6 +271,19 @@ const ProductPage = (props) => {
                         >
                             {productDetails.rating}
                         </Button>
+                        {
+                            productDetails.stock < 5 && productDetails.stock > 0 &&
+                            <Alert icon={false} severity="warning" sx={{mb: -1, mt: 1, maxWidth: 300, minWidth: 200}}>
+                                Remaining in Stock : {productDetails.stock}
+                            </Alert>
+                        }
+
+                        {
+                            productDetails.stock === 0 &&
+                            <Alert icon={false} severity="error" sx={{mb: -1, mt: 1, maxWidth: 300, minWidth: 200}}>
+                                Out of Stock
+                            </Alert>
+                        }
                         <ThemeProvider theme={ThemeButton}>
                             <Stack
                                 direction="row"
@@ -318,7 +333,6 @@ const ProductPage = (props) => {
                                             >
                                                 Highlights
                                             </Typography>
-
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
