@@ -1,9 +1,8 @@
 import * as React from 'react';
+import {useContext, useEffect, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Toolbar from '@mui/material/Toolbar';
 import Paper from '@mui/material/Paper';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -11,45 +10,62 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import AddressForm from './AddressForm';
-import PaymentForm from './PaymentForm';
 import Review from './Review';
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
+import useTheme from "@mui/material/styles/useTheme";
+import {CheckOutContext} from "../../Context/CheckOutContext";
 
 function Copyright() {
     return (
         <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
+            <RouterLink to="/">
+                <Link color="inherit">
+                    EZ-BUY
+                </Link>
+            </RouterLink>{' '}
             {new Date().getFullYear()}
             {'.'}
         </Typography>
     );
 }
 
-const steps = ['Shipping address', 'Payment details', 'Review your order'];
+// TODO Try completed payment status step
+const steps = ['Shipping address', 'Review your order'];
 
 function getStepContent(step) {
     switch (step) {
         case 0:
-            return <AddressForm />;
+            return <AddressForm/>;
         case 1:
-            return <PaymentForm />;
-        case 2:
-            return <Review />;
+            return <Review/>;
         default:
             throw new Error('Unknown step');
     }
 }
 
-const theme = createTheme();
-
+// Checkout component
 export default function Checkout() {
-    const [activeStep, setActiveStep] = React.useState(0);
+    // theme
+    const theme = useTheme();
 
+    // Routing
+    const navigate = useNavigate();
+
+    // Context
+    const checkout = useContext(CheckOutContext);
+
+    // states
+    const [activeStep, setActiveStep] = useState(0);
+
+    // Step Handler
     const handleNext = () => {
+        if (activeStep === 0 && checkout.address.get === {}) {
+            console.log("Please Select Address")
+            return;
+        }
         setActiveStep(activeStep + 1);
     };
 
@@ -57,39 +73,37 @@ export default function Checkout() {
         setActiveStep(activeStep - 1);
     };
 
+    useEffect(() => {
+        // authorized access
+        if (checkout.products.get.length < 1) {
+            if (sessionStorage.getItem('co') === 'cart')
+                navigate('/user/cart');
+            else if (sessionStorage.getItem('co').length > 0)
+                navigate(`/product/${sessionStorage.getItem('co')}`);
+            else
+                navigate('/');
+        }
+    }, []);
+
+
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <AppBar
-                position="absolute"
-                color="default"
-                elevation={0}
-                sx={{
-                    position: 'relative',
-                    borderBottom: (t) => `1px solid ${t.palette.divider}`,
-                }}
-            >
-                <Toolbar>
-                    <Typography variant="h6" color="inherit" noWrap>
-                        Company name
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-                <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
+            <CssBaseline/>
+            <Container component="main" maxWidth="md" sx={{mb: 4}}>
+                <Paper variant="outlined" sx={{my: {xs: 3, md: 6}, p: {xs: 2, md: 3}}}>
                     <Typography component="h1" variant="h4" align="center">
                         Checkout
                     </Typography>
-                    <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+                    <Stepper activeStep={activeStep} sx={{pt: 3, pb: 5}}>
                         {steps.map((label) => (
                             <Step key={label}>
                                 <StepLabel>{label}</StepLabel>
                             </Step>
                         ))}
                     </Stepper>
-                    <React.Fragment>
+                    <>
                         {activeStep === steps.length ? (
-                            <React.Fragment>
+                            <>
                                 <Typography variant="h5" gutterBottom>
                                     Thank you for your order.
                                 </Typography>
@@ -98,13 +112,13 @@ export default function Checkout() {
                                     confirmation, and will send you an update when your order has
                                     shipped.
                                 </Typography>
-                            </React.Fragment>
+                            </>
                         ) : (
-                            <React.Fragment>
+                            <>
                                 {getStepContent(activeStep)}
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                                     {activeStep !== 0 && (
-                                        <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
+                                        <Button onClick={handleBack} sx={{mt: 3, ml: 1}}>
                                             Back
                                         </Button>
                                     )}
@@ -112,16 +126,16 @@ export default function Checkout() {
                                     <Button
                                         variant="contained"
                                         onClick={handleNext}
-                                        sx={{ mt: 3, ml: 1 }}
+                                        sx={{mt: 3, ml: 1}}
                                     >
                                         {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
                                     </Button>
                                 </Box>
-                            </React.Fragment>
+                            </>
                         )}
-                    </React.Fragment>
+                    </>
                 </Paper>
-                <Copyright />
+                <Copyright/>
             </Container>
         </ThemeProvider>
     );
