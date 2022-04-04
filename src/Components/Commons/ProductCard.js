@@ -69,7 +69,6 @@ const ProductCard = (props) => {
                             {props.product.price.toLocaleString('en-IN', {
                                 style: 'currency',
                                 currency: 'INR',
-                                maximumSignificantDigits: 3,
                             })}
                         </Typography>
                     </Stack>
