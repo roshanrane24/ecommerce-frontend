@@ -28,6 +28,9 @@ import AuthService from "../../api/AuthService";
 import {CheckOutContext} from "../../Context/CheckOutContext";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import WishListService from "../../api/WishListService";
+import CartService from "../../api/CartService";
+
 
 const ProductPage = () => {
     // Theme
@@ -80,9 +83,9 @@ const ProductPage = () => {
             // disable button
             setWishlistButtonState(true);
 
-            if (ProductService.productInWishlist(productDetails.id)) {
+            if (WishListService.productInWishlist(productDetails.id)) {
                 // Remove to wishlist
-                ProductService.removeToWishList(productDetails.id)
+                WishListService.removeToWishList(productDetails.id)
                     .then(() => {
                         setWishlistIcon(<FavoriteBorder/>)
                         setWishlistButtonState(false);
@@ -93,7 +96,8 @@ const ProductPage = () => {
                     });
             } else {
                 // Add to wishlist
-                ProductService.addToWishList(productDetails.id)
+                WishListService.addToWishList(productDetails.id)
+
                     .then(() => {
                         setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
                         setWishlistButtonState(false);
@@ -113,7 +117,7 @@ const ProductPage = () => {
     const addToCart = () => {
         // Validate User
         if (AuthService.getUserDetails()) {
-            ProductService.addToCart(productDetails.id)
+            CartService.addToCart(productDetails)
                 .then(message => {
                     setCartAlertSeverity("success");
                     setCartAlert(message);
@@ -134,13 +138,15 @@ const ProductPage = () => {
     const init = new BroadcastChannel('wishProduct')
     init.addEventListener('message',
         () => {
-            // wishlist check
-            if (ProductService.productInWishlist(productDetails.id))
-                setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
+            if (productDetails) {
+                // wishlist check
+                if (WishListService.productInWishlist(productDetails.id))
+                    setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
 
-            // Stock Check
-            if (productDetails.stock < 1)
-                setBuyButtonState(true);
+                // Stock Check
+                if (productDetails.stock < 1)
+                    setBuyButtonState(true);
+            }
         }, false)
 
     // init
@@ -153,7 +159,7 @@ const ProductPage = () => {
             .catch(() => {
                 setProductError({message: "Failed to load product details"})
             })
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

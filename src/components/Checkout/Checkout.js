@@ -74,13 +74,21 @@ export default function Checkout() {
     };
 
     useEffect(() => {
-        // authorized access
+        // authorized access (If refreshed page during checkout)
         if (checkout.products.get.length < 1) {
-            if (sessionStorage.getItem('co') === 'cart')
+            if (sessionStorage.getItem('co') === 'cart') {
+                // if tried checking out from cart
                 navigate('/user/cart');
-            else if (sessionStorage.getItem('co').length > 0)
+                sessionStorage.removeItem('co');
+            } else if (sessionStorage.getItem('co') === null) {
+                // unauthorized
+                navigate('/');
+            } else if (sessionStorage.getItem('co').length > 0) {
+                // if tried checking out using (Buy Now)
                 navigate(`/product/${sessionStorage.getItem('co')}`);
-            else
+                sessionStorage.removeItem('co');
+            } else
+                // unauthorized
                 navigate('/');
         }
     }, []);
