@@ -294,10 +294,15 @@ const ProductPage = () => {
                                     onClick={() => {
                                         // validate user to checkout else login
                                         if (AuthService.getUserDetails()) {
-                                            navigate(`/checkout`);
+                                            // set single quantity
+                                            productDetails.quantity = 1;
 
-                                            // set contex details
-                                            checkout.products.set(products => [...products, productDetails]);
+                                            // for failed redirection
+                                            sessionStorage.setItem('co', productDetails.id);
+
+                                            // set contexr details & navigate
+                                            checkout.products.set([productDetails]);
+                                            navigate(`/checkout`);
                                         } else {
                                             navigate(`/login?ref=/product/${productDetails.id}`);
                                         }

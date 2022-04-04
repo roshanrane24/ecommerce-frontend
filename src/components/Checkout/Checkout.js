@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import {ThemeProvider} from '@mui/material/styles';
 import AddressForm from './AddressForm';
 import Review from './Review';
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import useTheme from "@mui/material/styles/useTheme";
 import {CheckOutContext} from "../../Context/CheckOutContext";
 
@@ -51,6 +51,9 @@ export default function Checkout() {
     // theme
     const theme = useTheme();
 
+    // Routing
+    const navigate = useNavigate();
+
     // Context
     const checkout = useContext(CheckOutContext);
 
@@ -69,6 +72,19 @@ export default function Checkout() {
     const handleBack = () => {
         setActiveStep(activeStep - 1);
     };
+
+    useEffect(() => {
+        // authorized access
+        if (checkout.products.get.length < 1) {
+            if (sessionStorage.getItem('co') === 'cart')
+                navigate('/user/cart');
+            else if (sessionStorage.getItem('co').length > 0)
+                navigate(`/product/${sessionStorage.getItem('co')}`);
+            else
+                navigate('/');
+        }
+    }, []);
+
 
     return (
         <ThemeProvider theme={theme}>

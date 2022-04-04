@@ -25,27 +25,23 @@ const theme = createTheme({
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline/>
-            <ErrorBoundary>
-                <Routes>
-                    <Route path='/' element={<Header/>}>
-                        <Route index element={<Home/>}/>
-                        <Route path='product/:product_id' element={
-                            <CheckOutProvider>
-                                <ProductPage/>
-                            </CheckOutProvider>
-                        }/>
-                        <Route path='*' element={<NotFound/>}/>
-                    </Route>
-                    <Route path='/login' element={<Login/>}/>
-                    <Route path='/signup' element={<SignUp/>}/>
-                    <Route path='/checkout' element={
-                        <CheckOutProvider>
+            <CheckOutProvider>
+                <CssBaseline/>
+                <ErrorBoundary>
+                    <Routes>
+                        <Route path='/' element={<Header/>}>
+                            <Route index element={<Home/>}/>
+                            <Route path='product/:product_id' element={<ProductPage/>}/>
+                            <Route path='*' element={<NotFound/>}/>
+                        </Route>
+                        <Route path='/login' element={<Login/>}/>
+                        <Route path='/signup' element={<SignUp/>}/>
+                        <Route path='/checkout' element={
                             <Checkout/>
-                        </CheckOutProvider>
-                    }/>
-                </Routes>
-            </ErrorBoundary>
+                        }/>
+                    </Routes>
+                </ErrorBoundary>
+            </CheckOutProvider>
         </ThemeProvider>
     )
         ;

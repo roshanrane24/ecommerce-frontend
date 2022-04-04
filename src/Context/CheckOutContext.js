@@ -5,7 +5,8 @@ export const CheckOutContext = createContext(undefined);
 const CheckOutProvider = (props) => {
     // states
     const [products, setProducts] = useState([]);
-    const [shippingAddress, setShippingAddress] = useState({});
+    const [shippingAddress, setShippingAddress] = useState(null);
+    const [billingAddress, setBillingAddress] = useState(null);
 
     const data = {
         products: {
@@ -16,10 +17,14 @@ const CheckOutProvider = (props) => {
             get: shippingAddress,
             set: setShippingAddress
         },
+        billing: {
+            get: billingAddress,
+            set: setBillingAddress
+        },
         clear: () => {
             this.products.set([]);
             this.address.set({});
-            this.payment.set({});
+            this.billing.set({});
         }
     }
 
