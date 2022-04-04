@@ -18,7 +18,6 @@ class ProductService {
         return client.get(`/products/${product_id}`)
             .then(response => response.data);
     }
-
 }
 
 export default new ProductService();

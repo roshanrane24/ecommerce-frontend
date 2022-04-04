@@ -1,6 +1,8 @@
 import client from './HttpClient';
 import WishListService from "./WishListService";
 import CartService from "./CartService";
+import ProductService from "./ProductService";
+
 
 class AuthService {
 
@@ -30,6 +32,7 @@ class AuthService {
         localStorage.removeItem('user');
         localStorage.removeItem('wishlist');
         localStorage.removeItem('cart');
+
     }
 
     register(userDetails) {

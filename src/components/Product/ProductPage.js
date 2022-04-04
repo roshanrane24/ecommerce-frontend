@@ -31,6 +31,7 @@ import AlertTitle from "@mui/material/AlertTitle";
 import WishListService from "../../api/WishListService";
 import CartService from "../../api/CartService";
 
+
 const ProductPage = () => {
     // Theme
     const ThemeButton = createTheme({
@@ -96,6 +97,7 @@ const ProductPage = () => {
             } else {
                 // Add to wishlist
                 WishListService.addToWishList(productDetails.id)
+
                     .then(() => {
                         setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
                         setWishlistButtonState(false);
