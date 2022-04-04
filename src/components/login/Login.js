@@ -41,10 +41,6 @@ const Login = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // animations
-        setLoginIn(true);
-        setAlertData(null)
-
         // Form Data
         let data = new FormData(event.currentTarget)
         data = {
@@ -54,6 +50,10 @@ const Login = () => {
 
         // When validated
         if (validateEmail(data.email) && validatePassword(data.password)) {
+
+            // animations
+            setLoginIn(true);
+            setAlertData(null)
 
             // Login Request
             AuthService.login(data)

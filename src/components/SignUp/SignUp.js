@@ -118,10 +118,6 @@ const SignUp = () => {
     const submitHandler = (event) => {
         event.preventDefault();
 
-        // animations
-        setSignInUp(true);
-        setAlertData(null)
-
         // Form Data
         let data = new FormData(event.currentTarget)
         data = {
@@ -134,6 +130,10 @@ const SignUp = () => {
 
         // validate all fields
         if (validateFirstName(data.firstname) && validatLastName(data.lastname) && validateEmail(data.email) && validatePassword(data.password) && validateConfirmPassword(data.confirmPassword)) {
+            // animations
+            setSignInUp(true);
+            setAlertData(null)
+
             AuthService.register(data)
                 .then(() => {
                     // reset fields
