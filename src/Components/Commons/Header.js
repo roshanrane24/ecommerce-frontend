@@ -25,7 +25,7 @@ const Header = () => {
                 <Box component="header" sx={{mb: 8}}>
                     <AppBar position={"fixed"}>
                         <Toolbar>
-                            {/*Logo with home button*/}
+                            {/*Logo with Home button*/}
                             <Button onClick={() => navigate('/')}>
                                 <img src={"logo192.png"} alt="logo" width={32}/>
                             </Button>
@@ -47,9 +47,9 @@ const Header = () => {
                                     }}
                                     onClick={() => {
                                         if (userDetails)
-                                            navigate('/user/wishlist');
+                                            navigate('/wishlist');
                                         else
-                                            navigate('/login?ref=/user/wishlist');
+                                            navigate('/Login?ref=/wishlist');
                                     }}
                                     startIcon={<Favorite/>}
                                 >
@@ -68,7 +68,7 @@ const Header = () => {
                                             return {bgcolor: theme.palette.primary.dark}
                                         }
                                     }}
-                                    onClick={() => navigate('/user/cart')}
+                                    onClick={() => navigate('/cart')}
                                     startIcon={<ShoppingCart/>}
                                 >
                                     <Typography

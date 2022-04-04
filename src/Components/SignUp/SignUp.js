@@ -54,7 +54,7 @@ const SignUp = () => {
         if (firstName === "") {
             setFirstNameHelperText("This Field Cannot be Empty")
             return false;
-        } else if (firstName.lenght < 3) {
+        } else if (firstName.length < 3) {
             setFirstNameHelperText("First name must be at least 3 character long")
             return false;
         }
@@ -145,7 +145,7 @@ const SignUp = () => {
 
                     // set alert
                     setAlertSeverity("success");
-                    setAlertData({message: "You have successfully registered. You will be redirected to login page shortly."});
+                    setAlertData({message: "You have successfully registered. You will be redirected to Login page shortly."});
                     setAlert(true);
                     setSignInUp(false);
 
@@ -155,8 +155,8 @@ const SignUp = () => {
                         if (searchParams.get('ref')) {
                             navigate(`/login?ref=${searchParams.get('ref')}`);
                         } else {
-                            // Redirect to home
-                            navigate('/login');
+                            // Redirect to Home
+                            navigate('/Login');
                         }
                     }, 3000);
                 })

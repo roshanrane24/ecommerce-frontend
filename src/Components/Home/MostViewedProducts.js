@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Stack from "@mui/material/Stack";
 import ProductService from "../../api/ProductService";
-import ProductCard from "../commons/ProductCard";
+import ProductCard from "../Commons/ProductCard";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import IconButton from '@mui/material/IconButton';

@@ -6,7 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
 import {CheckOutContext} from "../../Context/CheckOutContext";
-import ProductListCard from "../commons/ProductListCard";
+import ProductListCard from "../Commons/ProductListCard";
 import Container from "@mui/material/Container";
 
 export default function Review() {

@@ -6,7 +6,7 @@ class CartService {
     // Add to cart
     addToCart(product) {
         return client.post('/shopping-cart/add', {
-            token: AuthService.getUserDetails().token,
+            quantity: product.quantity,
             productId: product.id,
         }, {
             headers: authHeader()

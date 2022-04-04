@@ -60,12 +60,12 @@ const UserButton = () => {
                     >
                         <MenuItem onClick={() => {
                             handleClose();
-                            navigate('/user/orders');
+                            navigate('/orders');
                         }}>My Orders</MenuItem>
 
                         <MenuItem onClick={() => {
                             handleClose();
-                            navigate('/user/profile')
+                            navigate('/profile')
                         }}>My Profile</MenuItem>
 
                         <MenuItem onClick={() => {
