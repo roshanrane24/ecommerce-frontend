@@ -47,9 +47,9 @@ const Header = () => {
                                     }}
                                     onClick={() => {
                                         if (userDetails)
-                                            navigate('/wishlist');
+                                            navigate('/user/wishlist');
                                         else
-                                            navigate('/login?ref=/wishlist');
+                                            navigate('/login?ref=/user/wishlist');
                                     }}
                                     startIcon={<Favorite/>}
                                 >
@@ -68,7 +68,7 @@ const Header = () => {
                                             return {bgcolor: theme.palette.primary.dark}
                                         }
                                     }}
-                                    onClick={() => navigate('/cart')}
+                                    onClick={() => navigate('/user/cart')}
                                     startIcon={<ShoppingCart/>}
                                 >
                                     <Typography

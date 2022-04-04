@@ -1,5 +1,6 @@
 import client from './HttpClient';
-import ProductService from "./ProductService";
+import WishListService from "./WishListService";
+import CartService from "./CartService";
 
 class AuthService {
 
@@ -12,8 +13,13 @@ class AuthService {
                     localStorage.setItem('user', JSON.stringify(response.data));
 
                     // fetch wishlist
-                    ProductService.getWishList().then(wishlist => {
+                    WishListService.getWishList().then(wishlist => {
                         localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
+                    });
+
+                    // fetch cart
+                    CartService.getShoppingCart().then(cart => {
+                        localStorage.setItem('cart', JSON.stringify([...cart]));
                     });
                 }
                 return response.data
@@ -21,7 +27,9 @@ class AuthService {
     }
 
     logout() {
-        localStorage.removeItem('user')
+        localStorage.removeItem('user');
+        localStorage.removeItem('wishlist');
+        localStorage.removeItem('cart');
     }
 
     register(userDetails) {
