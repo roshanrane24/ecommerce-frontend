@@ -117,6 +117,10 @@ const ProductPage = () => {
     const addToCart = () => {
         // Validate User
         if (AuthService.getUserDetails()) {
+            // Set Qauntity to 1
+            productDetails.quantity = 1;
+
+            // Add product to cart
             CartService.addToCart(productDetails)
                 .then(message => {
                     setCartAlertSeverity("success");
@@ -298,7 +302,7 @@ const ProductPage = () => {
                                     variant="contained"
                                     endIcon={<ShoppingCartIcon/>}
                                     onClick={() => {
-                                        // validate user to checkout else login
+                                        // validate user to checkout else Login
                                         if (AuthService.getUserDetails()) {
                                             // set single quantity
                                             productDetails.quantity = 1;

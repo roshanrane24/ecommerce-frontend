@@ -71,7 +71,7 @@ const Login = () => {
                             navigate(searchParams.get('ref'));
                             return;
                         }
-                        // Redirect to home
+                        // Redirect to Home
                         navigate('/');
                     }, 1000);
                 })
@@ -85,7 +85,7 @@ const Login = () => {
                     if (err.statusCode === 401)
                         err.message = "The username or password is incorrect.";
                     else
-                        err.message = "Error has occured while login";
+                        err.message = "Error has occured while Login";
 
                     // Set Alert
                     setAlertSeverity("error");
