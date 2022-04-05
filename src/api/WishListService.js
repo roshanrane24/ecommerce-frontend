@@ -45,7 +45,7 @@ class WishListService {
             });
     }
 
-// remove from wishlist
+    // remove from wishlist
     removeToWishList(product_id) {
         return client.delete('/wish-list/remove', {
             headers: authHeader(),
@@ -69,21 +69,10 @@ class WishListService {
             });
     }
 
-// Get wishlist
-    async getWishList() {
-        // empty list;
-        let wishlist = [];
-
-        // get list
-        await client.get(`/wish-list/display`, {headers: authHeader()})
-            .then(response => {
-                wishlist = response.data;
-            })
-            .catch(error => {
-                wishlist = error.response;
-            })
-
-        return wishlist;
+    // Get wishlist
+    getWishList() {
+        return client.get(`/wish-list/display`, {headers: authHeader()})
+            .then(response => response.data)
     }
 
     // For badge
@@ -92,12 +81,9 @@ class WishListService {
         let wishlist = localStorage.getItem('wishlist');
 
         // Check if wishlist present
-        if (!wishlist)
-            return 0;
-        else
-            wishlist = new Set(JSON.parse(wishlist));
+        wishlist = wishlist ? new Set(JSON.parse(wishlist)) : new Set();
 
-        return wishlist.length;
+        return wishlist.size;
     }
 }
 
