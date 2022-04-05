@@ -1,5 +1,4 @@
 import client from "./HttpClient";
-import AuthService from "./AuthService";
 import authHeader from "./AuthHeader";
 
 class CartService {
@@ -46,9 +45,10 @@ class CartService {
     // remove from cart
     removeFromCart(product) {
         return client.delete('/shopping-cart/remove', {
-            token: AuthService.getUserDetails().token,
-            productId: product.id,
-        }, {
+            data: {
+                quantity: product.quantity,
+                productId: product.id,
+            },
             headers: authHeader()
         })
             .then((response) => {
@@ -83,15 +83,32 @@ class CartService {
     // fetch cart from backend
     getShoppingCart() {
         return client.get('/shopping-cart/display', {headers: authHeader()})
-            .then(response => response.data)
+            .then(response => response.data);
     }
 
+    // Get count of items in cart
     getCartLength() {
         // get cart
         let cart = localStorage.getItem('cart');
 
         // Check if cart present
         return cart ? JSON.parse(cart).length : 0;
+    }
+
+    // Remove a single product form cart
+    removeProductFromCart({productId}) {
+        return client.delete('/shopping-cart/remove-product', {
+            headers: authHeader(),
+            data: {productId, quantity: 0}
+        })
+            .then(response => response.data);
+    }
+
+    // Remove All products from cart
+    emptyCart() {
+        return client.delete('/shopping-cart/remove-product',
+            {headers: authHeader()})
+            .then(response => response.data);
     }
 }
 
