@@ -1,11 +1,11 @@
 import * as React from 'react';
-import {useContext, useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import {Box, Button, FormControl, FormLabel, Radio, RadioGroup} from '@mui/material';
-import {CheckOutContext} from "../../Context/CheckOutContext";
+import { Box, Button, FormControl, FormLabel, Radio, RadioGroup } from '@mui/material';
+import { CheckOutContext } from "../../Context/CheckOutContext";
 import AddressCard from "./AddressCard";
 import UserService from "../../api/UserService";
 import InputLabel from "@mui/material/InputLabel";
@@ -99,7 +99,7 @@ export default function AddressForm() {
     function validateMobile(mobile) {
         setMobileHelperText('');
         if (/^([+]?)([\d]+){10,14}$/.test(mobile)) {
-            setMobileHelperText("Not a valid pincode");
+            setMobileHelperText("Not a valid mobile number");
             return false;
         }
         return true;
@@ -169,24 +169,24 @@ export default function AddressForm() {
                         .catch(error => {
                             // Show Error
                             setAlertData({
-                                    severity: "error",
-                                    message: error.response.message ? error.response.message : "Error while fetching address",
-                                }
+                                severity: "error",
+                                message: error.response.message ? error.response.message : "Error while fetching address",
+                            }
                             );
                             setAlert(true);
 
                             setTimeout(() => setAlert(false), 10000);
                         })
-                    }
+                }
                 )
                 .catch(error => {
                     setAddingAddress(false);
 
                     // Show Error
                     setAlertData({
-                            severity: "error",
-                            message: error.response.message ? error.response.message : "Error while saving address",
-                        }
+                        severity: "error",
+                        message: error.response.message ? error.response.message : "Error while saving address",
+                    }
                     );
                     setAlert(true);
 
@@ -195,9 +195,9 @@ export default function AddressForm() {
         } else {
             // Show Warning
             setAlertData({
-                    severity: "warning",
-                    message: "Please enter valid details",
-                }
+                severity: "warning",
+                message: "Please enter valid details",
+            }
             );
             setAlert(true);
 
@@ -229,7 +229,7 @@ export default function AddressForm() {
 
     return (
         <>
-            <Box sx={{mb: 2, p: 2}}>
+            <Box sx={{ mb: 2, p: 2 }}>
                 <FormControl>
                     <FormLabel id='address-group-label'>
                         Addresses:
@@ -251,24 +251,24 @@ export default function AddressForm() {
                                     Object.keys(addresses).map((addressId, idx) => (
                                         <FormControlLabel
                                             key={idx}
-                                            control={<Radio sx={{display: 'none'}}/>}
+                                            control={<Radio sx={{ display: 'none' }} />}
                                             label={<AddressCard address={addresses[addressId]}
-                                                                selectedAddress={radioValue}/>}
+                                                selectedAddress={radioValue} />}
                                             value={addressId}
                                         />
                                     ))
                                 }
                             </RadioGroup>
                         ) : (
-                            <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
-                                <CircularProgress sx={{m: 5}}/>
+                            <Stack sx={{ justifyContent: 'center', alignItems: 'center' }}>
+                                <CircularProgress sx={{ m: 5 }} />
                             </Stack>
                         )}
                 </FormControl>
             </Box>
             <Button variant='contained' onClick={() => setShow(!show)}>Add Address</Button>
             {/*Alert*/}
-            <Collapse in={alert} sx={{mb: -6}}>
+            <Collapse in={alert} sx={{ mb: -6 }}>
                 <Alert
                     severity={alertData.severity}
                     action={
@@ -278,17 +278,17 @@ export default function AddressForm() {
                             size="small"
                             onClick={() => setAlert(false)}
                         >
-                            <CloseIcon fontSize="inherit"/>
+                            <CloseIcon fontSize="inherit" />
                         </IconButton>
                     }
-                    sx={{mt: 2}}
+                    sx={{ mt: 2 }}
                 >
                     {alertData.message ? alertData.message : ""}
                 </Alert>
             </Collapse>
             {/*Address Form*/}
             {show && <Box component='form'>
-                <Typography variant="h6" sx={{mt: 7}} gutterBottom>
+                <Typography variant="h6" sx={{ mt: 7 }} gutterBottom>
                     Shipping address
                 </Typography>
                 <Grid container spacing={3}>
@@ -461,13 +461,13 @@ export default function AddressForm() {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6}
-                          fullWidth>
+                        fullWidth>
                         <LoadingButton
                             loading={addingAddress}
                             loadingPosition="start"
                             type="button"
                             variant="contained"
-                            sx={{mt: 3, mb: 2, minWidth: 100}}
+                            sx={{ mt: 3, mb: 2, minWidth: 100 }}
                             onClick={handleNewAddress}
                         >
                             Add

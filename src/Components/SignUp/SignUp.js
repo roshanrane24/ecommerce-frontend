@@ -12,13 +12,13 @@ import {
     TextField,
     Typography
 } from "@mui/material"
-import {ThemeProvider} from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import React, {useState} from "react";
+import React, { useState } from "react";
 import AuthService from "../../api/AuthService";
 import IconButton from "@mui/material/IconButton";
-import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 import useTheme from "@mui/material/styles/useTheme";
 import LoadingButton from "@mui/lab/LoadingButton";
 
@@ -145,7 +145,7 @@ const SignUp = () => {
 
                     // set alert
                     setAlertSeverity("success");
-                    setAlertData({message: "You have successfully registered. You will be redirected to Login page shortly."});
+                    setAlertData({ message: "You have successfully registered. You will be redirected to Login page shortly." });
                     setAlert(true);
                     setSignInUp(false);
 
@@ -165,7 +165,7 @@ const SignUp = () => {
                     setSignInUp(false);
 
                     // Set error message
-                    let err = {message: error.response.data.message}
+                    let err = { message: error.response.data.message }
 
                     // Set Alert
                     setAlertSeverity("error");
@@ -178,18 +178,18 @@ const SignUp = () => {
     return (
         <ThemeProvider theme={theme}>
             <Stack direction="row"
-                   sx={{
-                       justifyContent: 'flex-end;',
-                       flexGrow: 1,
-                   }}
+                sx={{
+                    justifyContent: 'flex-end;',
+                    flexGrow: 1,
+                }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon/>
+                    <CloseIcon />
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Collapse in={alert} sx={{mb: -6}}>
+                <CssBaseline />
+                <Collapse in={alert} sx={{ mb: -6 }}>
                     <Alert
                         severity={alertSeverity}
                         action={
@@ -199,12 +199,12 @@ const SignUp = () => {
                                 size="small"
                                 onClick={() => setAlert(false)}
                             >
-                                <CloseIcon fontSize="inherit"/>
+                                <CloseIcon fontSize="inherit" />
                             </IconButton>
                         }
-                        sx={{mb: 2}}
+                        sx={{ mb: 2 }}
                     >
-                        <AlertTitle sx={{textTransform: 'capitalize'}}>{alertData && alertSeverity}</AlertTitle>
+                        <AlertTitle sx={{ textTransform: 'capitalize' }}>{alertData && alertSeverity}</AlertTitle>
                         {alertData && alertData.message}
                     </Alert>
                 </Collapse>
@@ -216,13 +216,13 @@ const SignUp = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <LockOutlinedIcon/>
+                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" onSubmit={submitHandler} sx={{mt: 3}}>
+                    <Box component="form" onSubmit={submitHandler} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -309,13 +309,13 @@ const SignUp = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{mt: 3, mb: 2}}
+                            sx={{ mt: 3, mb: 2 }}
                         >
                             Sign Up
                         </LoadingButton>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <RouterLink to={`/login?ref=${searchParams.get('ref')}`}>
+                                <RouterLink to={`/login${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}>
                                     <Link variant="body2">
                                         Already have an account? Sign in
                                     </Link>
