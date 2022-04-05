@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import Copyright from "./Copyright";
@@ -60,7 +60,7 @@ const Login = () => {
                 .then(() => {
                     // Show Alert
                     setAlertSeverity("success");
-                    setAlertData({message: "You have successfully logged in."});
+                    setAlertData({ message: "You have successfully logged in." });
                     setAlert(true);
                     setLoginIn(false);
 
@@ -80,7 +80,7 @@ const Login = () => {
                     setLoginIn(false);
 
                     // Set error message
-                    let err = {statusCode: error.response.status}
+                    let err = { statusCode: error.response.status }
 
                     if (err.statusCode === 401)
                         err.message = "The username or password is incorrect.";
@@ -129,18 +129,18 @@ const Login = () => {
     return (
         <>
             <Stack direction="row"
-                   sx={{
-                       justifyContent: 'flex-end;',
-                       flexGrow: 1,
-                   }}
+                sx={{
+                    justifyContent: 'flex-end;',
+                    flexGrow: 1,
+                }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon/>
+                    <CloseIcon />
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Collapse in={alert} sx={{mb: -6}}>
+                <CssBaseline />
+                <Collapse in={alert} sx={{ mb: -6 }}>
                     <Alert
                         severity={alertSeverity}
                         action={
@@ -150,12 +150,12 @@ const Login = () => {
                                 size="small"
                                 onClick={() => setAlert(false)}
                             >
-                                <CloseIcon fontSize="inherit"/>
+                                <CloseIcon fontSize="inherit" />
                             </IconButton>
                         }
-                        sx={{mb: 2}}
+                        sx={{ mb: 2 }}
                     >
-                        <AlertTitle sx={{textTransform: 'capitalize'}}>{alertData && alertSeverity}</AlertTitle>
+                        <AlertTitle sx={{ textTransform: 'capitalize' }}>{alertData && alertSeverity}</AlertTitle>
                         {alertData && alertData.message}
                     </Alert>
                 </Collapse>
@@ -167,13 +167,13 @@ const Login = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <LockOutlinedIcon/>
+                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
                             error={emailHelperText}
                             margin="normal"
@@ -186,8 +186,8 @@ const Login = () => {
                             autoFocus
                             value={email}
                             onChange={(event) => {
-                                setEmail(event.target.value);
-                                validateEmail(event.target.value);
+                                setEmail(event.target.value.toLowerCase());
+                                validateEmail(event.target.value.toLowerCase());
                             }}
                             helperText={emailHelperText}
                         />
@@ -209,7 +209,7 @@ const Login = () => {
                             helperText={passwordHelperText}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
+                            control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         />
                         <LoadingButton
@@ -218,7 +218,7 @@ const Login = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{mt: 3, mb: 2}}
+                            sx={{ mt: 3, mb: 2 }}
                         >
                             Sign In
                         </LoadingButton>
@@ -231,7 +231,7 @@ const Login = () => {
                                 </RouterLink>
                             </Grid>
                             <Grid item>
-                                <RouterLink to={`/signup?ref=${searchParams.get('ref')}`}>
+                                <RouterLink to={`/signup${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}>
                                     <Link variant="body2">
                                         {"Don't have an account? Sign Up"}
                                     </Link>
@@ -240,7 +240,7 @@ const Login = () => {
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{mt: 8, mb: 4}}/>
+                <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
         </>
     );
