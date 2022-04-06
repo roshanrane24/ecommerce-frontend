@@ -30,6 +30,8 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import WishListService from "../../api/WishListService";
 import CartService from "../../api/CartService";
+import Tooltip from "@mui/material/Tooltip";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 
 const ProductPage = () => {
@@ -60,11 +62,15 @@ const ProductPage = () => {
 
     // States
     const [productDetails, setProductDetails] = useState(null);
+    // wishlist
     const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder/>);
     const [wishlistButtonState, setWishlistButtonState] = useState(false);
+    // buy
     const [buyButtonState, setBuyButtonState] = useState(false);
     const [cartAlert, setCartAlert] = useState("");
+    const [cartButtonState, setCartButtonState] = useState(false);
     const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
+    // Error
     const [productError, setProductError] = useState(null);
 
     // Product details handler
@@ -117,20 +123,31 @@ const ProductPage = () => {
     const addToCart = () => {
         // Validate User
         if (AuthService.getUserDetails()) {
+            // Disable Button
+            setCartButtonState(true);
+
             // Set Qauntity to 1
             productDetails.quantity = 1;
 
             // Add product to cart
             CartService.addToCart(productDetails)
                 .then(message => {
+                    // show success alert
                     setCartAlertSeverity("success");
                     setCartAlert(message);
                     setTimeout(() => setCartAlert(""), 10000);
+
+                    // Enable Button
+                    setCartButtonState(false);
                 })
                 .catch((error) => {
+                    // show failed alert
                     setCartAlertSeverity("error");
-                    setCartAlert(error.response.status);
+                    setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
                     setTimeout(() => setCartAlert(""), 10000);
+
+                    // Enable Button
+                    setCartButtonState(false);
                 });
         } else {
             // User Login Page
@@ -243,17 +260,19 @@ const ProductPage = () => {
                             >
                                 {productDetails.name}
                             </Typography>
-                            <IconButton
-                                sx={{
-                                    p: 2,
-                                    width: 10,
-                                    height: 10,
-                                }}
-                                disabled={wishlistButtonState}
-                                onClick={toggleWishList}
-                            >
-                                {wishlistIcon}
-                            </IconButton>
+                            <Tooltip title="Add to Wishlist">
+                                <IconButton
+                                    sx={{
+                                        p: 2,
+                                        width: 10,
+                                        height: 10,
+                                    }}
+                                    disabled={wishlistButtonState}
+                                    onClick={toggleWishList}
+                                >
+                                    {wishlistIcon}
+                                </IconButton>
+                            </Tooltip>
                         </Stack>
                         <Typography variant="h4" sx={{mt: 1, fontWeight: "bold"}}>
                             {productDetails.price.toLocaleString('en-IN', {
@@ -320,9 +339,14 @@ const ProductPage = () => {
                                 >
                                     Buy Now
                                 </Button>
-                                <Button variant="outlined" endIcon={<AddShoppingCartIcon/>} onClick={addToCart}>
+                                <LoadingButton
+                                    variant="outlined"
+                                    endIcon={<AddShoppingCartIcon/>}
+                                    onClick={addToCart}
+                                    loading={cartButtonState}
+                                >
                                     Add to Cart
-                                </Button>
+                                </LoadingButton>
                             </Stack>
                             {
                                 cartAlert &&
