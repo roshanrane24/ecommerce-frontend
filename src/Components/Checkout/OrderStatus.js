@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
+import client from "../../api/HttpClient";
+
 
 const OrderStatus = ({success, failed, awaiting}) => {
     //Routing
@@ -27,17 +29,18 @@ const OrderStatus = ({success, failed, awaiting}) => {
                     <Typography>
                         Payment has been successfully processed with transaction id #{success.razorpay_payment_id}
                     </Typography>
-                    {/*<Stack direction="row" alignItems="center" justifyContent="flex-end">*/}
-                    {/*    <Button*/}
-                    {/*        onClick={() => {*/}
-                    {/*            console.log("SC", success)*/}
-                    {/*            OrderService.getOrderInvoice({orderId: success.order_id})*/}
-                    {/*                .then(downloadInvoice)*/}
-                    {/*        }}*/}
-                    {/*    >*/}
-                    {/*        Download Invoice*/}
-                    {/*    </Button>*/}
-                    {/*</Stack>*/}
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end">
+                        <Button
+                            onClick={() => {
+                                // console.log("SC", success)
+                                // OrderService.getOrderInvoice({orderId: success.order_id})
+                                //     .then(downloadInvoice)
+                                window.open(`${client.defaults.baseURL}/orders/invoice/${success.order_id}`, `INVOICE_${success.order_id}`);
+                            }}
+                        >
+                            Download Invoice
+                        </Button>
+                    </Stack>
                 </>
             }
             {
