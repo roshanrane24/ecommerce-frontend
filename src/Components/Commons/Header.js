@@ -6,6 +6,7 @@ import UserButton from "./UserButton";
 import React, {useState} from 'react';
 import Footer from "./Footer";
 import AuthService from "../../api/AuthService";
+import client from "../../api/HttpClient";
 
 const Header = () => {
     // hooks
@@ -27,7 +28,16 @@ const Header = () => {
                         <Toolbar>
                             {/*Logo with Home button*/}
                             <Button onClick={() => navigate('/')}>
-                                <img src={"logo192.png"} alt="logo" width={32}/>
+                                <Box
+                                    component="img"
+                                    src={`${client.defaults.baseURL}/search/invoice/image/logo`}
+                                    alt="Ezzy Buy Logo"
+                                    sx={{
+                                        width: 'auto',
+                                        objectFit: 'scale-down',
+                                        height: 32,
+                                    }}
+                                />
                             </Button>
 
                             {/*Search Box*/}
