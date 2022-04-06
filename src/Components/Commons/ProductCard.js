@@ -27,7 +27,7 @@ const ProductCard = (props) => {
                 }}
                 onMouseOver={() => setVariant("elevation")}
                 onMouseLeave={() => setVariant("outlined")}
-                onClick={() => navigate(`/product/${props.product._id}`)}
+                onClick={() => navigate(`/product/${props.product.id}`)}
                 variant={variant}
                 elevation={7}
             >
@@ -42,7 +42,7 @@ const ProductCard = (props) => {
                 >
                     <Box
                         component="img"
-                        src={`${client.defaults.baseURL}/products/image/${props.product._id}`}
+                        src={`${client.defaults.baseURL}/products/image/${props.product.id}`}
                         alt={`${props.product.name}`}
                         sx={{
                             objectFit: "scale-down",
