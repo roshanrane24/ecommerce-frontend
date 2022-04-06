@@ -70,7 +70,9 @@ const UserButton = () => {
 
                         <MenuItem onClick={() => {
                             AuthService.logout();
-                            navigate('/')
+                            handleClose();
+                            setUserDetails(null);
+                            navigate('/');
                         }}>
                             Logout
                         </MenuItem>
