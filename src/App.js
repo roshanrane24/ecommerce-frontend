@@ -21,6 +21,12 @@ import Orders from "./Components/Orders/Orders";
 
 const theme = createTheme({
     palette: {
+        primary: {
+            main: "#03dac6"
+        },
+        // secondary: {
+        //     main: "#DA0318"
+        // },
         background: {
             default: grey[100]
         }

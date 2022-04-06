@@ -18,9 +18,10 @@ class OrderService {
     }
 
     // Update status of payment
-    updatePaymentDetail({transactionId, orderId, status}) {
-        return client.post('/orders/reduce-stock',
-            {transactionId, orderId, status},
+    updatePaymentDetail({transactionId, razorpayOrderId, paid}) {
+        console.log({transactionId, razorpayOrderId, paid})
+        return client.post('/orders/transaction-handler',
+            {transactionId, razorpayOrderId, paid},
             {headers: authHeader()})
             .then(response => response.data);
     }
@@ -33,7 +34,8 @@ class OrderService {
 
     //Get order's Invoice
     getOrderInvoice({orderId}) {
-        console.log("Not Yet Implemented", orderId);
+        return client.get(`/orders/invoice/${orderId}`, {header: authHeader(), responseType: 'blob'})
+            .then(response => response.data)
     }
 }
 

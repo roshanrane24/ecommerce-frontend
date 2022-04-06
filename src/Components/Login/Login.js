@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,10 +11,10 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
-import Copyright from "./Copyright";
+import Copyright from "../Commons/Copyright";
 import CloseIcon from '@mui/icons-material/Close';
 import AuthService from "../../api/AuthService";
 import Alert from "@mui/material/Alert";

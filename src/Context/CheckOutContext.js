@@ -7,6 +7,7 @@ const CheckOutProvider = (props) => {
     const [products, setProducts] = useState([]);
     const [shippingAddress, setShippingAddress] = useState(null);
     const [billingAddress, setBillingAddress] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     const data = {
         products: {
@@ -21,11 +22,17 @@ const CheckOutProvider = (props) => {
             get: billingAddress,
             set: setBillingAddress
         },
+        total: {
+            get: totalPrice,
+            set: setTotalPrice
+        },
         clear: () => {
-            this.products.set([]);
-            this.address.set({});
-            this.billing.set({});
-        }
+            setProducts([]);
+            setShippingAddress(null);
+            setBillingAddress(null);
+            setTotalPrice(0);
+        },
+        description: products.length < 1 ? [""] : products.map(p => p.name),
     }
 
     return (

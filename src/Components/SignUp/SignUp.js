@@ -12,15 +12,16 @@ import {
     TextField,
     Typography
 } from "@mui/material"
-import { ThemeProvider } from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useState } from "react";
+import React, {useState} from "react";
 import AuthService from "../../api/AuthService";
 import IconButton from "@mui/material/IconButton";
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom";
 import useTheme from "@mui/material/styles/useTheme";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Copyright from "../Commons/Copyright";
 
 const SignUp = () => {
     // Theme context object
@@ -315,7 +316,8 @@ const SignUp = () => {
                         </LoadingButton>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <RouterLink to={`/login${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}>
+                                <RouterLink
+                                    to={`/login${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}>
                                     <Link variant="body2">
                                         Already have an account? Sign in
                                     </Link>
@@ -324,6 +326,7 @@ const SignUp = () => {
                         </Grid>
                     </Box>
                 </Box>
+                <Copyright/>
             </Container>
         </ThemeProvider>
 

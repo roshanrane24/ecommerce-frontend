@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    MenuItem,
     Paper,
     Stack,
     Table,
@@ -10,16 +11,15 @@ import {
     TableHead,
     TableRow,
     TextField,
-    Typography,
-    MenuItem
+    Typography
 } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StarIcon from "@mui/icons-material/Star";
 import ProductService from "../../api/ProductService";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import React, { useContext, useEffect, useState } from 'react';
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import React, {useContext, useEffect, useState} from 'react';
 import client from "../../api/HttpClient";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -27,12 +27,13 @@ import IconButton from "@mui/material/IconButton";
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import AuthService from "../../api/AuthService";
-import { CheckOutContext } from "../../Context/CheckOutContext";
+import {CheckOutContext} from "../../Context/CheckOutContext";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import WishListService from "../../api/WishListService";
 import CartService from "../../api/CartService";
-
+import Tooltip from "@mui/material/Tooltip";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 
 const ProductPage = () => {
@@ -63,11 +64,15 @@ const ProductPage = () => {
 
     // States
     const [productDetails, setProductDetails] = useState(null);
-    const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder />);
+    // wishlist
+    const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder/>);
     const [wishlistButtonState, setWishlistButtonState] = useState(false);
+    // buy
     const [buyButtonState, setBuyButtonState] = useState(false);
     const [cartAlert, setCartAlert] = useState("");
+    const [cartButtonState, setCartButtonState] = useState(false);
     const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
+    // Error
     const [productError, setProductError] = useState(null);
     const [quantity, setQuantity] = useState(1);
 
@@ -91,7 +96,7 @@ const ProductPage = () => {
                 // Remove to wishlist
                 WishListService.removeToWishList(productDetails.id)
                     .then(() => {
-                        setWishlistIcon(<FavoriteBorder />)
+                        setWishlistIcon(<FavoriteBorder/>)
                         setWishlistButtonState(false);
                     })
                     .catch((error) => {
@@ -103,7 +108,7 @@ const ProductPage = () => {
                 WishListService.addToWishList(productDetails.id)
 
                     .then(() => {
-                        setWishlistIcon(<Favorite sx={{ color: ThemeButton.palette.primary.main }} />);
+                        setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
                         setWishlistButtonState(false);
                     })
                     .catch((error) => {
@@ -121,20 +126,33 @@ const ProductPage = () => {
     const addToCart = () => {
         // Validate User
         if (AuthService.getUserDetails()) {
+            // Disable Button
+            setCartButtonState(true);
+
             // Set Qauntity to 1
-            productDetails.quantity = 1;
+            productDetails.quantity = quantity;
 
             // Add product to cart
             CartService.addToCart(productDetails)
-                .then(message => {
+                .then(response => {
+                    // show success alert
                     setCartAlertSeverity("success");
-                    setCartAlert(message);
+                    setCartAlert(response.data ? response.data.message : "Successfully added product to cart.");
                     setTimeout(() => setCartAlert(""), 10000);
+
+                    // Enable Button
+                    setCartButtonState(false);
                 })
                 .catch((error) => {
+                    // show failed alert
+                    console.log(error);
+                    console.log(error.response);
                     setCartAlertSeverity("error");
-                    setCartAlert(error.response.status);
+                    setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
                     setTimeout(() => setCartAlert(""), 10000);
+
+                    // Enable Button
+                    setCartButtonState(false);
                 });
         } else {
             // User Login Page
@@ -149,7 +167,7 @@ const ProductPage = () => {
             if (productDetails) {
                 // wishlist check
                 if (WishListService.productInWishlist(productDetails.id))
-                    setWishlistIcon(<Favorite sx={{ color: ThemeButton.palette.primary.main }} />);
+                    setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
 
                 // Stock Check
                 if (productDetails.stock < 1)
@@ -165,7 +183,7 @@ const ProductPage = () => {
                 init.postMessage('run');
             })
             .catch(() => {
-                setProductError({ message: "Failed to load product details" })
+                setProductError({message: "Failed to load product details"})
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -206,13 +224,20 @@ const ProductPage = () => {
                             <Stack
                                 sx={{
                                     width: '100%',
-                                    height: '100%',
+                                    height: '80%',
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}
                             >
-                                <Box component="img"
-                                    src={`${client.defaults.baseURL}/products/image/${productDetails.id}`} />
+                                <Box
+                                    component="img"
+                                    src={`${client.defaults.baseURL}/products/image/${productDetails.id}`}
+                                    sx={{
+                                        width: "100%",
+                                        height: 'auto',
+                                        objectFit: "scale-down"
+                                    }}
+                                />
                             </Stack>
                         </Paper>
                     </Box>
@@ -247,68 +272,75 @@ const ProductPage = () => {
                             >
                                 {productDetails.name}
                             </Typography>
-                            <IconButton
-                                sx={{
-                                    p: 2,
-                                    width: 10,
-                                    height: 10,
-                                }}
-                                disabled={wishlistButtonState}
-                                onClick={toggleWishList}
-                            >
-                                {wishlistIcon}
-                            </IconButton>
+                            <Tooltip title="Add to Wishlist">
+                                <IconButton
+                                    sx={{
+                                        p: 2,
+                                        width: 10,
+                                        height: 10,
+                                    }}
+                                    disabled={wishlistButtonState}
+                                    onClick={toggleWishList}
+                                >
+                                    {wishlistIcon}
+                                </IconButton>
+                            </Tooltip>
                         </Stack>
-                        <Typography variant="h4" sx={{ mt: 1, fontWeight: "bold" }}>
+                        <Typography variant="h4" sx={{mt: 1, fontWeight: "bold"}}>
                             {productDetails.price.toLocaleString('en-IN', {
                                 style: 'currency',
                                 currency: 'INR',
                             })}
                         </Typography>
                         <ThemeProvider theme={ThemeIncl}>
-                            <Typography gutterBottom sx={{ color: "primary.main", textTransform: "capitalize", mb: 1 }}>
+                            <Typography gutterBottom sx={{color: "primary.main", textTransform: "capitalize", mb: 1}}>
                                 inclusive of all taxes
                             </Typography>
                         </ThemeProvider>
                         <Button
                             variant="contained"
-                            endIcon={<StarIcon />}
+                            endIcon={<StarIcon/>}
                             color="success"
                             size="small"
                             disableElevation
                             disableRipple
-                            sx={{ mt: 2 }}
+                            sx={{mt: 2}}
                         >
                             {productDetails.rating}
                         </Button>
                         <Box width='75px'
-                            sx={{
-                                mt: 2,
-                                mb: 2
-                            }}>
-                            <TextField label='Qty' select fullWidth
+                             sx={{
+                                 mt: 2,
+                                 mb: 2
+                             }}>
+                            <TextField
+                                label='Qty'
+                                select
+                                size="small"
+                                fullWidth
                                 value={quantity}
                                 onChange={(event) => {
                                     setQuantity(event.target.value);
-                                }}>{
+                                }}
+                            >
+                                {
                                     [...Array(productDetails.stock > 10 ? 10 : productDetails.stock).keys()].map((numb) => {
                                         return <MenuItem value={numb + 1}>{numb + 1}</MenuItem>
                                     })
-
                                 }
                             </TextField>
                         </Box>
 
                         {
                             productDetails.stock < 5 && productDetails.stock > 0 &&
-                            <Alert icon={false} severity="warning" sx={{ mb: -1, mt: 1, maxWidth: 300, minWidth: 200 }}>
+                            <Alert icon={false} severity="warning" sx={{mb: -1, mt: 1, maxWidth: 300, minWidth: 200}}>
                                 Remaining in Stock : {productDetails.stock}
                             </Alert>
                         }
 
                         {
                             productDetails.stock === 0 &&
-                            <Alert icon={false} severity="error" sx={{ mb: -1, mt: 1, maxWidth: 300, minWidth: 200 }}>
+                            <Alert icon={false} severity="error" sx={{mb: -1, mt: 1, maxWidth: 300, minWidth: 200}}>
                                 Out of Stock
                             </Alert>
                         }
@@ -317,11 +349,11 @@ const ProductPage = () => {
                                 direction="row"
                                 spacing={2}
                                 display="block"
-                                sx={{ my: 3 }}
+                                sx={{my: 3}}
                             >
                                 <Button
                                     variant="contained"
-                                    endIcon={<ShoppingCartIcon />}
+                                    endIcon={<ShoppingCartIcon/>}
                                     onClick={() => {
                                         // validate user to checkout else Login
                                         if (AuthService.getUserDetails()) {
@@ -342,19 +374,25 @@ const ProductPage = () => {
                                 >
                                     Buy Now
                                 </Button>
-                                <Button variant="outlined" endIcon={<AddShoppingCartIcon />} onClick={addToCart}>
+                                <LoadingButton
+                                    variant="outlined"
+                                    endIcon={<AddShoppingCartIcon/>}
+                                    onClick={addToCart}
+                                    loading={cartButtonState}
+                                    loadingPosition={"start"}
+                                >
                                     Add to Cart
-                                </Button>
+                                </LoadingButton>
                             </Stack>
                             {
                                 cartAlert &&
-                                <Alert severity={cartAlertSeverity} sx={{ flexShrink: 1, flexGrow: 1, mb: 2 }}>
+                                <Alert severity={cartAlertSeverity} sx={{flexShrink: 1, flexGrow: 1, mb: 2}}>
                                     {cartAlert}
                                 </Alert>
                             }
                         </ThemeProvider>
-                        <Typography variant="subtitle1" sx={{ fontWeight: "bold" }} gutterBottom>Description</Typography>
-                        <Typography variant="body2" gutterBottom sx={{ mb: 5 }}>
+                        <Typography variant="subtitle1" sx={{fontWeight: "bold"}} gutterBottom>Description</Typography>
+                        <Typography variant="body2" gutterBottom sx={{mb: 5}}>
                             <p>
                                 {Object.values(productDetails.description)}
                             </p>
@@ -366,7 +404,7 @@ const ProductPage = () => {
                                         <TableCell colSpan={2}>
                                             <Typography
                                                 variant="subtitle1"
-                                                sx={{ fontWeight: "bold" }}
+                                                sx={{fontWeight: "bold"}}
                                             >
                                                 Highlights
                                             </Typography>
@@ -378,7 +416,7 @@ const ProductPage = () => {
                                         Object.keys(productDetails.additionalDetails).map((key, idx) => (
                                             <TableRow
                                                 key={idx}
-                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                sx={{'&:last-child td, &:last-child th': {border: 0}}}
                                             >
                                                 <TableCell
                                                     sx={{
@@ -387,7 +425,7 @@ const ProductPage = () => {
                                                 >
                                                     <Typography
                                                         variant="body2"
-                                                        sx={{ fontWeight: "bold" }}
+                                                        sx={{fontWeight: "bold"}}
                                                     >
                                                         {key}
                                                     </Typography>
@@ -409,10 +447,10 @@ const ProductPage = () => {
             {
                 !productDetails && !productError &&
                 < Backdrop
-                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
                     open={!productDetails}
                 >
-                    <CircularProgress color="inherit" />
+                    <CircularProgress color="inherit"/>
                 </Backdrop>
             }
             {
@@ -428,7 +466,7 @@ const ProductPage = () => {
                     > Reload</strong>
                 </Alert>
             }
-        </Stack >
+        </Stack>
     );
 };
 
