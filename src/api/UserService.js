@@ -42,7 +42,6 @@ class UserService {
     getUserDetails() {
         return client.get('/user-details/display', {headers: authHeader()})
             .then(response => response.data);
-
     }
 
     // edit user details

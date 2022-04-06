@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Box, Button, FormControl, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { CheckOutContext } from "../../Context/CheckOutContext";
+import {Box, Button, FormControl, FormLabel, Radio, RadioGroup} from '@mui/material';
+import {CheckOutContext} from "../../Context/CheckOutContext";
 import AddressCard from "./AddressCard";
 import UserService from "../../api/UserService";
 import InputLabel from "@mui/material/InputLabel";
@@ -19,7 +19,7 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function AddressForm() {
+export default function AddressForm(props) {
     // Context
     const checkout = useContext(CheckOutContext);
 
@@ -39,6 +39,7 @@ export default function AddressForm() {
     // Addresses
     const [radioValue, setRadioValue] = useState('');
     const [addresses, setAddresses] = useState([])
+    const [addressLoaded, setAddressLoaded] = useState(false);
     // ValidationText
     const [fullNameHelperText, setFullNameHelperText] = React.useState('');
     const [address1HelperText, setAddress1HelperText] = React.useState('');
@@ -98,7 +99,7 @@ export default function AddressForm() {
 
     function validateMobile(mobile) {
         setMobileHelperText('');
-        if (/^([+]?)([\d]+){10,14}$/.test(mobile)) {
+        if (!/^([+]?)([\d]+){10,14}$/.test(mobile)) {
             setMobileHelperText("Not a valid mobile number");
             return false;
         }
@@ -123,70 +124,70 @@ export default function AddressForm() {
                     line1: address1,
                     line2: address2,
                     landmark: landmark,
-                    town_city: city
+                    townCity: city
                 }
             )
                 .then(() => {
-                    // Stop Animation
-                    setAddingAddress(false);
+                        // Stop Animation
+                        setAddingAddress(false);
 
-                    // Scroll to top
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth' // for smoothly scrolling
-                    });
+                        // Scroll to top
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth' // for smoothly scrolling
+                        });
 
-                    // Reset Fields
-                    setFullName('');
-                    setAddress1('');
-                    setAddress2('');
-                    setLandmark('');
-                    setCity('');
-                    setPinCode('');
-                    setState('');
-                    setCountry('');
-                    setMobile('');
+                        // Reset Fields
+                        setFullName('');
+                        setAddress1('');
+                        setAddress2('');
+                        setLandmark('');
+                        setCity('');
+                        setPinCode('');
+                        setState('');
+                        setCountry('');
+                        setMobile('');
 
-                    // Show Success
-                    setAlertData(data => {
-                        data.state = true;
-                        data.severity = "success";
-                        data.message = "Successfully added address";
-                        return data;
-                    });
-                    setTimeout(() => {
+                        // Show Success
                         setAlertData(data => {
-                            data.state = false;
+                            data.state = true;
+                            data.severity = "success";
+                            data.message = "Successfully added address";
                             return data;
                         });
-                    }, 10000);
+                        setTimeout(() => {
+                            setAlertData(data => {
+                                data.state = false;
+                                return data;
+                            });
+                        }, 10000);
 
-                    // fetch addresses
-                    UserService.getSavedAddresses()
-                        .then((addrs) => {
-                            setAddresses(addrs);
-                        })
-                        .catch(error => {
-                            // Show Error
-                            setAlertData({
-                                severity: "error",
-                                message: error.response.message ? error.response.message : "Error while fetching address",
-                            }
-                            );
-                            setAlert(true);
+                        // fetch addresses
+                        UserService.getSavedAddresses()
+                            .then((addrs) => {
+                                setAddresses(addrs);
+                            })
+                            .catch(error => {
+                                // Show Error
+                                setAlertData({
+                                        severity: "error",
+                                        message: error.response.message ? error.response.message : "Error while fetching address",
+                                    }
+                                );
+                                setAlert(true);
 
-                            setTimeout(() => setAlert(false), 10000);
-                        })
-                }
+                                setTimeout(() => setAlert(false), 10000);
+                            })
+                    }
                 )
                 .catch(error => {
                     setAddingAddress(false);
 
                     // Show Error
                     setAlertData({
-                        severity: "error",
-                        message: error.response.message ? error.response.message : "Error while saving address",
-                    }
+                            severity: "error",
+                            message: error.response.message ? error.response.message : "Error while saving address",
+                        }
                     );
                     setAlert(true);
 
@@ -195,9 +196,9 @@ export default function AddressForm() {
         } else {
             // Show Warning
             setAlertData({
-                severity: "warning",
-                message: "Please enter valid details",
-            }
+                    severity: "warning",
+                    message: "Please enter valid details",
+                }
             );
             setAlert(true);
 
@@ -217,11 +218,17 @@ export default function AddressForm() {
     useEffect(() => {
         UserService.getSavedAddresses()
             .then((address) => {
+                props.setDisabled(false);
+
                 // set addresses
                 setAddresses(address);
 
                 if (Object.keys(address).length > 0)
                     init.postMessage(address);
+            })
+            .catch(() => {
+                // address Loaded
+                setAddressLoaded(true);
             });
         // eslint
     }, []);
@@ -229,7 +236,7 @@ export default function AddressForm() {
 
     return (
         <>
-            <Box sx={{ mb: 2, p: 2 }}>
+            <Box sx={{mb: 2, p: 2}}>
                 <FormControl>
                     <FormLabel id='address-group-label'>
                         Addresses:
@@ -251,24 +258,39 @@ export default function AddressForm() {
                                     Object.keys(addresses).map((addressId, idx) => (
                                         <FormControlLabel
                                             key={idx}
-                                            control={<Radio sx={{ display: 'none' }} />}
+                                            control={<Radio sx={{display: 'none'}}/>}
                                             label={<AddressCard address={addresses[addressId]}
-                                                selectedAddress={radioValue} />}
+                                                                selectedAddress={radioValue}/>}
                                             value={addressId}
                                         />
                                     ))
                                 }
                             </RadioGroup>
+                        ) : addressLoaded ? (
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    width: "100%",
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    p: 2, m: 1
+                                }}
+                            >
+                                <Typography variant="h5">
+                                    No Address Available
+                                </Typography>
+
+                            </Stack>
                         ) : (
-                            <Stack sx={{ justifyContent: 'center', alignItems: 'center' }}>
-                                <CircularProgress sx={{ m: 5 }} />
+                            <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
+                                <CircularProgress sx={{m: 5}}/>
                             </Stack>
                         )}
                 </FormControl>
             </Box>
             <Button variant='contained' onClick={() => setShow(!show)}>Add Address</Button>
             {/*Alert*/}
-            <Collapse in={alert} sx={{ mb: -6 }}>
+            <Collapse in={alert} sx={{mb: -6}}>
                 <Alert
                     severity={alertData.severity}
                     action={
@@ -278,17 +300,17 @@ export default function AddressForm() {
                             size="small"
                             onClick={() => setAlert(false)}
                         >
-                            <CloseIcon fontSize="inherit" />
+                            <CloseIcon fontSize="inherit"/>
                         </IconButton>
                     }
-                    sx={{ mt: 2 }}
+                    sx={{mt: 2}}
                 >
                     {alertData.message ? alertData.message : ""}
                 </Alert>
             </Collapse>
             {/*Address Form*/}
             {show && <Box component='form'>
-                <Typography variant="h6" sx={{ mt: 7 }} gutterBottom>
+                <Typography variant="h6" sx={{mt: 7}} gutterBottom>
                     Shipping address
                 </Typography>
                 <Grid container spacing={3}>
@@ -461,13 +483,13 @@ export default function AddressForm() {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6}
-                        fullWidth>
+                          fullWidth>
                         <LoadingButton
                             loading={addingAddress}
                             loadingPosition="start"
                             type="button"
                             variant="contained"
-                            sx={{ mt: 3, mb: 2, minWidth: 100 }}
+                            sx={{mt: 3, mb: 2, minWidth: 100}}
                             onClick={handleNewAddress}
                         >
                             Add
