@@ -38,7 +38,7 @@ class CartService {
 
                 localStorage.setItem('cart', JSON.stringify([...cart]));
 
-                return response.data.message;
+                return response.data;
             });
     }
 

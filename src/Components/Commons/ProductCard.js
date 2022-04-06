@@ -3,10 +3,10 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
-import CardMedia from "@mui/material/CardMedia";
 import {useNavigate} from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import client from "../../api/HttpClient";
+import Box from "@mui/material/Box";
 
 const ProductCard = (props) => {
     // Navigation
@@ -40,12 +40,15 @@ const ProductCard = (props) => {
                         alignItems: 'center'
                     }}
                 >
-                    <CardMedia
+                    <Box
                         component="img"
-                        height="auto"
-                        width="160"
-                        image={`${client.defaults.baseURL}/products/image/${props.product._id}`}
+                        src={`${client.defaults.baseURL}/products/image/${props.product._id}`}
                         alt={`${props.product.name}`}
+                        sx={{
+                            objectFit: "scale-down",
+                            height: 180,
+                            width: 160
+                        }}
                     />
                 </Stack>
                 <CardContent
