@@ -463,7 +463,9 @@ const ProductPage = () => {
                             setProductError(null);
                             getProductDetails();
                         })}
-                    > Reload</strong>
+                    >
+                        Reload
+                    </strong>
                 </Alert>
             }
         </Stack>
