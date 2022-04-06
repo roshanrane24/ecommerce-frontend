@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
-import {Box, Paper, Stack} from "@mui/material";
+import React, { useState } from 'react';
+import { Box, Paper, Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import {Add, Close, Favorite, Remove} from "@mui/icons-material";
+import { Add, Close, Favorite, Remove } from "@mui/icons-material";
 import TextField from "@mui/material/TextField";
 import client from "../../api/HttpClient";
 
-const ProductListCard = ({product, order, wishlist, cart}) => {
+const ProductListCard = ({ product, order, wishlist, cart }) => {
     // States
     const [cartDisabled, setCartDisabled] = useState(false);
 
@@ -24,9 +24,9 @@ const ProductListCard = ({product, order, wishlist, cart}) => {
             component={Paper}
             direction="row"
             fullWidth
-            sx={{p: 1}}
+            sx={{ p: 1 }}
         >
-            <Stack sx={{flexGrow: 1, p: 1, justifyContent: 'space-between'}}>
+            <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
                 <Box
                     sx={{
                         width: "70%",
@@ -42,14 +42,14 @@ const ProductListCard = ({product, order, wishlist, cart}) => {
                     </Typography>
                 </Box>
                 <Stack direction="row">
-                    <Box sx={{flexGrow: 1}}>
+                    <Box sx={{ flexGrow: 1 }}>
                         <Box>
                             <Typography variant="subtitle2">
                                 Price: <strong> {product.price.toLocaleString('en-IN', {
-                                style: 'currency',
-                                currency: 'INR',
-                            })}
-                            </strong>
+                                    style: 'currency',
+                                    currency: 'INR',
+                                })}
+                                </strong>
                             </Typography>
                         </Box>
                         {
@@ -70,13 +70,13 @@ const ProductListCard = ({product, order, wishlist, cart}) => {
                                         mt: 1
                                     }}
                                 >
-                                    <Stack direction="row" spacing={1} sx={{alignItems: 'center'}}>
+                                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                                         <IconButton
                                             disabled={cartDisabled}
-                                            sx={{width: 25, height: 25}}
+                                            sx={{ width: 25, height: 25 }}
                                             onClick={decreaseCart}
                                         >
-                                            <Remove/>
+                                            <Remove />
                                         </IconButton>
                                         <TextField
                                             value={product.quantity}
@@ -91,16 +91,16 @@ const ProductListCard = ({product, order, wishlist, cart}) => {
                                         />
                                         <IconButton
                                             disabled={cartDisabled}
-                                            sx={{width: 25, height: 25}}
+                                            sx={{ width: 25, height: 25 }}
                                             onClick={increaseCart}
                                         >
-                                            <Add/>
+                                            <Add />
                                         </IconButton>
                                     </Stack>
                                     {
                                         cart &&
-                                        <IconButton sx={{ml: 2}}>
-                                            <Favorite fontSize="small"/>
+                                        <IconButton sx={{ ml: 2 }}>
+                                            <Favorite fontSize="small" />
                                         </IconButton>
                                     }
                                 </Stack>
@@ -118,9 +118,9 @@ const ProductListCard = ({product, order, wishlist, cart}) => {
                         >
                             <Typography variant="subtitle2">
                                 SubTotal: <b>{(product.price * product.quantity).toLocaleString('en-IN', {
-                                style: 'currency',
-                                currency: 'INR',
-                            })}</b>
+                                    style: 'currency',
+                                    currency: 'INR',
+                                })}</b>
                             </Typography>
                         </Box>
                     }
@@ -136,19 +136,19 @@ const ProductListCard = ({product, order, wishlist, cart}) => {
             >
                 <Box
                     component='img'
-                    src={`${client.defaults.baseURL}/products/image/${product.id}`}
+                    src={`${client.defaults.baseURL}/products/image/${product._id ? product._id : product.id}`}
                     sx={{
                         p: 2,
                         height: wishlist ? 90 : 150,
                         width: wishlist ? 90 : 150,
                         objectFit: "scale-down"
-                    }}/>
+                    }} />
             </Stack>
             {
                 (wishlist || cart) &&
-                <Stack sx={{justifyContent: 'space-between'}}>
+                <Stack sx={{ justifyContent: 'space-between' }}>
                     <IconButton>
-                        <Close/>
+                        <Close />
                     </IconButton>
                 </Stack>
             }
