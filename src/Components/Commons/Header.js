@@ -30,7 +30,7 @@ const Header = () => {
                             <Button onClick={() => navigate('/')}>
                                 <Box
                                     component="img"
-                                    src={`${client.defaults.baseURL}/search/invoice/image/logo`}
+                                    src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
                                     alt="Ezzy Buy Logo"
                                     sx={{
                                         width: 'auto',
