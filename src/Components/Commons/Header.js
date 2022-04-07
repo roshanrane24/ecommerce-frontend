@@ -6,6 +6,7 @@ import UserButton from "./UserButton";
 import React, {useState} from 'react';
 import Footer from "./Footer";
 import AuthService from "../../api/AuthService";
+import client from "../../api/HttpClient";
 
 const Header = () => {
     // hooks
@@ -25,9 +26,18 @@ const Header = () => {
                 <Box component="header" sx={{mb: 8}}>
                     <AppBar position={"fixed"}>
                         <Toolbar>
-                            {/*Logo with home button*/}
-                            <Button onClick={() => navigate('/')}>
-                                <img src={"logo192.png"} alt="logo" width={32}/>
+                            {/*Logo with Home button*/}
+                            <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
+                                <Box
+                                    component="img"
+                                    src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
+                                    alt="Ezzy Buy Logo"
+                                    sx={{
+                                        width: 'auto',
+                                        objectFit: 'scale-down',
+                                        height: 64
+                                    }}
+                                />
                             </Button>
 
                             {/*Search Box*/}
@@ -47,9 +57,9 @@ const Header = () => {
                                     }}
                                     onClick={() => {
                                         if (userDetails)
-                                            navigate('/user/wishlist');
+                                            navigate('/wishlist');
                                         else
-                                            navigate('/login?ref=/user/wishlist');
+                                            navigate('/Login?ref=/wishlist');
                                     }}
                                     startIcon={<Favorite/>}
                                 >
@@ -68,7 +78,7 @@ const Header = () => {
                                             return {bgcolor: theme.palette.primary.dark}
                                         }
                                     }}
-                                    onClick={() => navigate('/user/cart')}
+                                    onClick={() => navigate('/cart')}
                                     startIcon={<ShoppingCart/>}
                                 >
                                     <Typography

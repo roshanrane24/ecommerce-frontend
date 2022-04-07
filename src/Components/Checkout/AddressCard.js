@@ -38,7 +38,7 @@ const AddressCard = ({address, selectedAddress}) => {
                 </Typography>
             }
             <Typography variant="body2" sx={{textWeight: 'bold', textTransform: 'capitalize'}}>
-                {address.landmark ? address.landmark + ", " : ""} {address.town_city},
+                {address.landmark ? address.landmark + ", " : ""} {address.townCity},
             </Typography>
             <Typography variant="body2" sx={{textWeight: 'bold', textTransform: 'capitalize'}}>
                 {address.state}, {" "} {address.country}

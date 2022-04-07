@@ -6,22 +6,16 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
 import {CheckOutContext} from "../../Context/CheckOutContext";
-import ProductListCard from "../commons/ProductListCard";
+import ProductListCard from "../Commons/ProductListCard";
 import Container from "@mui/material/Container";
 
 export default function Review() {
-    // Routing
-    // const navigate = useNavigate();
-
-    // States
-    const [totalPrice, setTotalPrice] = React.useState(0);
-
     // Context
     const checkout = useContext(CheckOutContext);
 
     React.useEffect(() => {
         checkout.products.get.map(product => {
-            setTotalPrice(prevPrice => prevPrice + (product.price * product.quantity));
+            checkout.total.set(prevPrice => prevPrice + (product.price * product.quantity));
         })
     }, []);
     return (
@@ -29,7 +23,7 @@ export default function Review() {
             <Typography variant="h6" gutterBottom>
                 Order summary
             </Typography>
-            <Box>
+            <Box sx={{mb: 2}}>
                 {/*Product List*/}
                 <Container maxWidth="md" sx={{p: 3}}>
                     <Stack spacing={2}>
@@ -42,7 +36,7 @@ export default function Review() {
                     <ListItem sx={{py: 1, px: 0}}>
                         <ListItemText primary="Total"/>
                         <Typography variant="subtitle1" sx={{fontWeight: 700}}>
-                            {totalPrice.toLocaleString('en-IN', {
+                            {checkout.total.get.toLocaleString('en-IN', {
                                 style: 'currency',
                                 currency: 'INR',
                             })}

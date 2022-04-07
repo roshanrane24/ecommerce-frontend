@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    MenuItem,
     Paper,
     Stack,
     Table,
@@ -9,6 +10,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography
 } from "@mui/material";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
@@ -30,6 +32,8 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import WishListService from "../../api/WishListService";
 import CartService from "../../api/CartService";
+import Tooltip from "@mui/material/Tooltip";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 
 const ProductPage = () => {
@@ -60,12 +64,17 @@ const ProductPage = () => {
 
     // States
     const [productDetails, setProductDetails] = useState(null);
+    // wishlist
     const [wishlistIcon, setWishlistIcon] = useState(<FavoriteBorder/>);
     const [wishlistButtonState, setWishlistButtonState] = useState(false);
+    // buy
     const [buyButtonState, setBuyButtonState] = useState(false);
     const [cartAlert, setCartAlert] = useState("");
+    const [cartButtonState, setCartButtonState] = useState(false);
     const [cartAlertSeverity, setCartAlertSeverity] = useState("info");
+    // Error
     const [productError, setProductError] = useState(null);
+    const [quantity, setQuantity] = useState(1);
 
     // Product details handler
     const getProductDetails = () => {
@@ -117,16 +126,33 @@ const ProductPage = () => {
     const addToCart = () => {
         // Validate User
         if (AuthService.getUserDetails()) {
+            // Disable Button
+            setCartButtonState(true);
+
+            // Set Qauntity to 1
+            productDetails.quantity = quantity;
+
+            // Add product to cart
             CartService.addToCart(productDetails)
-                .then(message => {
+                .then(response => {
+                    // show success alert
                     setCartAlertSeverity("success");
-                    setCartAlert(message);
+                    setCartAlert(response.data ? response.data.message : "Successfully added product to cart.");
                     setTimeout(() => setCartAlert(""), 10000);
+
+                    // Enable Button
+                    setCartButtonState(false);
                 })
                 .catch((error) => {
+                    // show failed alert
+                    console.log(error);
+                    console.log(error.response);
                     setCartAlertSeverity("error");
-                    setCartAlert(error.response.status);
+                    setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
                     setTimeout(() => setCartAlert(""), 10000);
+
+                    // Enable Button
+                    setCartButtonState(false);
                 });
         } else {
             // User Login Page
@@ -203,8 +229,15 @@ const ProductPage = () => {
                                     justifyContent: 'center'
                                 }}
                             >
-                                <Box component="img"
-                                     src={`${client.defaults.baseURL}/products/image/${productDetails.id}`}/>
+                                <Box
+                                    component="img"
+                                    src={`${client.defaults.baseURL}/products/image/${productDetails.id}`}
+                                    sx={{
+                                        width: "100%",
+                                        height: 'auto',
+                                        objectFit: "scale-down"
+                                    }}
+                                />
                             </Stack>
                         </Paper>
                     </Box>
@@ -239,23 +272,24 @@ const ProductPage = () => {
                             >
                                 {productDetails.name}
                             </Typography>
-                            <IconButton
-                                sx={{
-                                    p: 2,
-                                    width: 10,
-                                    height: 10,
-                                }}
-                                disabled={wishlistButtonState}
-                                onClick={toggleWishList}
-                            >
-                                {wishlistIcon}
-                            </IconButton>
+                            <Tooltip title="Add to Wishlist">
+                                <IconButton
+                                    sx={{
+                                        p: 2,
+                                        width: 10,
+                                        height: 10,
+                                    }}
+                                    disabled={wishlistButtonState}
+                                    onClick={toggleWishList}
+                                >
+                                    {wishlistIcon}
+                                </IconButton>
+                            </Tooltip>
                         </Stack>
                         <Typography variant="h4" sx={{mt: 1, fontWeight: "bold"}}>
                             {productDetails.price.toLocaleString('en-IN', {
                                 style: 'currency',
                                 currency: 'INR',
-                                maximumSignificantDigits: 3
                             })}
                         </Typography>
                         <ThemeProvider theme={ThemeIncl}>
@@ -274,6 +308,29 @@ const ProductPage = () => {
                         >
                             {productDetails.rating}
                         </Button>
+                        <Box width='75px'
+                             sx={{
+                                 mt: 2,
+                                 mb: 2
+                             }}>
+                            <TextField
+                                label='Qty'
+                                select
+                                size="small"
+                                fullWidth
+                                value={quantity}
+                                onChange={(event) => {
+                                    setQuantity(event.target.value);
+                                }}
+                            >
+                                {
+                                    [...Array(productDetails.stock > 10 ? 10 : productDetails.stock).keys()].map((numb) => {
+                                        return <MenuItem value={numb + 1}>{numb + 1}</MenuItem>
+                                    })
+                                }
+                            </TextField>
+                        </Box>
+
                         {
                             productDetails.stock < 5 && productDetails.stock > 0 &&
                             <Alert icon={false} severity="warning" sx={{mb: -1, mt: 1, maxWidth: 300, minWidth: 200}}>
@@ -298,10 +355,10 @@ const ProductPage = () => {
                                     variant="contained"
                                     endIcon={<ShoppingCartIcon/>}
                                     onClick={() => {
-                                        // validate user to checkout else login
+                                        // validate user to checkout else Login
                                         if (AuthService.getUserDetails()) {
                                             // set single quantity
-                                            productDetails.quantity = 1;
+                                            productDetails.quantity = quantity;
 
                                             // for failed redirection
                                             sessionStorage.setItem('co', productDetails.id);
@@ -317,9 +374,15 @@ const ProductPage = () => {
                                 >
                                     Buy Now
                                 </Button>
-                                <Button variant="outlined" endIcon={<AddShoppingCartIcon/>} onClick={addToCart}>
+                                <LoadingButton
+                                    variant="outlined"
+                                    endIcon={<AddShoppingCartIcon/>}
+                                    onClick={addToCart}
+                                    loading={cartButtonState}
+                                    loadingPosition={"start"}
+                                >
                                     Add to Cart
-                                </Button>
+                                </LoadingButton>
                             </Stack>
                             {
                                 cartAlert &&
@@ -400,7 +463,9 @@ const ProductPage = () => {
                             setProductError(null);
                             getProductDetails();
                         })}
-                    > Reload</strong>
+                    >
+                        Reload
+                    </strong>
                 </Alert>
             }
         </Stack>

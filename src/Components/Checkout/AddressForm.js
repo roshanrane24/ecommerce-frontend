@@ -19,7 +19,7 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function AddressForm() {
+export default function AddressForm(props) {
     // Context
     const checkout = useContext(CheckOutContext);
 
@@ -39,6 +39,7 @@ export default function AddressForm() {
     // Addresses
     const [radioValue, setRadioValue] = useState('');
     const [addresses, setAddresses] = useState([])
+    const [addressLoaded, setAddressLoaded] = useState(false);
     // ValidationText
     const [fullNameHelperText, setFullNameHelperText] = React.useState('');
     const [address1HelperText, setAddress1HelperText] = React.useState('');
@@ -98,8 +99,8 @@ export default function AddressForm() {
 
     function validateMobile(mobile) {
         setMobileHelperText('');
-        if (/^([+]?)([\d]+){10,14}$/.test(mobile)) {
-            setMobileHelperText("Not a valid pincode");
+        if (!/^([+]?)([\d]+){10,14}$/.test(mobile)) {
+            setMobileHelperText("Not a valid mobile number");
             return false;
         }
         return true;
@@ -123,60 +124,70 @@ export default function AddressForm() {
                     line1: address1,
                     line2: address2,
                     landmark: landmark,
-                    town_city: city
+                    townCity: city
                 }
             )
                 .then(() => {
-                    // Stop Animation
-                    setAddingAddress(false);
+                        // Stop Animation
+                        setAddingAddress(false);
 
-                    // Scroll to top
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth' // for smoothly scrolling
-                    });
+                        // Scroll to top
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth' // for smoothly scrolling
+                        });
 
-                    // Reset Fields
-                    setFullName('');
-                    setAddress1('');
-                    setAddress2('');
-                    setLandmark('');
-                    setCity('');
-                    setPinCode('');
-                    setState('');
-                    setCountry('');
-                    setMobile('');
+                        // Reset Fields
+                        setFullName('');
+                        setAddress1('');
+                        setAddress2('');
+                        setLandmark('');
+                        setCity('');
+                        setPinCode('');
+                        setState('');
+                        setCountry('');
+                        setMobile('');
 
-                    // Show Success
-                    setAlertData(data => {
-                        data.state = true;
-                        data.severity = "success";
-                        data.message = "Successfully added address";
-                        return data;
-                    });
-                    setTimeout(() => {
+                        // Show Success
                         setAlertData(data => {
-                            data.state = false;
+                            data.state = true;
+                            data.severity = "success";
+                            data.message = "Successfully added address";
                             return data;
                         });
-                    }, 10000);
+                        setTimeout(() => {
+                            setAlertData(data => {
+                                data.state = false;
+                                return data;
+                            });
+                        }, 10000);
 
-                    // fetch addresses
-                    UserService.getSavedAddresses()
-                        .then((addrs) => {
-                            setAddresses(addrs);
-                        })
-                        .catch(error => {
-                            // Show Error
-                            setAlertData({
-                                    severity: "error",
-                                    message: error.response.message ? error.response.message : "Error while fetching address",
+                        // fetch addresses
+                        UserService.getSavedAddresses()
+                            .then(async (addrs) => {
+                                await setAddresses(addrs);
+
+                                // Enable Button
+                                props.setDisabled(false);
+
+                                // Set address when there's only added address
+                                if (Object.keys(addresses).length === 1) {
+                                    setRadioValue(addrs[Object.keys(addrs)[0]].id);
+                                    checkout.address.set(Object.keys(addrs)[0]);
+                                    checkout.billing.set(Object.keys(addrs)[0]);
                                 }
-                            );
-                            setAlert(true);
+                            })
+                            .catch(error => {
+                                // Show Error
+                                setAlertData({
+                                        severity: "error",
+                                        message: error.response.message ? error.response.message : "Error while fetching address",
+                                    }
+                                );
+                                setAlert(true);
 
-                            setTimeout(() => setAlert(false), 10000);
-                        })
+                                setTimeout(() => setAlert(false), 10000);
+                            })
                     }
                 )
                 .catch(error => {
@@ -217,15 +228,26 @@ export default function AddressForm() {
     useEffect(() => {
         UserService.getSavedAddresses()
             .then((address) => {
-                // set addresses
-                setAddresses(address);
+                    // set addresses
+                    setAddresses(address);
 
-                if (Object.keys(address).length > 0)
-                    init.postMessage(address);
+                    // Enable Next Button
+                    if (Object.keys(address).length > 0)
+                        props.setDisabled(false);
+
+                    if (Object.keys(address).length > 0)
+                        init.postMessage(address);
+
+                    // address Loaded
+                    setAddressLoaded(true);
+                }
+            )
+            .catch(() => {
+                // address Loaded
+                setAddressLoaded(true);
             });
         // eslint
     }, []);
-
 
     return (
         <>
@@ -259,6 +281,21 @@ export default function AddressForm() {
                                     ))
                                 }
                             </RadioGroup>
+                        ) : addressLoaded ? (
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    width: "100%",
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    p: 2, m: 1
+                                }}
+                            >
+                                <Typography variant="h5">
+                                    No Addresses Available
+                                </Typography>
+
+                            </Stack>
                         ) : (
                             <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
                                 <CircularProgress sx={{m: 5}}/>
@@ -266,7 +303,17 @@ export default function AddressForm() {
                         )}
                 </FormControl>
             </Box>
-            <Button variant='contained' onClick={() => setShow(!show)}>Add Address</Button>
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    alignItems: 'center',
+                    justifyContent: 'flex-start'
+                }}
+            >
+                <Button variant='contained' onClick={() => setShow(!show)}>{show ? "Close" : "Add Address"}</Button>
+                <Typography variant="caption">*Selected address will be both billing & shipping address</Typography>
+            </Stack>
             {/*Alert*/}
             <Collapse in={alert} sx={{mb: -6}}>
                 <Alert

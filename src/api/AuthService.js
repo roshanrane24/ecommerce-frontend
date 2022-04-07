@@ -1,7 +1,6 @@
 import client from './HttpClient';
 import WishListService from "./WishListService";
 import CartService from "./CartService";
-import ProductService from "./ProductService";
 
 
 class AuthService {
@@ -16,7 +15,7 @@ class AuthService {
 
                     // fetch wishlist
                     WishListService.getWishList().then(wishlist => {
-                        localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
+                        localStorage.setItem('wishlist', JSON.stringify(wishlist.map(item => item.id)));
                     });
 
                     // fetch cart

@@ -1,7 +1,7 @@
-import {Button, Menu, MenuItem, Typography} from "@mui/material";
-import {KeyboardArrowDown} from "@mui/icons-material";
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { Button, Menu, MenuItem, Typography } from "@mui/material";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthService from "../../api/AuthService";
 
 const UserButton = () => {
@@ -31,7 +31,7 @@ const UserButton = () => {
                         aria-haspopup="true"
                         onClick={handleMenu}
                         color="inherit"
-                        endIcon={<KeyboardArrowDown/>}
+                        endIcon={<KeyboardArrowDown />}
                     >
                         <Typography
                             variant={'subtitle1'}
@@ -60,17 +60,19 @@ const UserButton = () => {
                     >
                         <MenuItem onClick={() => {
                             handleClose();
-                            navigate('/user/orders');
+                            navigate('/orders');
                         }}>My Orders</MenuItem>
 
                         <MenuItem onClick={() => {
                             handleClose();
-                            navigate('/user/profile')
+                            navigate('/profile')
                         }}>My Profile</MenuItem>
 
                         <MenuItem onClick={() => {
-                            AuthService.logout(setUserDetails);
+                            AuthService.logout();
+                            handleClose();
                             setUserDetails(null);
+                            navigate('/');
                         }}>
                             Logout
                         </MenuItem>
@@ -97,7 +99,7 @@ const UserButton = () => {
                 >
                     <Typography
                         variant={'subtitle1'}
-                        sx={{textTransform: 'capitalize'}}
+                        sx={{ textTransform: 'capitalize' }}
                     >
                         Login
                     </Typography>
