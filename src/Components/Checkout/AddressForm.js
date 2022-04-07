@@ -164,9 +164,18 @@ export default function AddressForm(props) {
 
                         // fetch addresses
                         UserService.getSavedAddresses()
-                            .then((addrs) => {
-                                setAddresses(addrs);
-                                props.setDisabled(addrs.length > 0);
+                            .then(async (addrs) => {
+                                await setAddresses(addrs);
+
+                                // Enable Button
+                                props.setDisabled(false);
+
+                                // Set address when there's only added address
+                                if (Object.keys(addrs).length === 1) {
+                                    setRadioValue(addrs[Object.keys(addrs)[0]].id);
+                                    checkout.address.set(Object.keys(addrs)[0]);
+                                    checkout.billing.set(Object.keys(addrs)[0]);
+                                }
                             })
                             .catch(error => {
                                 // Show Error
@@ -219,7 +228,9 @@ export default function AddressForm(props) {
     useEffect(() => {
         UserService.getSavedAddresses()
             .then((address) => {
-                props.setDisabled(address.length > 0);
+                // Button Status
+                if (address.length > 0)
+                    props.setDisabled(false);
 
                 // set addresses
                 setAddresses(address);
