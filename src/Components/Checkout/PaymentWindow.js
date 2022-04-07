@@ -35,7 +35,6 @@ const PaymentWindow = ({orderId, handlers}) => {
         });
     }
 
-
     // Load payment window
     async function displayRazorpay(options) {
         const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
