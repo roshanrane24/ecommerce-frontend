@@ -57,6 +57,9 @@ export default function AddressForm(props) {
         if (fullName.length < 1) {
             setFullNameHelperText("This Field Cannot be Empty")
             return false;
+        } else if (fullName.landmark > 60) {
+            setFullNameHelperText("Full name can not be more than 60 character long")
+            return false;
         }
         return true;
     }
@@ -65,6 +68,9 @@ export default function AddressForm(props) {
         setAddress1HelperText('');
         if (address1.length < 1) {
             setAddress1HelperText("This Field Cannot be Empty")
+            return false;
+        } else if (address1.length > 40) {
+            setAddress1HelperText("Line 1 can not be more than 40 character long")
             return false;
         }
         return true;
@@ -75,6 +81,9 @@ export default function AddressForm(props) {
         if (city.length < 1) {
             setCityHelperText("This Field Cannot be Empty")
             return false;
+        } else if (city.length > 50) {
+            setCityHelperText("City name can not be more than 50 character length")
+            return false;
         }
         return true;
     }
@@ -83,6 +92,9 @@ export default function AddressForm(props) {
         setStateHelperText('');
         if (state.length < 1) {
             setStateHelperText("This field cannot be empty");
+            return false;
+        } else if (state.length > 50) {
+            setStateHelperText("State name can not be more than 50 character length")
             return false;
         }
         return true;
