@@ -166,6 +166,7 @@ export default function AddressForm(props) {
                         UserService.getSavedAddresses()
                             .then((addrs) => {
                                 setAddresses(addrs);
+                                props.setDisabled(addrs.length > 0);
                             })
                             .catch(error => {
                                 // Show Error
@@ -218,13 +219,16 @@ export default function AddressForm(props) {
     useEffect(() => {
         UserService.getSavedAddresses()
             .then((address) => {
-                props.setDisabled(false);
+                props.setDisabled(address.length > 0);
 
                 // set addresses
                 setAddresses(address);
 
                 if (Object.keys(address).length > 0)
                     init.postMessage(address);
+
+                // address Loaded
+                setAddressLoaded(true);
             })
             .catch(() => {
                 // address Loaded
@@ -277,7 +281,7 @@ export default function AddressForm(props) {
                                 }}
                             >
                                 <Typography variant="h5">
-                                    No Address Available
+                                    No Addresses Available
                                 </Typography>
 
                             </Stack>
