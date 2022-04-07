@@ -8,6 +8,7 @@ const CheckOutProvider = (props) => {
     const [shippingAddress, setShippingAddress] = useState(null);
     const [billingAddress, setBillingAddress] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [isCheckedOut, setIsCheckedOut] = useState(false);
 
     const data = {
         products: {
@@ -25,6 +26,10 @@ const CheckOutProvider = (props) => {
         total: {
             get: totalPrice,
             set: setTotalPrice
+        },
+        checked: {
+            get: isCheckedOut,
+            set: setIsCheckedOut
         },
         clear: () => {
             setProducts([]);

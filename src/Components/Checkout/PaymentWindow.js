@@ -4,6 +4,7 @@ import useTheme from "@mui/material/styles/useTheme";
 import {Box} from "@mui/material";
 import Button from "@mui/material/Button";
 import AuthService from "../../api/AuthService";
+import Stack from "@mui/material/Stack";
 
 const PaymentWindow = ({orderId, handlers}) => {
     // Context
@@ -12,9 +13,8 @@ const PaymentWindow = ({orderId, handlers}) => {
     // Theme
     const theme = useTheme();
 
-    // State
-    const [id,] = useState(orderId);
-
+    // States
+    let [reload, setReload] = useState(Date.now());
     // load script
     const loadScript = (src) => {
         return new Promise((resolve) => {
@@ -31,6 +31,7 @@ const PaymentWindow = ({orderId, handlers}) => {
             };
 
             // Load script in element
+            document.getElementById('paymentWindow').innerHTML = "";
             document.getElementById('paymentWindow').appendChild(script);
         });
     }
@@ -48,6 +49,14 @@ const PaymentWindow = ({orderId, handlers}) => {
         paymentObject.open();
         paymentObject.on('payment.failed', handlers.failure);
     }
+
+    useEffect(() => {
+        // Display window event
+        setReload(Date.now());
+
+        // clear total price
+        checkout.total.set(0);
+    }, []);
 
     useEffect(async () => {
         // User Details
@@ -83,31 +92,47 @@ const PaymentWindow = ({orderId, handlers}) => {
 
         // Display razorpay window
         displayRazorpay(options);
-
-        // clear total price
-        checkout.total.set(0);
-    }, []);
+    }, [reload]);
 
     return (
-        <Box component="div" id="paymentWindow">
-            <Button
-                onClick={() => {
-                    // Crate response
-                    const response = {
-                        error: {
-                            metadata: {payment_id: "CANCELED", orderId: id}
-                        }
-                    };
-
-                    // call fail handler
-                    handlers.failure(response);
+        <>
+            <Box id="paymentWindow"/>
+            <Stack
+                direction="row"
+                component="div"
+                sx={{
+                    alignItem: 'center',
+                    justifyContent: "space-around"
                 }}
-                sx={{mx: 5}}
-                variant="contained"
             >
-                Cancel
-            </Button>
-        </Box>
+                <Button
+                    disabled={checkout.checked.get}
+                    onClick={() => {
+                        // Crate response
+                        const response = {
+                            error: {
+                                metadata: {payment_id: "CANCELED", orderId}
+                            }
+                        };
+
+                        // call fail handler
+                        handlers.failure(response);
+                    }}
+                    sx={{mx: 5}}
+                    variant="contained"
+                >
+                    Cancel
+                </Button>
+                <Button
+                    disabled={checkout.checked.get}
+                    onClick={() => setReload(Date.now())}
+                    sx={{mx: 5}}
+                    variant="contained"
+                >
+                    Retry
+                </Button>
+            </Stack>
+        </>
     );
 };
 
