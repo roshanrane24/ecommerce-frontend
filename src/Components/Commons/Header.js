@@ -27,7 +27,7 @@ const Header = () => {
                     <AppBar position={"fixed"}>
                         <Toolbar>
                             {/*Logo with Home button*/}
-                            <Button onClick={() => navigate('/')}>
+                            <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
                                 <Box
                                     component="img"
                                     src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
@@ -35,7 +35,7 @@ const Header = () => {
                                     sx={{
                                         width: 'auto',
                                         objectFit: 'scale-down',
-                                        height: 32,
+                                        height: 64
                                     }}
                                 />
                             </Button>
