@@ -171,7 +171,7 @@ export default function AddressForm(props) {
                                 props.setDisabled(false);
 
                                 // Set address when there's only added address
-                                if (Object.keys(addrs).length === 1) {
+                                if (Object.keys(addresses).length === 1) {
                                     setRadioValue(addrs[Object.keys(addrs)[0]].id);
                                     checkout.address.set(Object.keys(addrs)[0]);
                                     checkout.billing.set(Object.keys(addrs)[0]);
@@ -228,26 +228,26 @@ export default function AddressForm(props) {
     useEffect(() => {
         UserService.getSavedAddresses()
             .then((address) => {
-                // Button Status
-                if (address.length > 0)
-                    props.setDisabled(false);
+                    // set addresses
+                    setAddresses(address);
 
-                // set addresses
-                setAddresses(address);
+                    // Enable Next Button
+                    if (Object.keys(address).length > 0)
+                        props.setDisabled(false);
 
-                if (Object.keys(address).length > 0)
-                    init.postMessage(address);
+                    if (Object.keys(address).length > 0)
+                        init.postMessage(address);
 
-                // address Loaded
-                setAddressLoaded(true);
-            })
+                    // address Loaded
+                    setAddressLoaded(true);
+                }
+            )
             .catch(() => {
                 // address Loaded
                 setAddressLoaded(true);
             });
         // eslint
     }, []);
-
 
     return (
         <>
@@ -303,7 +303,17 @@ export default function AddressForm(props) {
                         )}
                 </FormControl>
             </Box>
-            <Button variant='contained' onClick={() => setShow(!show)}>Add Address</Button>
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    alignItems: 'center',
+                    justifyContent: 'flex-start'
+                }}
+            >
+                <Button variant='contained' onClick={() => setShow(!show)}>{show ? "Close" : "Add Address"}</Button>
+                <Typography variant="caption">*Selected address will be both billing & shipping address</Typography>
+            </Stack>
             {/*Alert*/}
             <Collapse in={alert} sx={{mb: -6}}>
                 <Alert
