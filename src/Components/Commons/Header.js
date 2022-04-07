@@ -27,21 +27,31 @@ const Header = () => {
                     <AppBar position={"fixed"}>
                         <Toolbar>
                             {/*Logo with Home button*/}
-                            <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
-                                <Box
-                                    component="img"
-                                    src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
-                                    alt="Ezzy Buy Logo"
-                                    sx={{
-                                        width: 'auto',
-                                        objectFit: 'scale-down',
-                                        height: 64
-                                    }}
-                                />
-                            </Button>
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'end',
+                                    flexGrow: 1,
+                                    mr: 5
+                                }}
+                            >
+                                <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
+                                    <Box
+                                        component="img"
+                                        src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
+                                        alt="Ezzy Buy Logo"
+                                        sx={{
+                                            width: 'auto',
+                                            objectFit: 'scale-down',
+                                            height: 64
+                                        }}
+                                    />
+                                </Button>
+                            </Stack>
 
                             {/*Search Box*/}
-                            <Box sx={{flexGrow: 1}}/>
+                            {/*<Box sx={{flexGrow: 1}}/>*/}
                             <SearchBox/>
                             <Box sx={{flexGrow: 1}}/>
 
