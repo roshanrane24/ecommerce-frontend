@@ -224,7 +224,7 @@ const ProductPage = () => {
                             <Stack
                                 sx={{
                                     width: '100%',
-                                    height: '80%',
+                                    height: '100%',
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}
