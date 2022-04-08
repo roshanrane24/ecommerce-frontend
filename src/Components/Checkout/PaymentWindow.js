@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {CheckOutContext} from "../../Context/CheckOutContext";
 import useTheme from "@mui/material/styles/useTheme";
 import {Box} from "@mui/material";
@@ -37,22 +37,26 @@ const PaymentWindow = ({orderId, handlers}) => {
     }
 
     // Load payment window
-    async function displayRazorpay(options) {
-        const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+    const displayRazorpay = useCallback(
+        async (options) => {
+            const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
 
-        if (!res) {
-            alert("Razorpay SDK failed to load. Are you online?");
-            return;
-        }
+            if (!res) {
+                alert("Razorpay SDK failed to load. Are you online?");
+                return;
+            }
 
-        const paymentObject = new window.Razorpay(options);
-        paymentObject.open();
-        paymentObject.on('payment.failed', handlers.failure);
-    }
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.open();
+            paymentObject.on('payment.failed', handlers.failure);
+        },
+        [],
+    );
+
 
     useEffect(() => {
-        // Display window event
-        setReload(Date.now());
+        // // Display window event
+        // setReload(Date.now());
 
         // clear total price
         checkout.total.set(0);

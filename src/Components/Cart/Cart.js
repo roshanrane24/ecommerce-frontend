@@ -9,7 +9,6 @@ const Cart = () => {
         CartService.getShoppingCart()
             .then(cart => {
                 setCartItems(cart);
-                console.log(cart)
             })
             .catch(error => console.log(error))
     }, []);

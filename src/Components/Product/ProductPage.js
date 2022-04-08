@@ -94,7 +94,7 @@ const ProductPage = () => {
 
             if (WishListService.productInWishlist(productDetails.id)) {
                 // Remove to wishlist
-                WishListService.removeToWishList(productDetails.id)
+                WishListService.removeFromWishList(productDetails.id)
                     .then(() => {
                         setWishlistIcon(<FavoriteBorder/>)
                         setWishlistButtonState(false);
