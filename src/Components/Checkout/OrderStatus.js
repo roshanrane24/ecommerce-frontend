@@ -11,11 +11,6 @@ const OrderStatus = ({success, failed, awaiting}) => {
     //Routing
     const navigate = useNavigate();
 
-    // Invoice download handler
-    // const downloadInvoice = (pdf) => {
-    //     console.log(pdf);
-    // }
-
     return (
         <Box sx={{p: 2}}
         >
