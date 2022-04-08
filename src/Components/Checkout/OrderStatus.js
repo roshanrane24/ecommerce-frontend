@@ -11,11 +11,6 @@ const OrderStatus = ({success, failed, awaiting}) => {
     //Routing
     const navigate = useNavigate();
 
-    // Invoice download handler
-    const downloadInvoice = (pdf) => {
-        console.log(pdf);
-    }
-
     return (
         <Box sx={{p: 2}}
         >
@@ -56,9 +51,6 @@ const OrderStatus = ({success, failed, awaiting}) => {
                 awaiting &&
                 <>
                     <Typography variant="h4" color="warning.main" gutterBottom>Awaiting Payment</Typography>
-                    <Typography>
-                        Your order with order id #{awaiting.razorpay_order_id} has been successfully placed.
-                    </Typography>
                     <Typography>
                         Awaiting payment from bank.
                     </Typography>

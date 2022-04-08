@@ -52,6 +52,10 @@ export default function Checkout() {
     // RazorPay Handler Method
     // Success
     const handleSuccess = response => {
+        // disable button
+        checkout.checked.set(true);
+
+        // Update payement details
         OrderService.updatePaymentDetail({
             transactionId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
@@ -78,7 +82,10 @@ export default function Checkout() {
 
     // Failure
     const handleFailure = response => {
-        console.log(response)
+        // disable button
+        checkout.checked.set(true);
+
+        // Update payement details
         OrderService.updatePaymentDetail({
             transactionId: response.error.metadata.payment_id,
             razorpayOrderId: response.error.metadata.order_id,
@@ -188,6 +195,8 @@ export default function Checkout() {
         } else
             // unauthorized
             navigate('/');
+
+        cleanCheckout();
     }
 
     useEffect(() => {
