@@ -16,15 +16,6 @@ const Wishlist = () => {
     }, []);
     return (
         <>
-            {/* <Stack sx={{
-                mt: 2,
-                justifyContent: 'center',
-
-            }}>
-                <Typography variant='h4' sx={{ textAlign: 'center' }} gutterBottom>Wishlist</Typography>
-                <Divider />
-            </Stack> */}
-
             <Stack
                 sx={{
                     alignItems: 'flex-start',

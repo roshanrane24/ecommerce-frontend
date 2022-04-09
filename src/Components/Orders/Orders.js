@@ -59,9 +59,9 @@ const Orders = () => {
                         <CircularProgress/>
                     </Stack>
                 ) : orders.length > 0 ? (
-                    <Stack spacing={1}>
+                    <Stack spacing={2}>
                         {
-                            orders.map(order => <OrderCard order={order}/>)
+                            orders.map((order, idx) => <OrderCard key={idx} order={order}/>)
                         }
                     </Stack>
                 ) : (

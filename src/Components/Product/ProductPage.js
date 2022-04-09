@@ -363,7 +363,7 @@ const ProductPage = () => {
                                             // for failed redirection
                                             sessionStorage.setItem('co', productDetails.id);
 
-                                            // set contexr details & navigate
+                                            // set context details & navigate
                                             checkout.products.set([productDetails]);
                                             navigate(`/checkout`);
                                         } else {
