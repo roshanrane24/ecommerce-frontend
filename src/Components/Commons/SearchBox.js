@@ -44,7 +44,6 @@ const SearchBox = (props) => {
                     paddingInline: 1,
                     marginLeft: 1,
                     minWidth: 200,
-                    maxWidth: 500
                 }}
                 onKeyUp={(event) => {
                     if (event.key === "Enter")

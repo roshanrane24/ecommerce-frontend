@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import {useNavigate} from "react-router-dom";
-import client from "../../api/HttpClient";
+import OrderService from "../../api/OrderService";
 
 
 const OrderStatus = ({success, failed, awaiting}) => {
@@ -27,10 +27,12 @@ const OrderStatus = ({success, failed, awaiting}) => {
                     <Stack direction="row" alignItems="center" justifyContent="flex-end">
                         <Button
                             onClick={() => {
-                                // console.log("SC", success)
-                                // OrderService.getOrderInvoice({orderId: success.order_id})
-                                //     .then(downloadInvoice)
-                                window.open(`${client.defaults.baseURL}/orders/invoice/${success.order_id}`, `INVOICE_${success.order_id}`);
+                                OrderService.getOrderInvoice({orderId: success.order_id})
+                                    .then(invoice => {
+                                        let file = new Blob([invoice], {type: 'application/pdf'});
+                                        let invoiceURL = URL.createObjectURL(file);
+                                        window.open(invoiceURL, `INVOICE_${success.order_id}`);
+                                    });
                             }}
                         >
                             Download Invoice

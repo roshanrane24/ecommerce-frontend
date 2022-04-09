@@ -25,6 +25,7 @@ class CartService {
                         p.quantity++;
                         changed = true;
                     }
+                    return p;
                 });
 
                 if (!changed)
@@ -68,6 +69,7 @@ class CartService {
                         changed = true;
                         return p.quantity > 1 ? p.quantity-- && true : false;
                     }
+                    return true;
                 });
 
                 if (!changed)
@@ -96,12 +98,38 @@ class CartService {
     }
 
     // Remove a single product form cart
-    removeProductFromCart({productId}) {
+    removeProductFromCart(productId) {
         return client.delete('/shopping-cart/remove-product', {
             headers: authHeader(),
             data: {productId, quantity: 0}
         })
-            .then(response => response.data);
+            .then(response => {
+                // get cart & add item
+                let cart = localStorage.getItem('cart');
+
+                // Check if cart present
+                cart = cart ? JSON.parse(cart) : null;
+                if (!cart) throw new Error("Cart is empty.")
+
+                // add product
+                let changed = false;
+
+                cart = cart.filter(p => {
+                    if (p.id === productId) {
+                        changed = true;
+                        return false;
+                    }
+                    return true
+                });
+
+                if (!changed)
+                    throw new Error("Product not in the cart")
+
+                // store cart
+                localStorage.setItem('cart', JSON.stringify([...cart]));
+
+                return response.data.message;
+            });
     }
 
     // Remove All products from cart

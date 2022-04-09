@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ProductListCard from "../Commons/ProductListCard";
 import WishListService from "../../api/WishListService";
-import { Stack, Box, Typography, Divider } from '@mui/material';
-
+import {Box, Stack} from '@mui/material';
 
 const Wishlist = () => {
 
-    const [cartItems, setCartItems] = useState([]);
+    const [wishlistItems, setWishlistItems] = useState([]);
 
     useEffect(() => {
         WishListService.getWishList()
-            .then(cart => {
-                setCartItems(cart);
-                console.log(cart)
+            .then(wishlist => {
+                setWishlistItems(wishlist);
             })
             .catch(error => console.log(error))
     }, []);
@@ -36,24 +34,26 @@ const Wishlist = () => {
                     flexGrow: 1
 
                 }} spacing={5}
-                direction='row' >
-                <Stack spacing={2}
+                direction='row'>
+                <Stack
+                    spacing={2}
                     sx={{
                         alignItems: 'center',
                         justifyContent: 'center', flexGrow: 1
-                    }}>
+                    }}
+                >
                     {
-                        cartItems.length > 0 ? (cartItems.map((product) =>
+                        wishlistItems.length > 0 ? (wishlistItems.map((product) =>
                             <Box width='100%' sx={{
                                 px: 2
                             }}>
-                                <ProductListCard product={product} wishlist />
+                                <ProductListCard product={product} wishlist/>
                             </Box>
                         )) : ("Wishlist is empty")
 
                     }
                 </Stack>
-            </Stack >
+            </Stack>
         </>
 
     );
