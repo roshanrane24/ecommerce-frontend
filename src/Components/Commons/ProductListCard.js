@@ -10,7 +10,7 @@ import Snackbar from "@mui/material/Snackbar";
 import {Link} from 'react-router-dom';
 import WishListService from "../../api/WishListService";
 
-const ProductListCard = ({product, order, wishlist, cart, alert}) => {
+const ProductListCard = ({product, order, wishlist, cart, history}) => {
     // States
     const [cartDisabled, setCartDisabled] = useState(false);
     const [saveDisabled, setSaveDisabled] = useState(false);
@@ -48,7 +48,7 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
             .then(async () => {
                 await setQuantity(quantity => quantity - 1);
 
-                if (quantity == 0)
+                if (quantity === 0)
                     setRender(false);
 
                 setCartDisabled(false);
@@ -175,19 +175,32 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                             width: "70%",
                             "display": "-webkit-box",
                             WebkitBoxOrient: "vertical",
-                            WebkitLineClamp: 2,
+                            WebkitLineClamp: wishlist || history ? 1 : 2,
                             "overflow": "clip",
                             textOverflow: "ellipsis",
                         }}
                     >
-                        <Link to={`/product/${product.id}`}>
-                            <Typography variant="subtitle1">
+                        <Link to={`/product/${product.id}`} style={{textDecoration: 'none'}}>
+                            <Typography
+                                variant={history ? "body1" : "subtitle1"}
+                                sx={{
+                                    color: 'primary.light',
+                                    textDecoration: 'none',
+                                    textTransform: 'capitalize',
+                                    ":hover": {
+                                        textDecoration: 'underline',
+                                    }
+                                }}
+                            >
                                 {product.name}
                             </Typography>
                         </Link>
                     </Box>
                     <Stack direction="row">
-                        <Box sx={{flexGrow: 1}}>
+                        <Stack
+                            sx={{flexGrow: 1}}
+                            direction={history ? "row" : "column"}
+                        >
                             <Stack
                                 direction="row"
                                 sx={{
@@ -214,7 +227,9 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                             </Stack>
                             {
                                 order &&
-                                <Box>
+                                <Box
+                                    sx={{ml: history ? 5 : 0}}
+                                >
                                     <Typography variant="subtitle2">
                                         Quantity: <b>{quantity}</b>
                                     </Typography>
@@ -270,7 +285,7 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                     </Stack>
                                 </>
                             }
-                        </Box>
+                        </Stack>
                         {
                             (cart || order) &&
                             <Box
@@ -281,7 +296,7 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                 }}
                             >
                                 <Typography variant="subtitle2">
-                                    SubTotal: <b>{(product.price * product.quantity).toLocaleString('en-IN', {
+                                    SubTotal: <b>{(product.price * quantity).toLocaleString('en-IN', {
                                     style: 'currency',
                                     currency: 'INR',
                                 })}</b>
@@ -292,8 +307,8 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                 </Stack>
                 <Stack
                     sx={{
-                        width: wishlist ? 100 : 150,
-                        height: wishlist ? 100 : 170,
+                        width: wishlist || history ? 60 : 150,
+                        height: wishlist || history ? 70 : 170,
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
@@ -303,8 +318,8 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                         src={`${client.defaults.baseURL}/products/image/${product._id ? product._id : product.id}`}
                         sx={{
                             p: 2,
-                            height: wishlist ? 90 : 150,
-                            width: wishlist ? 90 : 150,
+                            height: wishlist || history ? 90 : 150,
+                            width: wishlist || history ? 90 : 150,
                             objectFit: "scale-down"
                         }}/>
                 </Stack>
