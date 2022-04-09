@@ -64,7 +64,6 @@ const OrderCard = ({order}) => {
 
     return (
         <Paper
-            variant="outlined"
             sx={{
                 width: "100%",
                 p: 1,
@@ -76,7 +75,8 @@ const OrderCard = ({order}) => {
                     flexGrow: 1,
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    px: 2
+                    px: 2,
+                    mb: 0.5
                 }}
             >
                 <Typography variant="caption">
@@ -86,12 +86,13 @@ const OrderCard = ({order}) => {
                     <b>Status</b> : {getOrderStatus(order.orderStatus)}
                 </Typography>
             </Stack>
-            <Stack spacing={0.5}>
+            <Stack spacing={0.1}>
                 {
-                    order.itemList.map(product => <ProductListCard product={product} order history/>)
+                    order.itemList.map((product, idx) => <ProductListCard key={idx} product={product} outlined order
+                                                                          history/>)
                 }
             </Stack>
-            <ListItem component={"paper"} sx={{py: 1, px: 1}}>
+            <ListItem sx={{py: 1, px: 1}}>
                 <ListItemText primary={<Typography variant="body1">Order Total</Typography>}/>
                 <Typography variant="body1" sx={{fontWeight: 'bold'}}>
                     {order.orderAmount.toLocaleString('en-IN', {

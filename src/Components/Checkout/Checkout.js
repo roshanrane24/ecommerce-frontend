@@ -139,6 +139,9 @@ export default function Checkout() {
                 // Switch to payment step
                 setActiveStep(2);
 
+                if (sessionStorage.getItem('co') === "cart")
+                    localStorage.removeItem('cart');
+
                 //stop animation
                 setIsLoading(false);
             })
@@ -183,7 +186,7 @@ export default function Checkout() {
     const handleCancel = () => {
         if (sessionStorage.getItem('co') === 'cart') {
             // if tried checking out from cart
-            navigate('/user/cart');
+            navigate('/cart');
             sessionStorage.removeItem('co');
         } else if (sessionStorage.getItem('co') === null) {
             // unauthorized
