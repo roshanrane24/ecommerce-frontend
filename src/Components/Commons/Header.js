@@ -23,7 +23,7 @@ const Header = () => {
                 flexDirection: 'column',
                 minHeight: '100vh',
             }}>
-                <Box component="header" sx={{mb: 10}}>
+                <Box component="header" sx={{mb: 9}}>
                     <AppBar position={"fixed"}>
                         <Toolbar>
                             {/*Logo with Home button*/}

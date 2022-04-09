@@ -234,7 +234,7 @@ const ProductPage = () => {
                                     src={`${client.defaults.baseURL}/products/image/${productDetails.id}`}
                                     sx={{
                                         width: "100%",
-                                        height: 'auto',
+                                        height: '100%',
                                         objectFit: "scale-down"
                                     }}
                                 />
