@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -19,9 +18,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import AuthService from "../../api/AuthService";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import useTheme from "@mui/material/styles/useTheme";
 
 
 const Login = () => {
+    // Theme
+    const theme = useTheme();
+
     // states
     const [email, setEmail] = useState("");
     const [emailHelperText, setEmailHelperText] = useState("");
@@ -168,9 +171,9 @@ const Login = () => {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
-                            error={emailHelperText}
+                            error={!!emailHelperText}
                             margin="normal"
                             required
                             fullWidth
@@ -187,7 +190,7 @@ const Login = () => {
                             helperText={emailHelperText}
                         />
                         <TextField
-                            error={passwordHelperText}
+                            error={!!passwordHelperText}
                             margin="normal"
                             required
                             fullWidth
@@ -204,38 +207,39 @@ const Login = () => {
                             helperText={passwordHelperText}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
+                            control={<Checkbox value="remember" color="primary"/>}
                             label="Remember me"
                         />
                         <LoadingButton
                             loading={loginIn}
-                            loadingPosition="start"
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign In
                         </LoadingButton>
                         <Grid container>
                             <Grid item xs>
-                                <RouterLink to='/forgot'>
-                                    <Link variant="body2">
-                                        Forgot password?
-                                    </Link>
+                                <RouterLink
+                                    to='/forgot'
+                                    style={{color: theme.palette.primary.main}}
+                                >
+                                    Forgot password?
                                 </RouterLink>
                             </Grid>
                             <Grid item>
-                                <RouterLink to={`/signup${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}>
-                                    <Link variant="body2">
-                                        {"Don't have an account? Sign Up"}
-                                    </Link>
+                                <RouterLink
+                                    to={`/signup${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}
+                                    style={{color: theme.palette.primary.main}}
+                                >
+                                    {"Don't have an account? Sign Up"}
                                 </RouterLink>
                             </Grid>
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
+                <Copyright sx={{mt: 8, mb: 4}}/>
             </Container>
         </>
     );

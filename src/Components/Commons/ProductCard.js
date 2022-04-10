@@ -29,7 +29,7 @@ const ProductCard = (props) => {
                 onMouseLeave={() => setVariant("outlined")}
                 onClick={() => navigate(`/product/${props.product.id}`)}
                 variant={variant}
-                elevation={7}
+                elevation={variant === "elevation" ? 7 : undefined}
             >
                 <Stack
                     component="div"

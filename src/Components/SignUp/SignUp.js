@@ -1,4 +1,4 @@
-import {Alert, Avatar, Box, Container, CssBaseline, Grid, Link, Stack, TextField, Typography} from "@mui/material"
+import {Alert, Avatar, Box, Container, CssBaseline, Grid, Stack, TextField, Typography} from "@mui/material"
 import {ThemeProvider} from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import CloseIcon from '@mui/icons-material/Close';
@@ -134,7 +134,7 @@ const SignUp = () => {
 
                     // set alert
                     setSeverity("success");
-                    setMessage({message: "You have successfully registered. You will be redirected to Login page shortly."});
+                    setMessage("You have successfully registered. You will be redirected to Login page shortly.");
                     setOpen(true);
                     setSignInUp(false);
 
@@ -154,11 +154,11 @@ const SignUp = () => {
                     setSignInUp(false);
 
                     // Set error message
-                    let err = {message: error.response ? error.response.data.message : "An error has occured"}
+                    let err = error.response ? error.response.data.message : "An error has occured";
 
                     // Set Alert
                     setSeverity("error");
-                    setMessage(err.message);
+                    setMessage(err);
                     setOpen(true);
                 });
         }
@@ -206,7 +206,7 @@ const SignUp = () => {
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" onSubmit={submitHandler} sx={{mt: 3}}>
+                    <Box component="form" onSubmit={submitHandler} sx={{my: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -220,7 +220,7 @@ const SignUp = () => {
                                         setFirstName(event.target.value);
                                         validateFirstName(event.target.value);
                                     }}
-                                    error={firstNameHelperText}
+                                    error={!!firstNameHelperText}
                                     helperText={firstNameHelperText}
                                 />
                             </Grid>
@@ -235,7 +235,7 @@ const SignUp = () => {
                                     label="Last Name"
                                     name="lastName"
                                     value={lastName}
-                                    error={lastNameHelperText}
+                                    error={!!lastNameHelperText}
                                     helperText={lastNameHelperText}
                                 />
                             </Grid>
@@ -250,7 +250,7 @@ const SignUp = () => {
                                     label="Email Address"
                                     name="email"
                                     value={email}
-                                    error={emailHelperText}
+                                    error={!!emailHelperText}
                                     helperText={emailHelperText}
                                 />
                             </Grid>
@@ -266,7 +266,7 @@ const SignUp = () => {
                                     type="password"
                                     id="password"
                                     value={password}
-                                    error={passwordHelperText}
+                                    error={!!passwordHelperText}
                                     helperText={passwordHelperText}
                                 />
                             </Grid>
@@ -282,14 +282,13 @@ const SignUp = () => {
                                     type="password"
                                     id="confirmPassword"
                                     value={confirmPassword}
-                                    error={confirmPasswordHelperText}
+                                    error={!!confirmPasswordHelperText}
                                     helperText={confirmPasswordHelperText}
                                 />
                             </Grid>
                         </Grid>
                         <LoadingButton
                             loading={signInUp}
-                            loadingPosition="start"
                             type="submit"
                             fullWidth
                             variant="contained"
@@ -300,10 +299,10 @@ const SignUp = () => {
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <RouterLink
-                                    to={`/login${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}>
-                                    <Link variant="body2">
-                                        Already have an account? Sign in
-                                    </Link>
+                                    to={`/login${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}
+                                    style={{color: theme.palette.primary.main}}
+                                >
+                                    Already have an account? Sign in
                                 </RouterLink>
                             </Grid>
                         </Grid>

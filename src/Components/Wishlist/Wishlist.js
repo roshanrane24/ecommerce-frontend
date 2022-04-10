@@ -57,10 +57,8 @@ const Wishlist = () => {
                             }}
                         >
                             {
-                                wishlistItems.length > 0 ? (wishlistItems.map((product) =>
-                                    <Box width='100%' sx={{
-                                        px: 2
-                                    }}>
+                                wishlistItems.length > 0 ? (wishlistItems.map((product, idx) =>
+                                    <Box width='100%' sx={{px: 2}} key={idx}>
                                         <ProductListCard product={product} wishlist/>
                                     </Box>
                                 )) : ("Wishlist is empty")

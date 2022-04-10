@@ -93,8 +93,8 @@ const Search = () => {
                     {
                         products &&
                         products.map((product, idx) =>
-                            <Grid item sm={2.4}>
-                                <ProductCard key={idx} product={product}/>
+                            <Grid item sm={2.4} key={idx}>
+                                <ProductCard product={product}/>
                             </Grid>
                         )}
                 </Grid>
@@ -108,8 +108,8 @@ const Search = () => {
                 }}
             >
                 <Pagination
-                    count={search.total.get}
-                    page={search.page.get}
+                    count={search.total.get ? search.total.get : 1}
+                    page={search.page.get ? search.page.get : 1}
                     onChange={(event, value) => {
                         search.page.set(value);
                         search.params.set({

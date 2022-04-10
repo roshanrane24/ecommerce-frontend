@@ -310,6 +310,7 @@ const ProductPage = () => {
                             <TextField
                                 label='Qty'
                                 select
+                                disabled={productDetails.stock < 1}
                                 size="small"
                                 fullWidth
                                 value={quantity}
@@ -318,8 +319,8 @@ const ProductPage = () => {
                                 }}
                             >
                                 {
-                                    [...Array(productDetails.stock > 10 ? 10 : productDetails.stock).keys()].map((numb) => {
-                                        return <MenuItem value={numb + 1}>{numb + 1}</MenuItem>
+                                    [...Array(productDetails.stock > 10 ? 10 : productDetails.stock > 0 ? productDetails.stock : 1).keys()].map((numb, idx) => {
+                                        return <MenuItem key={idx} value={numb + 1}>{numb + 1}</MenuItem>
                                     })
                                 }
                             </TextField>
@@ -373,7 +374,6 @@ const ProductPage = () => {
                                     endIcon={<AddShoppingCartIcon/>}
                                     onClick={addToCart}
                                     loading={cartButtonState}
-                                    loadingPosition={"start"}
                                     disabled={buyButtonState}
                                 >
                                     Add to Cart
@@ -388,9 +388,7 @@ const ProductPage = () => {
                         </ThemeProvider>
                         <Typography variant="subtitle1" sx={{fontWeight: "bold"}} gutterBottom>Description</Typography>
                         <Typography variant="body2" gutterBottom sx={{mb: 5}}>
-                            <p>
-                                {Object.values(productDetails.description)}
-                            </p>
+                            <> {Object.values(productDetails.description)} </>
                         </Typography>
                         <TableContainer component={Paper}>
                             <Table aria-label="simple table">
