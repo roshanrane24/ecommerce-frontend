@@ -1,17 +1,4 @@
-import {
-    Alert,
-    AlertTitle,
-    Avatar,
-    Box,
-    Collapse,
-    Container,
-    CssBaseline,
-    Grid,
-    Link,
-    Stack,
-    TextField,
-    Typography
-} from "@mui/material"
+import {Alert, Avatar, Box, Container, CssBaseline, Grid, Link, Stack, TextField, Typography} from "@mui/material"
 import {ThemeProvider} from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import CloseIcon from '@mui/icons-material/Close';
@@ -22,6 +9,7 @@ import {Link as RouterLink, useNavigate, useSearchParams} from "react-router-dom
 import useTheme from "@mui/material/styles/useTheme";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Copyright from "../Commons/Copyright";
+import Snackbar from "@mui/material/Snackbar";
 
 const SignUp = () => {
     // Theme context object
@@ -38,9 +26,9 @@ const SignUp = () => {
     const [passwordHelperText, setPasswordHelperText] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [confirmPasswordHelperText, setConfirmPasswordHelperText] = useState('');
-    const [alertData, setAlertData] = useState(null);
-    const [alert, setAlert] = useState(false);
-    const [alertSeverity, setAlertSeverity] = useState("info");
+    const [message, setMessage] = useState("");
+    const [open, setOpen] = useState(false);
+    const [severity, setSeverity] = useState("info");
     const [signInUp, setSignInUp] = useState(false);
     const [searchParams,] = useSearchParams();
     const navigate = useNavigate();
@@ -133,7 +121,7 @@ const SignUp = () => {
         if (validateFirstName(data.firstname) && validatLastName(data.lastname) && validateEmail(data.email) && validatePassword(data.password) && validateConfirmPassword(data.confirmPassword)) {
             // animations
             setSignInUp(true);
-            setAlertData(null)
+            setMessage("");
 
             AuthService.register(data)
                 .then(() => {
@@ -145,9 +133,9 @@ const SignUp = () => {
                     setConfirmPassword('');
 
                     // set alert
-                    setAlertSeverity("success");
-                    setAlertData({ message: "You have successfully registered. You will be redirected to Login page shortly." });
-                    setAlert(true);
+                    setSeverity("success");
+                    setMessage({message: "You have successfully registered. You will be redirected to Login page shortly."});
+                    setOpen(true);
                     setSignInUp(false);
 
                     // Redirection
@@ -166,49 +154,44 @@ const SignUp = () => {
                     setSignInUp(false);
 
                     // Set error message
-                    let err = { message: error.response.data.message }
+                    let err = {message: error.response ? error.response.data.message : "An error has occured"}
 
                     // Set Alert
-                    setAlertSeverity("error");
-                    setAlertData(err);
-                    setAlert(true);
+                    setSeverity("error");
+                    setMessage(err.message);
+                    setOpen(true);
                 });
         }
     }
 
+    // Snackbar
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway')
+            return;
+
+        setOpen(false);
+        setSeverity("info");
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <Stack direction="row"
-                sx={{
-                    justifyContent: 'flex-end;',
-                    flexGrow: 1,
-                }}
+                   sx={{
+                       justifyContent: 'flex-end;',
+                       flexGrow: 1,
+                   }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Collapse in={alert} sx={{ mb: -6 }}>
-                    <Alert
-                        severity={alertSeverity}
-                        action={
-                            <IconButton
-                                aria-label="close"
-                                color="inherit"
-                                size="small"
-                                onClick={() => setAlert(false)}
-                            >
-                                <CloseIcon fontSize="inherit" />
-                            </IconButton>
-                        }
-                        sx={{ mb: 2 }}
-                    >
-                        <AlertTitle sx={{ textTransform: 'capitalize' }}>{alertData && alertSeverity}</AlertTitle>
-                        {alertData && alertData.message}
+                <CssBaseline/>
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity={severity} sx={{width: '100%'}}>
+                        {message}
                     </Alert>
-                </Collapse>
+                </Snackbar>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -217,13 +200,13 @@ const SignUp = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" onSubmit={submitHandler} sx={{ mt: 3 }}>
+                    <Box component="form" onSubmit={submitHandler} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -310,7 +293,7 @@ const SignUp = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign Up
                         </LoadingButton>

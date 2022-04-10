@@ -18,8 +18,7 @@ import Copyright from "../Commons/Copyright";
 import CloseIcon from '@mui/icons-material/Close';
 import AuthService from "../../api/AuthService";
 import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
-import Collapse from "@mui/material/Collapse";
+import Snackbar from "@mui/material/Snackbar";
 
 
 const Login = () => {
@@ -29,9 +28,9 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [passwordHelperText, setPasswordHelperText] = useState("");
     const [loginIn, setLoginIn] = useState(false);
-    const [alertData, setAlertData] = useState(null);
-    const [alert, setAlert] = useState(false);
-    const [alertSeverity, setAlertSeverity] = useState("info");
+    const [message, setMessage] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [severity, setSeverity] = useState("info");
     const [searchParams,] = useSearchParams();
 
     // Navigation
@@ -53,15 +52,15 @@ const Login = () => {
 
             // animations
             setLoginIn(true);
-            setAlertData(null)
 
             // Login Request
             AuthService.login(data)
                 .then(() => {
                     // Show Alert
-                    setAlertSeverity("success");
-                    setAlertData({ message: "You have successfully logged in." });
-                    // setAlert(true);
+                    setSeverity("success");
+                    setMessage("You have successfully logged in.");
+                    setOpen(true);
+
                     setLoginIn(false);
 
                     // Redirection
@@ -80,7 +79,7 @@ const Login = () => {
                     setLoginIn(false);
 
                     // Set error message
-                    let err = { statusCode: error.response.status }
+                    let err = {statusCode: error.response.status}
 
                     if (err.statusCode === 401)
                         err.message = "The username or password is incorrect.";
@@ -88,9 +87,9 @@ const Login = () => {
                         err.message = "Error has occured while Login";
 
                     // Set Alert
-                    setAlertSeverity("error");
-                    setAlertData(err);
-                    setAlert(true);
+                    setSeverity("error");
+                    setMessage(err.message);
+                    setOpen(true);
                 });
         }
     };
@@ -126,39 +125,35 @@ const Login = () => {
         return true;
     }
 
+    // Snackbar
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway')
+            return;
+
+        setOpen(false);
+        setSeverity("info");
+    };
+
+
     return (
         <>
             <Stack direction="row"
-                sx={{
-                    justifyContent: 'flex-end;',
-                    flexGrow: 1,
-                }}
+                   sx={{
+                       justifyContent: 'flex-end;',
+                       flexGrow: 1,
+                   }}
             >
                 <IconButton onClick={() => navigate('/')}>
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
             </Stack>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Collapse in={alert} sx={{ mb: -6 }}>
-                    <Alert
-                        severity={alertSeverity}
-                        action={
-                            <IconButton
-                                aria-label="close"
-                                color="inherit"
-                                size="small"
-                                onClick={() => setAlert(false)}
-                            >
-                                <CloseIcon fontSize="inherit" />
-                            </IconButton>
-                        }
-                        sx={{ mb: 2 }}
-                    >
-                        <AlertTitle sx={{ textTransform: 'capitalize' }}>{alertData && alertSeverity}</AlertTitle>
-                        {alertData && alertData.message}
+                <CssBaseline/>
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity={severity} sx={{width: '100%'}}>
+                        {message}
                     </Alert>
-                </Collapse>
+                </Snackbar>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -167,8 +162,8 @@ const Login = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
