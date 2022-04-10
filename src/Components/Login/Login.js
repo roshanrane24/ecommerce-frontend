@@ -61,7 +61,7 @@ const Login = () => {
                     // Show Alert
                     setAlertSeverity("success");
                     setAlertData({ message: "You have successfully logged in." });
-                    setAlert(true);
+                    // setAlert(true);
                     setLoginIn(false);
 
                     // Redirection

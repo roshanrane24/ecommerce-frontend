@@ -44,7 +44,7 @@ const Orders = () => {
                     {message}
                 </Alert>
             </Snackbar>
-            <Typography variant="h4" gutterBottom>My Orders</Typography>
+            <Typography variant="h5" gutterBottom>My Orders</Typography>
             <Divider sx={{mb: 1}}/>
             {
                 loading ? (

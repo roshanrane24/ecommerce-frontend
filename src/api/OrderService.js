@@ -19,7 +19,6 @@ class OrderService {
 
     // Update status of payment
     updatePaymentDetail({transactionId, razorpayOrderId, paid}) {
-        console.log({transactionId, razorpayOrderId, paid})
         return client.post('/orders/transaction-handler',
             {transactionId, razorpayOrderId, paid},
             {headers: authHeader()})

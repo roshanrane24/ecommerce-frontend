@@ -21,6 +21,8 @@ import PaymentWindow from "./PaymentWindow";
 import Copyright from "../Commons/Copyright";
 import OrderStatus from "./OrderStatus";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 // TODO Try completed payment status step
 const steps = ['Select Address', 'Review your order', "Process Payment", "Order Status"];
@@ -42,6 +44,9 @@ export default function Checkout() {
     const [paymentStatus, setPaymentStatus] = useState(<div/>);
     const [isLoading, setIsLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(true);
+    const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("info");
+    const [open, setOpen] = useState(false);
 
     // Cleaning
     const cleanCheckout = () => {
@@ -55,7 +60,7 @@ export default function Checkout() {
         // disable button
         checkout.checked.set(true);
 
-        // Update payement details
+        // Update payment details
         OrderService.updatePaymentDetail({
             transactionId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
@@ -72,7 +77,6 @@ export default function Checkout() {
                 setPaymentStatus(<OrderStatus success={newResponse}/>);
             })
             .catch(error => {
-                console.log(error.response)
                 setActiveStep(3);
                 setPaymentStatus(<OrderStatus awaiting={response}/>);
             });
@@ -146,9 +150,10 @@ export default function Checkout() {
                 setIsLoading(false);
             })
             .catch(error => {
-                console.log(error)
-                console.log(error.response);
-                setActiveStep(3);
+                // Show Error
+                setSeverity('error');
+                setMessage(error.response.data);
+                setOpen(true);
 
                 //stop animation
                 setIsLoading(false);
@@ -164,7 +169,9 @@ export default function Checkout() {
             case 0:
                 if (activeStep === 0 && checkout.address.get === {}) {
                     // TODO Add Alert
-                    console.log("Please Select Address");
+                    setSeverity('error');
+                    setMessage("Please Select Address");
+                    setOpen(true);
                 } else
                     setActiveStep(1);
 
@@ -209,10 +216,23 @@ export default function Checkout() {
         }
     }, []);
 
+    // Snackbar
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway')
+            return;
+
+        setOpen(false);
+        setSeverity("info");
+    };
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline/>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={severity} sx={{width: '100%'}}>
+                    {message}
+                </Alert>
+            </Snackbar>
             <Container component="main" maxWidth="md" sx={{mb: 4}}>
                 <Paper variant="outlined" sx={{my: {xs: 3, md: 6}, p: {xs: 2, md: 3}}}>
                     <Typography component="h1" variant="h4" align="center">
