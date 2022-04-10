@@ -32,7 +32,6 @@ const Header = () => {
                                 sx={{
                                     justifyContent: 'center',
                                     alignItems: 'end',
-                                    mr: 5
                                 }}
                             >
                                 <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
@@ -59,7 +58,6 @@ const Header = () => {
                             >
                                 <SearchBox/>
                             </Stack>
-
                             <Stack direction='row' spacing={3}>
                                 {/*Right Side Buttons*/}
                                 <Button

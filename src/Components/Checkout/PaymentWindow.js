@@ -62,6 +62,14 @@ const PaymentWindow = ({orderId, handlers}) => {
         checkout.total.set(0);
     }, []);
 
+    useEffect(() => {
+        // Display window event
+        setReload(Date.now());
+
+        // clear total price
+        checkout.total.set(0);
+    }, []);
+
     useEffect(async () => {
         // User Details
         const user = await AuthService.getUserDetails();
