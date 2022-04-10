@@ -21,6 +21,7 @@ const Cart = () => {
         const [cartItems, setCartItems] = useState([]);
         const [loading, setLoading] = useState(true);
         const [loadingCheckout, setLoadingCheckout] = useState(false);
+    const [canCheckout, setCanCheckout] = useState(true);
 
         // Context
         const checkout = useContext(CheckOutContext);
@@ -61,7 +62,7 @@ const Cart = () => {
             }
         }
 
-// Init
+    // Init
         useEffect(() => {
             CartService.getShoppingCart()
                 .then(cart => {
@@ -74,8 +75,11 @@ const Cart = () => {
                 });
         }, []);
 
-// Recalculate subtotal
         useEffect(async () => {
+            // Checkout availability
+            setCanCheckout(true);
+
+            // Recalculate subtotal
             let subtotal = 0;
 
             await cartItems.forEach((item) => {
@@ -83,35 +87,42 @@ const Cart = () => {
             });
 
             checkout.total.set(subtotal)
+
         }, [cartItems]);
 
-// To pass handler methods to child
-        const handlers = {removeCartItem, changeQuantity}
+    // To pass handler methods to child
+    const handlers = {removeCartItem, changeQuantity, setCanCheckout}
 
-        return (
-            <Container sx={{mt: 1}}>
-                <Grid container>
-                    <Grid item sm={9}>
-                        <Typography
-                            variant="h5"
-                            gutterBottom
-                            sx={{
-                                textTransform: 'capitalize'
-                            }}
-                        >
-                            {AuthService.getUserDetails().firstname}'s Cart
-                        </Typography>
-                        <Divider sx={{mb: 1}}/>
+    return (
+        <Container sx={{mt: 1}}>
+            <Grid container>
+                <Grid item sm={9}>
+                    <Typography
+                        variant="h5"
+                        gutterBottom
+                        sx={{
+                            textTransform: 'capitalize'
+                        }}
+                    >
                         {
-                            loading ? (
-                                <Stack
-                                    direction="row"
-                                    sx={{
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        flexGrow: 1
-                                    }}
-                                >
+                            AuthService.getUserDetails() ? (
+                                <>{AuthService.getUserDetails().firstname}'s Cart</>
+                            ) : (
+                                <>Your Cart</>
+                            )
+                        }
+                    </Typography>
+                    <Divider sx={{mb: 1}}/>
+                    {
+                        loading ? (
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexGrow: 1
+                                }}
+                            >
                                     <CircularProgress/>
                                 </Stack>
                             ) : cartItems.length > 0 ? (
@@ -218,6 +229,7 @@ const Cart = () => {
                                     <LoadingButton
                                         loading={loadingCheckout}
                                         size="small"
+                                        disabled={!canCheckout}
                                         variant="contained"
                                         endIcon={<ShoppingCartIcon/>}
                                         onClick={proceedToCheckout}

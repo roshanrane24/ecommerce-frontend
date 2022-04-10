@@ -124,40 +124,34 @@ const ProductPage = () => {
 
     // Cart Handlers
     const addToCart = () => {
-        // Validate User
-        if (AuthService.getUserDetails()) {
-            // Disable Button
-            setCartButtonState(true);
+        // Disable Button
+        setCartButtonState(true);
 
-            // Set Qauntity to 1
-            productDetails.quantity = quantity;
+        // Set Qauntity to 1
+        productDetails.quantity = quantity;
 
-            // Add product to cart
-            CartService.addToCart(productDetails)
-                .then(response => {
-                    // show success alert
-                    setCartAlertSeverity("success");
-                    setCartAlert(response.data ? response.data.message : "Successfully added product to cart.");
-                    setTimeout(() => setCartAlert(""), 10000);
+        // Add product to cart
+        CartService.addToCart(productDetails)
+            .then(response => {
+                // show success alert
+                setCartAlertSeverity("success");
+                setCartAlert(response.data ? response.data.message : "Successfully added product to cart.");
+                setTimeout(() => setCartAlert(""), 10000);
 
-                    // Enable Button
-                    setCartButtonState(false);
-                })
-                .catch((error) => {
-                    // show failed alert
-                    console.log(error);
-                    console.log(error.response);
-                    setCartAlertSeverity("error");
-                    setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
-                    setTimeout(() => setCartAlert(""), 10000);
+                // Enable Button
+                setCartButtonState(false);
+            })
+            .catch((error) => {
+                // show failed alert
+                console.log(error);
+                console.log(error.response);
+                setCartAlertSeverity("error");
+                setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
+                setTimeout(() => setCartAlert(""), 10000);
 
-                    // Enable Button
-                    setCartButtonState(false);
-                });
-        } else {
-            // User Login Page
-            navigate(`/login?ref=${location.pathname}`)
-        }
+                // Enable Button
+                setCartButtonState(false);
+            });
     }
 
     // load wish state on init
@@ -380,6 +374,7 @@ const ProductPage = () => {
                                     onClick={addToCart}
                                     loading={cartButtonState}
                                     loadingPosition={"start"}
+                                    disabled={buyButtonState}
                                 >
                                     Add to Cart
                                 </LoadingButton>

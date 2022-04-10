@@ -18,6 +18,20 @@ class AuthService {
                         localStorage.setItem('wishlist', JSON.stringify(wishlist.map(item => item.id)));
                     });
 
+                    // Check local cart
+                    let tcart = localStorage.getItem('tcart');
+                    tcart = tcart ? JSON.parse(tcart) : null;
+
+                    // Add to user's cart
+                    if (tcart) {
+                        tcart.forEach(item => {
+                            CartService.addToCart(item);
+                        });
+
+                        // remove local cart
+                        localStorage.removeItem('tcart');
+                    }
+
                     // fetch cart
                     CartService.getShoppingCart().then(cart => {
                         localStorage.setItem('cart', JSON.stringify([...cart]));
