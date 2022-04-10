@@ -170,7 +170,6 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
             <Stack
                 component={Paper}
                 direction="row"
-                variant={outlined ? "outlined" : "elevated"}
                 sx={{p: 1}}
             >
                 <Snackbar open={openBar} autoHideDuration={6000} onClose={handleClose}>

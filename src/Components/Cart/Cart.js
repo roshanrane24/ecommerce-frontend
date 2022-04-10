@@ -92,7 +92,13 @@ const Cart = () => {
             <Container sx={{mt: 1}}>
                 <Grid container>
                     <Grid item sm={9}>
-                        <Typography variant="h5" gutterBottom>
+                        <Typography
+                            variant="h5"
+                            gutterBottom
+                            sx={{
+                                textTransform: 'capitalize'
+                            }}
+                        >
                             {AuthService.getUserDetails().firstname}'s Cart
                         </Typography>
                         <Divider sx={{mb: 1}}/>
