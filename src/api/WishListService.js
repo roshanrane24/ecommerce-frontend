@@ -46,7 +46,7 @@ class WishListService {
     }
 
     // remove from wishlist
-    removeToWishList(product_id) {
+    removeFromWishList(product_id) {
         return client.delete('/wish-list/remove', {
             headers: authHeader(),
             data: {

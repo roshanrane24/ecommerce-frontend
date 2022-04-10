@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import {KeyboardArrowDown} from "@mui/icons-material";
@@ -8,10 +8,14 @@ import {useNavigate} from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import client from "../../api/HttpClient";
+import {SearchContext} from "../../Context/SearchContext";
 
 const CategoryCard = (props) => {
     // Navigation Hooks
     const navigate = useNavigate();
+
+    // Context
+    const search = useContext(SearchContext);
 
     // Menu States
     const [anchorEl, setAnchorEl] = useState(null);
@@ -33,7 +37,12 @@ const CategoryCard = (props) => {
             >
                 <Stack
                     direction="row"
-                    onClick={() => navigate(`/search?category=${props.category.categoryName.toLowerCase()}`)}
+                    onClick={() => {
+                        search.by.set('category');
+                        search.keyword.set(props.category.categoryName);
+                        search.page.set(1);
+                        navigate(`/search?category=${props.category.categoryName.toLowerCase()}&page=1`);
+                    }}
                     sx={{
                         p: 1,
                         justifyContent: "center",
@@ -83,8 +92,10 @@ const CategoryCard = (props) => {
                         return <MenuItem
                             key={idx}
                             onClick={() => {
-                                navigate(`/search?category=${props.category.categoryName.toLowerCase()}`
-                                    + `&subcategory=${subCategory.toLowerCase()}`)
+                                search.by.set('subcategory');
+                                search.keyword.set(subCategory);
+                                search.page.set(1);
+                                navigate(`/search?subcategory=${subCategory.toLowerCase()}&page=1`)
                             }}>
                             {subCategory}
                         </MenuItem>

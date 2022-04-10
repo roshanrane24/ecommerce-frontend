@@ -23,17 +23,15 @@ const Header = () => {
                 flexDirection: 'column',
                 minHeight: '100vh',
             }}>
-                <Box component="header" sx={{mb: 8}}>
+                <Box component="header" sx={{mb: 9.5}}>
                     <AppBar position={"fixed"}>
                         <Toolbar>
                             {/*Logo with Home button*/}
                             <Stack
                                 direction="row"
                                 sx={{
-                                    justifyContent: 'flex-end',
+                                    justifyContent: 'center',
                                     alignItems: 'end',
-                                    flexGrow: 1,
-                                    mr: 5
                                 }}
                             >
                                 <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
@@ -44,18 +42,23 @@ const Header = () => {
                                         sx={{
                                             width: 'auto',
                                             objectFit: 'scale-down',
-                                            height: 64
+                                            height: 72
                                         }}
                                     />
                                 </Button>
                             </Stack>
 
                             {/*Search Box*/}
-                            {/*<Box sx={{flexGrow: 1}}/>*/}
-                            <SearchBox/>
-                            <Box sx={{flexGrow: 1}}/>
-
-                            <Stack direction='row' spacing={2}>
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    flexGrow: 1,
+                                    px: 10
+                                }}
+                            >
+                                <SearchBox/>
+                            </Stack>
+                            <Stack direction='row' spacing={3}>
                                 {/*Right Side Buttons*/}
                                 <Button
                                     size="medium"

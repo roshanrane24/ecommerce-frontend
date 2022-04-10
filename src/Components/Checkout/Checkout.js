@@ -21,6 +21,12 @@ import PaymentWindow from "./PaymentWindow";
 import Copyright from "../Commons/Copyright";
 import OrderStatus from "./OrderStatus";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import client from "../../api/HttpClient";
+import Avatar from "@mui/material/Avatar";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Divider from "@mui/material/Divider";
 
 // TODO Try completed payment status step
 const steps = ['Select Address', 'Review your order', "Process Payment", "Order Status"];
@@ -42,6 +48,9 @@ export default function Checkout() {
     const [paymentStatus, setPaymentStatus] = useState(<div/>);
     const [isLoading, setIsLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(true);
+    const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("info");
+    const [open, setOpen] = useState(false);
 
     // Cleaning
     const cleanCheckout = () => {
@@ -55,7 +64,7 @@ export default function Checkout() {
         // disable button
         checkout.checked.set(true);
 
-        // Update payement details
+        // Update payment details
         OrderService.updatePaymentDetail({
             transactionId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
@@ -71,8 +80,7 @@ export default function Checkout() {
                 setActiveStep(3);
                 setPaymentStatus(<OrderStatus success={newResponse}/>);
             })
-            .catch(error => {
-                console.log(error.response)
+            .catch(() => {
                 setActiveStep(3);
                 setPaymentStatus(<OrderStatus awaiting={response}/>);
             });
@@ -139,13 +147,17 @@ export default function Checkout() {
                 // Switch to payment step
                 setActiveStep(2);
 
+                if (sessionStorage.getItem('co') === "cart")
+                    localStorage.removeItem('cart');
+
                 //stop animation
                 setIsLoading(false);
             })
             .catch(error => {
-                console.log(error)
-                console.log(error.response);
-                setActiveStep(3);
+                // Show Error
+                setSeverity('error');
+                setMessage(error.response.data);
+                setOpen(true);
 
                 //stop animation
                 setIsLoading(false);
@@ -161,7 +173,9 @@ export default function Checkout() {
             case 0:
                 if (activeStep === 0 && checkout.address.get === {}) {
                     // TODO Add Alert
-                    console.log("Please Select Address");
+                    setSeverity('error');
+                    setMessage("Please Select Address");
+                    setOpen(true);
                 } else
                     setActiveStep(1);
 
@@ -183,7 +197,7 @@ export default function Checkout() {
     const handleCancel = () => {
         if (sessionStorage.getItem('co') === 'cart') {
             // if tried checking out from cart
-            navigate('/user/cart');
+            navigate('/cart');
             sessionStorage.removeItem('co');
         } else if (sessionStorage.getItem('co') === null) {
             // unauthorized
@@ -206,15 +220,51 @@ export default function Checkout() {
         }
     }, []);
 
+    // Snackbar
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway')
+            return;
+
+        setOpen(false);
+        setSeverity("info");
+    };
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline/>
-            <Container component="main" maxWidth="md" sx={{mb: 4}}>
-                <Paper variant="outlined" sx={{my: {xs: 3, md: 6}, p: {xs: 2, md: 3}}}>
-                    <Typography component="h1" variant="h4" align="center">
-                        Checkout
-                    </Typography>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={severity} sx={{width: '100%'}}>
+                    {message}
+                </Alert>
+            </Snackbar>
+            <Container component="main" maxWidth="xl" sx={{mb: 1}}>
+                <Paper variant="outlined" sx={{my: {xs: 1, md: 3}, p: {xs: 2, md: 3}}}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexGrow: 1
+                        }}
+                    >
+                        <Box
+                            component="img"
+                            src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
+                            alt="Ezzy Buy Logo"
+                            sx={{
+                                width: 'auto',
+                                objectFit: 'scale-down',
+                                height: 72
+                            }}
+                        />
+                        <Typography component="h1" variant="h4" align="center">
+                            Checkout
+                        </Typography>
+                        <Avatar sx={{m: 1, bgcolor: 'primary.main'}}>
+                            <LockOutlinedIcon/>
+                        </Avatar>
+                    </Stack>
+                    <Divider sx={{my: 1}}/>
                     <Stepper activeStep={activeStep} sx={{pt: 3, pb: 5}}>
                         {steps.map((label) => (
                             <Step key={label}>

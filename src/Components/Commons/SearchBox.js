@@ -1,31 +1,43 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {Search} from "@mui/icons-material";
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
+import {SearchContext} from "../../Context/SearchContext";
 
 const SearchBox = (props) => {
+    // Context
+    const search = useContext(SearchContext);
+
     // Hooks
     const [searchText, setSearchText] = useState("");
     const location = useLocation();
     const navigate = useNavigate();
-    const [params, setParams] = useSearchParams();
 
     // Search Field Handler
     const searchTextHandler = (event) => {
-        console.log(event)
         setSearchText(event.target.value);
     }
 
     const searchHandler = () => {
         // Only When Query text in Box
         if (searchText.length > 0) {
-            if (!(location.pathname === 'search'))
+            if (!(location.pathname === 'search')) {
                 // navigate to search
-                navigate(`search?query=${searchText}`);
-            else
+                navigate(`search?query=${searchText}&page=1`);
+                search.by.set("query");
+                search.page.set(1);
+                search.keyword.set(searchText);
+            } else {
                 // change Query
-                setParams({'query': searchText})
+                search.params.set({
+                    'query': searchText,
+                    page: 1
+                })
+                search.by.set("query");
+                search.page.set(1);
+                search.keyword.set(searchText);
+            }
         }
     }
 
@@ -44,7 +56,6 @@ const SearchBox = (props) => {
                     paddingInline: 1,
                     marginLeft: 1,
                     minWidth: 200,
-                    maxWidth: 500
                 }}
                 onKeyUp={(event) => {
                     if (event.key === "Enter")

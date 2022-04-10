@@ -1,59 +1,86 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ProductListCard from "../Commons/ProductListCard";
 import WishListService from "../../api/WishListService";
-import { Stack, Box, Typography, Divider } from '@mui/material';
-
+import {Box, Stack} from '@mui/material';
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import {Link} from "react-router-dom";
 
 const Wishlist = () => {
+    // States
+    const [wishlistItems, setWishlistItems] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const [cartItems, setCartItems] = useState([]);
-
+    // Init
     useEffect(() => {
         WishListService.getWishList()
-            .then(cart => {
-                setCartItems(cart);
-                console.log(cart)
+            .then(wishlist => {
+                setLoading(false);
+                setWishlistItems(wishlist);
             })
-            .catch(error => console.log(error))
+            .catch(() => {
+                setLoading(false);
+            });
     }, []);
+
     return (
         <>
-            {/* <Stack sx={{
-                mt: 2,
-                justifyContent: 'center',
+            {
+                loading ? (
+                    <Stack
+                        direction="row"
+                        sx={{
+                            p: 1,
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            flexGrow: 1
+                        }}
+                    >
+                        <CircularProgress/>
+                    </Stack>
+                ) : wishlistItems.length > 0 ? (
+                    <Stack
+                        sx={{
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            px: 30,
+                            pt: 2,
+                            flexGrow: 1
 
-            }}>
-                <Typography variant='h4' sx={{ textAlign: 'center' }} gutterBottom>Wishlist</Typography>
-                <Divider />
-            </Stack> */}
+                        }} spacing={5}
+                        direction='row'>
+                        <Stack
+                            spacing={2}
+                            sx={{
+                                alignItems: 'center',
+                                justifyContent: 'center', flexGrow: 1
+                            }}
+                        >
+                            {
+                                wishlistItems.length > 0 ? (wishlistItems.map((product, idx) =>
+                                    <Box width='100%' sx={{px: 2}} key={idx}>
+                                        <ProductListCard product={product} wishlist/>
+                                    </Box>
+                                )) : ("Wishlist is empty")
 
-            <Stack
-                sx={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'center',
-                    px: 30,
-                    pt: 2,
-                    flexGrow: 1
-
-                }} spacing={5}
-                direction='row' >
-                <Stack spacing={2}
-                    sx={{
-                        alignItems: 'center',
-                        justifyContent: 'center', flexGrow: 1
-                    }}>
-                    {
-                        cartItems.length > 0 ? (cartItems.map((product) =>
-                            <Box width='100%' sx={{
-                                px: 2
-                            }}>
-                                <ProductListCard product={product} wishlist />
-                            </Box>
-                        )) : ("Wishlist is empty")
-
-                    }
-                </Stack>
-            </Stack >
+                            }
+                        </Stack>
+                    </Stack>
+                ) : (
+                    <Stack
+                        direction="row"
+                        sx={{
+                            p: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center', flexGrow: 1
+                        }}
+                    >
+                        <Typography variant="h5">
+                            Your wishlist is empty. <Link to={'/'}>Continue Shopping</Link>
+                        </Typography>
+                    </Stack>
+                )
+            }
         </>
 
     );

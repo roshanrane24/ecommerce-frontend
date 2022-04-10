@@ -94,7 +94,7 @@ const ProductPage = () => {
 
             if (WishListService.productInWishlist(productDetails.id)) {
                 // Remove to wishlist
-                WishListService.removeToWishList(productDetails.id)
+                WishListService.removeFromWishList(productDetails.id)
                     .then(() => {
                         setWishlistIcon(<FavoriteBorder/>)
                         setWishlistButtonState(false);
@@ -124,40 +124,34 @@ const ProductPage = () => {
 
     // Cart Handlers
     const addToCart = () => {
-        // Validate User
-        if (AuthService.getUserDetails()) {
-            // Disable Button
-            setCartButtonState(true);
+        // Disable Button
+        setCartButtonState(true);
 
-            // Set Qauntity to 1
-            productDetails.quantity = quantity;
+        // Set Qauntity to 1
+        productDetails.quantity = quantity;
 
-            // Add product to cart
-            CartService.addToCart(productDetails)
-                .then(response => {
-                    // show success alert
-                    setCartAlertSeverity("success");
-                    setCartAlert(response.data ? response.data.message : "Successfully added product to cart.");
-                    setTimeout(() => setCartAlert(""), 10000);
+        // Add product to cart
+        CartService.addToCart(productDetails)
+            .then(response => {
+                // show success alert
+                setCartAlertSeverity("success");
+                setCartAlert(response.data ? response.data.message : "Successfully added product to cart.");
+                setTimeout(() => setCartAlert(""), 10000);
 
-                    // Enable Button
-                    setCartButtonState(false);
-                })
-                .catch((error) => {
-                    // show failed alert
-                    console.log(error);
-                    console.log(error.response);
-                    setCartAlertSeverity("error");
-                    setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
-                    setTimeout(() => setCartAlert(""), 10000);
+                // Enable Button
+                setCartButtonState(false);
+            })
+            .catch((error) => {
+                // show failed alert
+                console.log(error);
+                console.log(error.response);
+                setCartAlertSeverity("error");
+                setCartAlert(error.response.data ? error.response.data.message : "Failed to add item to cart.");
+                setTimeout(() => setCartAlert(""), 10000);
 
-                    // Enable Button
-                    setCartButtonState(false);
-                });
-        } else {
-            // User Login Page
-            navigate(`/login?ref=${location.pathname}`)
-        }
+                // Enable Button
+                setCartButtonState(false);
+            });
     }
 
     // load wish state on init
@@ -234,7 +228,7 @@ const ProductPage = () => {
                                     src={`${client.defaults.baseURL}/products/image/${productDetails.id}`}
                                     sx={{
                                         width: "100%",
-                                        height: 'auto',
+                                        height: '100%',
                                         objectFit: "scale-down"
                                     }}
                                 />
@@ -316,6 +310,7 @@ const ProductPage = () => {
                             <TextField
                                 label='Qty'
                                 select
+                                disabled={productDetails.stock < 1}
                                 size="small"
                                 fullWidth
                                 value={quantity}
@@ -324,8 +319,8 @@ const ProductPage = () => {
                                 }}
                             >
                                 {
-                                    [...Array(productDetails.stock > 10 ? 10 : productDetails.stock).keys()].map((numb) => {
-                                        return <MenuItem value={numb + 1}>{numb + 1}</MenuItem>
+                                    [...Array(productDetails.stock > 10 ? 10 : productDetails.stock > 0 ? productDetails.stock : 1).keys()].map((numb, idx) => {
+                                        return <MenuItem key={idx} value={numb + 1}>{numb + 1}</MenuItem>
                                     })
                                 }
                             </TextField>
@@ -363,7 +358,7 @@ const ProductPage = () => {
                                             // for failed redirection
                                             sessionStorage.setItem('co', productDetails.id);
 
-                                            // set contexr details & navigate
+                                            // set context details & navigate
                                             checkout.products.set([productDetails]);
                                             navigate(`/checkout`);
                                         } else {
@@ -379,7 +374,7 @@ const ProductPage = () => {
                                     endIcon={<AddShoppingCartIcon/>}
                                     onClick={addToCart}
                                     loading={cartButtonState}
-                                    loadingPosition={"start"}
+                                    disabled={buyButtonState}
                                 >
                                     Add to Cart
                                 </LoadingButton>
@@ -393,9 +388,7 @@ const ProductPage = () => {
                         </ThemeProvider>
                         <Typography variant="subtitle1" sx={{fontWeight: "bold"}} gutterBottom>Description</Typography>
                         <Typography variant="body2" gutterBottom sx={{mb: 5}}>
-                            <p>
-                                {Object.values(productDetails.description)}
-                            </p>
+                            <> {Object.values(productDetails.description)} </>
                         </Typography>
                         <TableContainer component={Paper}>
                             <Table aria-label="simple table">

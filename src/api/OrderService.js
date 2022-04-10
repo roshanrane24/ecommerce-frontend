@@ -19,7 +19,6 @@ class OrderService {
 
     // Update status of payment
     updatePaymentDetail({transactionId, razorpayOrderId, paid}) {
-        console.log({transactionId, razorpayOrderId, paid})
         return client.post('/orders/transaction-handler',
             {transactionId, razorpayOrderId, paid},
             {headers: authHeader()})
@@ -34,7 +33,7 @@ class OrderService {
 
     //Get order's Invoice
     getOrderInvoice({orderId}) {
-        return client.get(`/orders/invoice/${orderId}`, {header: authHeader(), responseType: 'blob'})
+        return client.get(`/orders/invoice/${orderId}`, {headers: authHeader(), responseType: 'blob'})
             .then(response => response.data)
     }
 }
