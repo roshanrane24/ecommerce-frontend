@@ -14,6 +14,10 @@ export default function Review() {
     const checkout = useContext(CheckOutContext);
 
     React.useEffect(() => {
+        // Already calculated total
+        if (checkout.total.get > 0) return;
+
+        // Calculate subtotal
         checkout.products.get.map(product => {
             checkout.total.set(prevPrice => prevPrice + (product.price * product.quantity));
         })

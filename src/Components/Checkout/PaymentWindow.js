@@ -69,7 +69,7 @@ const PaymentWindow = ({orderId, handlers}) => {
         // Options
         const options = {
             "key": "rzp_test_VVOzaRtoIXQGUP",
-            "amount": checkout.total.get * 100,
+            "amount": Math.round(checkout.total.get * 100),
             "currency": "INR",
             "name": "EZZY BUY",
             "description": "Please select your payment method.",
