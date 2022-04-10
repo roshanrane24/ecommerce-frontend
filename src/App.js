@@ -23,11 +23,17 @@ import SearchProvider from "./Context/SearchContext";
 const theme = createTheme({
     palette: {
         primary: {
-            main: "#03dac6"
+            main: "#03dac6",
+            light: "#66fff9",
+            dark: "#00a896",
+            contrastText: "#000000"
         },
-        // secondary: {
-        //     main: "#DA0318"
-        // },
+        secondary: {
+            main: "#64b5f6",
+            light: "#9be7ff",
+            dark: "#2286c3",
+            contrastText: "#000000"
+        },
         background: {
             default: grey[100]
         }

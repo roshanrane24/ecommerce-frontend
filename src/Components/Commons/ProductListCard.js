@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box, Paper, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -165,11 +165,20 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
         setSeverity("info");
     };
 
+    // Init
+    useEffect(() => {
+        // Whwn out of stock disable button
+        if (cart && !product.isStockAvailable)
+            handlers.setCanCheckout(false);
+    }, []);
+
+
     if (render) {
         return (
             <Stack
                 component={Paper}
                 direction="row"
+                variant={outlined ? "outlined" : undefined}
                 sx={{p: 1}}
             >
                 <Snackbar open={openBar} autoHideDuration={6000} onClose={handleClose}>
@@ -286,17 +295,20 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                                                 </IconButton>
                                             </Tooltip>
                                         </Stack>
+                                        <Tooltip title="Save Item in Wishlist">
+                                            <IconButton
+                                                disabled={saveDisabled}
+                                                sx={{ml: 2}}
+                                                onClick={saveForLater}
+                                            >
+                                                <Favorite fontSize="small"/>
+                                            </IconButton>
+                                        </Tooltip>
                                         {
-                                            cart &&
-                                            <Tooltip title="Save Item in Wishlist">
-                                                <IconButton
-                                                    disabled={saveDisabled}
-                                                    sx={{ml: 2}}
-                                                    onClick={saveForLater}
-                                                >
-                                                    <Favorite fontSize="small"/>
-                                                </IconButton>
-                                            </Tooltip>
+                                            !product.isStockAvailable &&
+                                            <Typography variant="body2" color="error">
+                                                Out of Stock
+                                            </Typography>
                                         }
                                     </Stack>
                                 </>
