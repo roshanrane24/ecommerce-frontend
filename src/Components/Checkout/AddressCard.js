@@ -10,7 +10,6 @@ const AddressCard = ({address, selectedAddress}) => {
         setSelected(address.id == selectedAddress)
     }, [selectedAddress]);
 
-
     return (
         <Card
             display='flex'

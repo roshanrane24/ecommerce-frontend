@@ -23,6 +23,10 @@ import OrderStatus from "./OrderStatus";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import client from "../../api/HttpClient";
+import Avatar from "@mui/material/Avatar";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Divider from "@mui/material/Divider";
 
 // TODO Try completed payment status step
 const steps = ['Select Address', 'Review your order', "Process Payment", "Order Status"];
@@ -76,7 +80,7 @@ export default function Checkout() {
                 setActiveStep(3);
                 setPaymentStatus(<OrderStatus success={newResponse}/>);
             })
-            .catch(error => {
+            .catch(() => {
                 setActiveStep(3);
                 setPaymentStatus(<OrderStatus awaiting={response}/>);
             });
@@ -233,11 +237,34 @@ export default function Checkout() {
                     {message}
                 </Alert>
             </Snackbar>
-            <Container component="main" maxWidth="md" sx={{mb: 4}}>
-                <Paper variant="outlined" sx={{my: {xs: 3, md: 6}, p: {xs: 2, md: 3}}}>
-                    <Typography component="h1" variant="h4" align="center">
-                        Checkout
-                    </Typography>
+            <Container component="main" maxWidth="xl" sx={{mb: 1}}>
+                <Paper variant="outlined" sx={{my: {xs: 1, md: 3}, p: {xs: 2, md: 3}}}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexGrow: 1
+                        }}
+                    >
+                        <Box
+                            component="img"
+                            src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
+                            alt="Ezzy Buy Logo"
+                            sx={{
+                                width: 'auto',
+                                objectFit: 'scale-down',
+                                height: 72
+                            }}
+                        />
+                        <Typography component="h1" variant="h4" align="center">
+                            Checkout
+                        </Typography>
+                        <Avatar sx={{m: 1, bgcolor: 'primary.main'}}>
+                            <LockOutlinedIcon/>
+                        </Avatar>
+                    </Stack>
+                    <Divider sx={{my: 1}}/>
                     <Stepper activeStep={activeStep} sx={{pt: 3, pb: 5}}>
                         {steps.map((label) => (
                             <Step key={label}>

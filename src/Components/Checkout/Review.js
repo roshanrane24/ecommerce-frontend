@@ -24,9 +24,11 @@ export default function Review() {
     }, []);
     return (
         <>
-            <Typography variant="h6" gutterBottom>
-                Order summary
-            </Typography>
+            <Container maxWidth="md" sx={{p: 3}}>
+                <Typography variant="h6" gutterBottom>
+                    Order summary
+                </Typography>
+            </Container>
             <Box sx={{mb: 2}}>
                 {/*Product List*/}
                 <Container maxWidth="md" sx={{p: 3}}>
@@ -63,7 +65,7 @@ export default function Review() {
                                 {checkout.address.get.landmark && checkout.address.get.landmark + ", "} {checkout.address.get.townCity + ", "} {checkout.address.get.state},
                             </Typography><br/>
                             <Typography variant="caption">
-                                {checkout.address.get.pincode + ", "}, {checkout.address.get.country + ", "}
+                                {checkout.address.get.pincode + ", "} {checkout.address.get.country + ", "}
                                 <b>{checkout.address.get.mobileNumber}</b>
                             </Typography>
                         </Grid>
@@ -79,7 +81,7 @@ export default function Review() {
                                 {checkout.billing.get.landmark && checkout.billing.get.landmark + ", "} {checkout.billing.get.townCity + ", "} {checkout.billing.get.state},
                             </Typography><br/>
                             <Typography variant="caption">
-                                {checkout.billing.get.pincode + ", "}, {checkout.billing.get.country + ", "}
+                                {checkout.billing.get.pincode + ", "} {checkout.billing.get.country + ", "}
                                 <b>{checkout.billing.get.mobileNumber}</b>
                             </Typography>
                         </Grid>
