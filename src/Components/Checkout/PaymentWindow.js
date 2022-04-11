@@ -104,7 +104,7 @@ const PaymentWindow = ({orderId, handlers}) => {
 
         // Display razorpay window
         displayRazorpay(options);
-    }, [reload]);
+    }, [reload, checkout.total.get]);
 
     return (
         <>

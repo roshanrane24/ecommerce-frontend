@@ -54,7 +54,7 @@ class UserService {
     // Update user password
     // TODO ask backend for api
     updateUserPassword({oldPassword, newPassword}) {
-        return client.post('/user-details/edit/password', {oldPassword, newPassword}, {headers: authHeader()})
+        return client.post('/user-details/change-password', {oldPassword, newPassword}, {headers: authHeader()})
             .then(response => response.data);
     }
 }

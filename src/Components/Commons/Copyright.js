@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import React from "react";
 
-export default (props) => {
+export default function Copyright(props) {
     const navigate = useNavigate();
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>

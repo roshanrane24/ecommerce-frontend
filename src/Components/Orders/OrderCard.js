@@ -31,7 +31,7 @@ const OrderCard = ({order}) => {
             default:
                 return <Chip size="small" label="ERROR" color="error" variant="outlined"/>;
         }
-    }, [order.orderStatus]);
+    }, []);
 
     // Invoice
     const downloadInvoice = useCallback(() => {
@@ -60,7 +60,7 @@ const OrderCard = ({order}) => {
             default:
                 setNoInvoice(false);
         }
-    }, []);
+    }, [order.orderStatus]);
 
     return (
         <Paper
