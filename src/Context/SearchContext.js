@@ -53,7 +53,7 @@ const SearchProvider = (props) => {
             setPage(parseInt(params.get('page')));
             setKeyword(params.get('query'));
         }
-    }, [refresh]);
+    }, [refresh, params]);
 
 
     return (

@@ -59,7 +59,7 @@ const Search = () => {
                     console.log(error);
                 });
         }
-    }, [search.keyword.get, search.page.get]);
+    }, [search.keyword.get, search.page.get, search]);
 
 
     return (

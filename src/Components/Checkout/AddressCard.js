@@ -7,13 +7,12 @@ const AddressCard = ({address, selectedAddress}) => {
     const [selected, setSelected] = useState(false);
 
     useEffect(() => {
-        setSelected(address.id == selectedAddress)
+        setSelected(address.id === parseInt(selectedAddress))
     }, [selectedAddress]);
 
     return (
         <Card
             display='flex'
-            flexDirection='row'
             sx={{
                 m: 1,
                 py: 1,
