@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box, Paper, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -9,8 +9,10 @@ import CartService from "../../api/CartService";
 import Snackbar from "@mui/material/Snackbar";
 import {Link} from 'react-router-dom';
 import WishListService from "../../api/WishListService";
+import Alert from "@mui/material/Alert";
+import Tooltip from "@mui/material/Tooltip";
 
-const ProductListCard = ({product, order, wishlist, cart, alert}) => {
+const ProductListCard = ({product, handlers, order, wishlist, cart, history, outlined}) => {
     // States
     const [cartDisabled, setCartDisabled] = useState(false);
     const [saveDisabled, setSaveDisabled] = useState(false);
@@ -18,6 +20,7 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
     const [openBar, setOpenBar] = useState(false);
     const [message, setMessage] = useState("");
     const [render, setRender] = useState(true);
+    const [severity, setSeverity] = useState("info");
 
     // Cart Handler
     function increaseCart() {
@@ -28,13 +31,15 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
         newProduct.quantity = 1;
         CartService.addToCart(newProduct)
             .then(() => {
+                handlers.changeQuantity(product.id, quantity + 1);
                 setQuantity(quantity => quantity + 1);
                 setCartDisabled(false);
             })
             .catch((error) => {
-                setCartDisabled(false);
+                setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured while changing cart quantity");
                 setOpenBar(true);
+                setCartDisabled(false);
             });
     }
 
@@ -44,31 +49,39 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
         // Add one at a time
         let newProduct = product;
         newProduct.quantity = 1;
-        CartService.removeFromCart(newProduct)
-            .then(async () => {
-                await setQuantity(quantity => quantity - 1);
 
-                if (quantity == 0)
-                    setRender(false);
+        CartService.removeFromCart(newProduct)
+            .then(() => {
+                if (quantity === 1)
+                    handlers.removeCartItem(product.id)
+                else {
+                    handlers.changeQuantity(product.id, quantity - 1)
+                    setQuantity(quantity => quantity - 1);
+                }
 
                 setCartDisabled(false);
             })
             .catch((error) => {
-                setCartDisabled(false);
+                setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured while changing cart quantity");
                 setOpenBar(true);
+                setCartDisabled(false);
             });
     }
 
     const removeProduct = () => {
+        setSaveDisabled(true);
+
         CartService.removeProductFromCart(product.id)
             .then(() => {
-                setQuantity(0);
-                setRender(false);
+                handlers.removeCartItem(product.id);
+                setSaveDisabled(false);
             })
             .catch((error) => {
+                setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error while removing product from cart");
                 setOpenBar(true);
+                setSaveDisabled(false);
             });
     }
 
@@ -78,16 +91,18 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
             .then(() => {
                 CartService.removeProductFromCart(product.id)
                     .then(() => {
-                        setRender(false);
+                        handlers.removeCartItem(product.id)
                         setSaveDisabled(false)
                     })
                     .catch((error) => {
+                        setSeverity("warning");
                         setMessage(error.response.data ? error.response.data.message : "Product added to wishlist.\n Error occured while removing product form cat.");
                         setOpenBar(true);
                         setSaveDisabled(false)
                     });
             })
             .catch(error => {
+                setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error while adding product in wishlist");
                 setOpenBar(true);
                 setSaveDisabled(false)
@@ -96,14 +111,18 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
 
     // Wishlist
     const removeFromWishList = () => {
+        setSaveDisabled(true);
+
         WishListService.removeFromWishList(product.id)
             .then(() => {
-                console.log("success");
                 setRender(false);
+                setSaveDisabled(false);
             })
             .catch((error) => {
-                setOpenBar(true);
+                setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured while removing item from quantity");
+                setOpenBar(true);
+                setSaveDisabled(false);
             });
 
     }
@@ -121,73 +140,84 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                         setRender(false);
                     })
                     .catch(() => {
-                        setSaveDisabled(false);
-                        setOpenBar(true);
+                        setSeverity("warning");
                         setMessage("Product Added in cart.");
+                        setOpenBar(true);
+                        setSaveDisabled(false);
                     });
 
                 setCartDisabled(false);
             })
             .catch((error) => {
-                setSaveDisabled(false);
-                setOpenBar(true);
+                setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured adding item to quantity");
+                setOpenBar(true);
+                setSaveDisabled(false);
             });
     }
 
     // Snackbar
     const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
+        if (reason === 'clickaway')
             return;
-        }
+
         setOpenBar(false);
+        setSeverity("info");
     };
 
-    const action = (
-        <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={handleClose}
-        >
-            <Close fontSize="small"/>
-        </IconButton>
-    );
+    // Init
+    useEffect(() => {
+        // Whwn out of stock disable button
+        if (cart && !product.isStockAvailable)
+            handlers.setCanCheckout(false);
+    }, []);
+
 
     if (render) {
         return (
             <Stack
                 component={Paper}
                 direction="row"
-                fullWidth
+                variant={outlined ? "outlined" : undefined}
                 sx={{p: 1}}
             >
-                <Snackbar
-                    open={openBar}
-                    autoHideDuration={6000}
-                    onClose={handleClose}
-                    message={message}
-                    action={action}
-                />
+                <Snackbar open={openBar} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity={severity} sx={{width: '100%'}}>
+                        {message}
+                    </Alert>
+                </Snackbar>
                 <Stack sx={{flexGrow: 1, p: 1, justifyContent: 'space-between'}}>
                     <Box
                         sx={{
                             width: "70%",
                             "display": "-webkit-box",
                             WebkitBoxOrient: "vertical",
-                            WebkitLineClamp: 2,
+                            WebkitLineClamp: wishlist || history ? 1 : 2,
                             "overflow": "clip",
                             textOverflow: "ellipsis",
                         }}
                     >
-                        <Link to={`/product/${product.id}`}>
-                            <Typography variant="subtitle1">
+                        <Link to={`/product/${product.id}`} style={{textDecoration: 'none'}}>
+                            <Typography
+                                variant={history ? "body1" : "subtitle1"}
+                                sx={{
+                                    color: 'primary.light',
+                                    textDecoration: 'none',
+                                    textTransform: 'capitalize',
+                                    ":hover": {
+                                        textDecoration: 'underline',
+                                    }
+                                }}
+                            >
                                 {product.name}
                             </Typography>
                         </Link>
                     </Box>
                     <Stack direction="row">
-                        <Box sx={{flexGrow: 1}}>
+                        <Stack
+                            sx={{flexGrow: 1}}
+                            direction={history ? "row" : "column"}
+                        >
                             <Stack
                                 direction="row"
                                 sx={{
@@ -203,18 +233,22 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                 </Typography>
                                 {
                                     wishlist &&
-                                    <IconButton
-                                        disabled={saveDisabled}
-                                        sx={{ml: 2}}
-                                        onClick={addInCart}
-                                    >
-                                        <ShoppingCart fontSize="small"/>
-                                    </IconButton>
+                                    <Tooltip title="Add to Cart">
+                                        <IconButton
+                                            disabled={saveDisabled}
+                                            sx={{ml: 2}}
+                                            onClick={addInCart}
+                                        >
+                                            <ShoppingCart fontSize="small"/>
+                                        </IconButton>
+                                    </Tooltip>
                                 }
                             </Stack>
                             {
                                 order &&
-                                <Box>
+                                <Box
+                                    sx={{ml: history ? 5 : 0}}
+                                >
                                     <Typography variant="subtitle2">
                                         Quantity: <b>{quantity}</b>
                                     </Typography>
@@ -231,13 +265,15 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                         }}
                                     >
                                         <Stack direction="row" spacing={1} sx={{alignItems: 'center'}}>
-                                            <IconButton
-                                                disabled={cartDisabled}
-                                                sx={{width: 25, height: 25}}
-                                                onClick={decreaseCart}
-                                            >
-                                                <Remove/>
-                                            </IconButton>
+                                            <Tooltip title="Remove 1 item from Cart">
+                                                <IconButton
+                                                    disabled={cartDisabled}
+                                                    sx={{width: 25, height: 25}}
+                                                    onClick={decreaseCart}
+                                                >
+                                                    <Remove/>
+                                                </IconButton>
+                                            </Tooltip>
                                             <TextField
                                                 value={quantity}
                                                 disabled
@@ -249,16 +285,17 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                                     m: 0,
                                                 }}
                                             />
-                                            <IconButton
-                                                disabled={cartDisabled}
-                                                sx={{width: 25, height: 25}}
-                                                onClick={increaseCart}
-                                            >
-                                                <Add/>
-                                            </IconButton>
+                                            <Tooltip title="Add 1 item to Cart">
+                                                <IconButton
+                                                    disabled={cartDisabled}
+                                                    sx={{width: 25, height: 25}}
+                                                    onClick={increaseCart}
+                                                >
+                                                    <Add/>
+                                                </IconButton>
+                                            </Tooltip>
                                         </Stack>
-                                        {
-                                            cart &&
+                                        <Tooltip title="Save Item in Wishlist">
                                             <IconButton
                                                 disabled={saveDisabled}
                                                 sx={{ml: 2}}
@@ -266,11 +303,17 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                             >
                                                 <Favorite fontSize="small"/>
                                             </IconButton>
+                                        </Tooltip>
+                                        {
+                                            !product.isStockAvailable &&
+                                            <Typography variant="body2" color="error">
+                                                Out of Stock
+                                            </Typography>
                                         }
                                     </Stack>
                                 </>
                             }
-                        </Box>
+                        </Stack>
                         {
                             (cart || order) &&
                             <Box
@@ -281,7 +324,7 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                                 }}
                             >
                                 <Typography variant="subtitle2">
-                                    SubTotal: <b>{(product.price * product.quantity).toLocaleString('en-IN', {
+                                    SubTotal: <b>{(product.price * quantity).toLocaleString('en-IN', {
                                     style: 'currency',
                                     currency: 'INR',
                                 })}</b>
@@ -292,30 +335,33 @@ const ProductListCard = ({product, order, wishlist, cart, alert}) => {
                 </Stack>
                 <Stack
                     sx={{
-                        width: wishlist ? 100 : 150,
-                        height: wishlist ? 100 : 170,
+                        width: wishlist || history ? 60 : 150,
+                        height: wishlist || history ? 70 : 170,
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
                 >
                     <Box
                         component='img'
-                        src={`${client.defaults.baseURL}/products/image/${product._id ? product._id : product.id}`}
+                        src={`${client.defaults.baseURL}/products/image/${product.id}`}
                         sx={{
                             p: 2,
-                            height: wishlist ? 90 : 150,
-                            width: wishlist ? 90 : 150,
+                            height: wishlist || history ? 90 : 150,
+                            width: wishlist || history ? 90 : 150,
                             objectFit: "scale-down"
                         }}/>
                 </Stack>
                 {
                     (wishlist || cart) &&
                     <Stack sx={{justifyContent: 'space-between'}}>
-                        <IconButton
-                            onClick={cart ? removeProduct : removeFromWishList}
-                        >
-                            <Close/>
-                        </IconButton>
+                        <Tooltip title={"Remove Item from " + (cart ? "Cart" : "Wishlist")}>
+                            <IconButton
+                                disabled={saveDisabled}
+                                onClick={cart ? removeProduct : removeFromWishList}
+                            >
+                                <Close/>
+                            </IconButton>
+                        </Tooltip>
                     </Stack>
                 }
             </Stack>

@@ -3,7 +3,11 @@ import * as React from "react";
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {hasError: false};
+        this.state = {
+            hasError: false,
+            error: null,
+            errorInfo: null
+        };
     }
 
     static getDerivedStateFromError() {
@@ -13,13 +17,19 @@ class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         // You can also log the error to an error reporting service
+        this.state.error = error;
+        this.state.errorInfo = errorInfo;
         console.log(error, errorInfo);
     }
 
     render() {
         if (this.state.hasError) {
             // You can render any custom fallback UI
-            return <h1>Something went wrong.</h1>;
+            return (
+                <div style={{display: "flex", flexGrow: 1, alignItems: 'center', justifyContent: 'center'}}>
+                    <h1>Something Went Wrong</h1>
+                </div>
+            );
         }
 
         return this.props.children;

@@ -23,7 +23,7 @@ const Header = () => {
                 flexDirection: 'column',
                 minHeight: '100vh',
             }}>
-                <Box component="header" sx={{mb: 10}}>
+                <Box component="header" sx={{mb: 9.5}}>
                     <AppBar position={"fixed"}>
                         <Toolbar>
                             {/*Logo with Home button*/}
@@ -32,7 +32,6 @@ const Header = () => {
                                 sx={{
                                     justifyContent: 'center',
                                     alignItems: 'end',
-                                    mr: 5
                                 }}
                             >
                                 <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
@@ -59,7 +58,6 @@ const Header = () => {
                             >
                                 <SearchBox/>
                             </Stack>
-
                             <Stack direction='row' spacing={3}>
                                 {/*Right Side Buttons*/}
                                 <Button

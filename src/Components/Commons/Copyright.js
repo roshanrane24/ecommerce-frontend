@@ -9,7 +9,7 @@ export default (props) => {
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
             <Link color="inherit" onClick={() => navigate('/')}>
-                {' EZ-Buy '}
+                {' Ezzy Buy '}
             </Link>
             {new Date().getFullYear()}
         </Typography>
