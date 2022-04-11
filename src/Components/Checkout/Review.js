@@ -18,7 +18,7 @@ export default function Review() {
         if (checkout.total.get > 0) return;
 
         // Calculate subtotal
-        checkout.products.get.map(product => {
+        checkout.products.get.forEach(product => {
             checkout.total.set(prevPrice => prevPrice + (product.price * product.quantity));
         })
     }, []);

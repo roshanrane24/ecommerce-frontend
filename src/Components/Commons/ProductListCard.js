@@ -170,7 +170,7 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
         // Whwn out of stock disable button
         if (cart && !product.isStockAvailable)
             handlers.setCanCheckout(false);
-    }, []);
+    }, [cart, handlers, product.isStockAvailable]);
 
 
     if (render) {
