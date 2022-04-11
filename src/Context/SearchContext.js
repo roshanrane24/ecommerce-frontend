@@ -7,7 +7,7 @@ const SearchProvider = (props) => {
     // states
     const [by, setBy] = useState("query");
     const [keyword, setKeyword] = useState("");
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(null);
     const [total, setTotal] = useState(1);
     const [refresh, setRefresh] = useState(Date.now());
 
@@ -53,7 +53,7 @@ const SearchProvider = (props) => {
             setPage(parseInt(params.get('page')));
             setKeyword(params.get('query'));
         }
-    }, [refresh, params]);
+    }, [refresh]);
 
 
     return (
