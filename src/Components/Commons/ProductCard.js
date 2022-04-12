@@ -69,7 +69,7 @@ const ProductCard = (props) => {
                 </CardContent>
                 <CardActions>
                     <Stack sx={{flexGrow: 1}} alignItems="center">
-                        <Typography variant="body2" color="primary.main">
+                        <Typography variant="body2" color="text.primary" sx={{fontWeight: 'bold'}}>
                             {
                                 props.product.price.toLocaleString('en-IN', {
                                     style: 'currency',
