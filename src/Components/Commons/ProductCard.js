@@ -55,6 +55,7 @@ const ProductCard = (props) => {
                     sx={{
                         p: 0,
                         width: 170,
+                        height: 40,
                         "display": "-webkit-box",
                         WebkitBoxOrient: "vertical",
                         WebkitLineClamp: 2,
@@ -62,13 +63,13 @@ const ProductCard = (props) => {
                         textOverflow: "ellipsis",
                     }}
                 >
-                    <Typography sx={{fontSize: 14,}} color="text.primary">
+                    <Typography variant="body2" color="text.primary">
                         {props.product.name}
                     </Typography>
                 </CardContent>
                 <CardActions>
                     <Stack sx={{flexGrow: 1}} alignItems="center">
-                        <Typography sx={{fontSize: 13}} color="text.primary">
+                        <Typography variant="body2" color="primary.main">
                             {props.product.price.toLocaleString('en-IN', {
                                 style: 'currency',
                                 currency: 'INR',
