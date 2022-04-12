@@ -2,6 +2,9 @@ import client from "./HttpClient";
 
 class SearchService {
     searchByCategory({keyword, pageNumber}) {
+        // Fix capitalization
+        keyword = keyword.replace(/\w[^\s\\\/]*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+
         if (keyword && pageNumber)
             return client.get(`/search/category?keyword=${keyword}&pageNumber=${pageNumber}`)
                 .then(response => response.data);
@@ -10,6 +13,9 @@ class SearchService {
     }
 
     searchBySubCategory({keyword, pageNumber}) {
+        // Fix capitalization
+        keyword = keyword.replace(/\w[^\s\\\/]*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+
         if (keyword && pageNumber)
             return client.get(`/search/sub-category?keyword=${keyword}&pageNumber=${pageNumber}`)
                 .then(response => response.data);
