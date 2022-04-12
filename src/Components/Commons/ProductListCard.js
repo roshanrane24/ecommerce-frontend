@@ -11,6 +11,7 @@ import {Link} from 'react-router-dom';
 import WishListService from "../../api/WishListService";
 import Alert from "@mui/material/Alert";
 import Tooltip from "@mui/material/Tooltip";
+import AuthService from "../../api/AuthService";
 
 const ProductListCard = ({product, handlers, order, wishlist, cart, history, outlined}) => {
     // States
@@ -167,9 +168,10 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
 
     // Init
     useEffect(() => {
-        // Whwn out of stock disable button
-        if (cart && !product.isStockAvailable)
-            handlers.setCanCheckout(false);
+        // When out of stock disable button
+        if (AuthService.getUserDetails())
+            if (cart && !product.isStockAvailable)
+                handlers.setCanCheckout(false);
     }, [cart, handlers, product.isStockAvailable]);
 
 
@@ -305,10 +307,17 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                                             </IconButton>
                                         </Tooltip>
                                         {
-                                            !product.isStockAvailable &&
-                                            <Typography variant="body2" color="error">
-                                                Out of Stock
-                                            </Typography>
+                                            AuthService.getUserDetails() ? (
+                                                !product.isStockAvailable &&
+                                                <Typography variant="body2" color="error">
+                                                    Out of Stock
+                                                </Typography>
+                                            ) : (
+                                                product.quantity <= product.stock &&
+                                                <Typography variant="body2" color="error">
+                                                    Out of Stock
+                                                </Typography>
+                                            )
                                         }
                                     </Stack>
                                 </>
