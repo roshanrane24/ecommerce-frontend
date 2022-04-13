@@ -203,7 +203,7 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                             <Typography
                                 variant={history ? "body1" : "subtitle1"}
                                 sx={{
-                                    color: 'primary.light',
+                                    color: 'primary.dark',
                                     textDecoration: 'none',
                                     textTransform: 'capitalize',
                                     ":hover": {
