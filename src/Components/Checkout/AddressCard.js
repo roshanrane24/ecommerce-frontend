@@ -19,7 +19,7 @@ const AddressCard = ({address, selectedAddress}) => {
                 px: 1,
                 minWidth: 220,
                 maxWidth: 250,
-                height: 175,
+                minHeight: 180,
                 border: selected ? '1px solid' : '0px',
                 borderColor: selected ? 'primary.main' : '',
             }}
