@@ -3,17 +3,18 @@ import {Favorite, ShoppingCart} from '@mui/icons-material';
 import {Outlet, useNavigate} from 'react-router-dom';
 import SearchBox from "./SearchBox";
 import UserButton from "./UserButton";
-import React, {useState} from 'react';
+import React, {useContext} from 'react';
 import Footer from "./Footer";
-import AuthService from "../../api/AuthService";
 import client from "../../api/HttpClient";
+import Badge from "@mui/material/Badge";
+import {UserContext} from "../../Context/UserContext";
 
 const Header = () => {
     // hooks
     const navigate = useNavigate();
 
-    // States
-    const [userDetails,] = useState(AuthService.getUserDetails());
+    // Context
+    const user = useContext(UserContext);
 
     return (
         <>
@@ -34,7 +35,12 @@ const Header = () => {
                                     alignItems: 'end',
                                 }}
                             >
-                                <Button onClick={() => navigate('/')} sx={{p: 0, ml: 10}}>
+                                <Button
+                                    onClick={() => {
+                                        user.refresh();
+                                        navigate('/')
+                                    }}
+                                    sx={{p: 0, ml: 10}}>
                                     <Box
                                         component="img"
                                         src={`${client.defaults.baseURL}/orders/invoice/image/logo.png`}
@@ -69,12 +75,17 @@ const Header = () => {
                                         }
                                     }}
                                     onClick={() => {
-                                        if (userDetails)
+                                        user.refresh();
+                                        if (user.details.get)
                                             navigate('/wishlist');
                                         else
                                             navigate('/Login?ref=/wishlist');
                                     }}
-                                    startIcon={<Favorite/>}
+                                    startIcon={
+                                        <Badge badgeContent={user.wCount.get} color="secondary">
+                                            <Favorite/>
+                                        </Badge>
+                                    }
                                 >
                                     <Typography
                                         variant={'subtitle1'}
@@ -91,8 +102,15 @@ const Header = () => {
                                             return {bgcolor: theme.palette.primary.dark}
                                         }
                                     }}
-                                    onClick={() => navigate('/cart')}
-                                    startIcon={<ShoppingCart/>}
+                                    onClick={() => {
+                                        user.refresh();
+                                        navigate('/cart')
+                                    }}
+                                    startIcon={
+                                        <Badge badgeContent={user.cCount.get} color="secondary">
+                                            <ShoppingCart/>
+                                        </Badge>
+                                    }
                                 >
                                     <Typography
                                         variant={'subtitle1'}

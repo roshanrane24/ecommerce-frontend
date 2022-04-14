@@ -20,8 +20,9 @@ export default function Review() {
         // Calculate subtotal
         checkout.products.get.forEach(product => {
             checkout.total.set(prevPrice => prevPrice + (product.price * product.quantity));
-        })
+        });
     }, []);
+
     return (
         <>
             <Container maxWidth="md" sx={{p: 3}}>
@@ -42,10 +43,12 @@ export default function Review() {
                     <ListItem sx={{py: 1, px: 0}}>
                         <ListItemText primary="Total"/>
                         <Typography variant="subtitle1" sx={{fontWeight: 700}}>
-                            {checkout.total.get.toLocaleString('en-IN', {
-                                style: 'currency',
-                                currency: 'INR',
-                            })}
+                            {
+                                checkout.total.get.toLocaleString('en-IN', {
+                                    style: 'currency',
+                                    currency: 'INR',
+                                })
+                            }
                         </Typography>
                     </ListItem>
                 </Container>

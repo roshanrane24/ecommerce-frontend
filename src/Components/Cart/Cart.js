@@ -3,7 +3,6 @@ import CartService from "../../api/CartService";
 import ProductListCard from "../Commons/ProductListCard";
 import {Box, Paper, Stack} from '@mui/material';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import AuthService from '../../api/AuthService';
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -12,51 +11,53 @@ import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import {CheckOutContext} from "../../Context/CheckOutContext";
 import LoadingButton from "@mui/lab/LoadingButton";
+import {UserContext} from "../../Context/UserContext";
 
 const Cart = () => {
-        // Routing
-        const navigate = useNavigate();
+    // Routing
+    const navigate = useNavigate();
 
-        // States
-        const [cartItems, setCartItems] = useState([]);
-        const [loading, setLoading] = useState(true);
-        const [loadingCheckout, setLoadingCheckout] = useState(false);
+    // States
+    const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [loadingCheckout, setLoadingCheckout] = useState(false);
     const [canCheckout, setCanCheckout] = useState(true);
 
-        // Context
-        const checkout = useContext(CheckOutContext);
+    // Context
+    const checkout = useContext(CheckOutContext);
+    const user = useContext(UserContext);
 
-        // Handlers
-        // Remove item from cart
-        const removeCartItem = product_id => {
-            setCartItems(cartItems.filter(item => item.id !== product_id));
-        };
+    // Handlers
+    // Remove item from cart
+    const removeCartItem = product_id => {
+        setCartItems(cartItems.filter(item => item.id !== product_id));
+    };
 
-        // change cart item quantity
-        const changeQuantity = (product_id, quantity) => {
-            setCartItems(cartItems.map(item => {
-                if (item.id === product_id)
-                    item.quantity = quantity;
+    // change cart item quantity
+    const changeQuantity = (product_id, quantity) => {
+        setCartItems(cartItems.map(item => {
+            if (item.id === product_id)
+                item.quantity = quantity;
 
-                return item;
-            }));
-        };
+            return item;
+        }));
+    };
 
-        // Checkout
-        const proceedToCheckout = () => {
-            setLoadingCheckout(true);
+    // Checkout
+    const proceedToCheckout = () => {
+        setLoadingCheckout(true);
 
-            if (AuthService.getUserDetails()) {
-                // add product to checkout context
-                checkout.products.set(cartItems);
+        if (user.details.get) {
+            // add product to checkout context
+            checkout.products.set(cartItems);
 
-                // set path for redirect
-                sessionStorage.setItem('co', 'cart');
+            // set path for redirect
+            sessionStorage.setItem('co', 'cart');
 
-                // navigate to checkout page
-                setLoadingCheckout(false);
-                navigate('/checkout')
-            } else {
+            // navigate to checkout page
+            setLoadingCheckout(false);
+            navigate('/checkout')
+        } else {
                 setLoadingCheckout(false);
                 navigate(`/login?ref=/cart`);
             }
@@ -105,8 +106,8 @@ const Cart = () => {
                         }}
                     >
                         {
-                            AuthService.getUserDetails() ? (
-                                <>{AuthService.getUserDetails().firstname}'s Cart</>
+                            user.details.get ? (
+                                <>{user.details.get.firstname}'s Cart</>
                             ) : (
                                 <>Your Cart</>
                             )
