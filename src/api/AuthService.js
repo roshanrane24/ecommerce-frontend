@@ -14,11 +14,6 @@ class AuthService {
                     // Save user
                     localStorage.setItem('user', JSON.stringify(response.data));
 
-                    // fetch wishlist
-                    WishListService.getWishList().then(wishlist => {
-                        localStorage.setItem('wishlist', JSON.stringify(wishlist.map(item => item.id)));
-                    });
-
                     // Check local cart
                     let tcart = localStorage.getItem('tcart');
                     tcart = tcart ? JSON.parse(tcart) : null;
@@ -33,10 +28,19 @@ class AuthService {
                         localStorage.removeItem('tcart');
                     }
 
+                    // fetch wishlist
+                    setTimeout(() => {
+                        WishListService.getWishList().then(wishlist => {
+                            localStorage.setItem('wishlist', JSON.stringify(wishlist.map(item => item.id)));
+                        })
+                    }, 5000)
+
                     // fetch cart
-                    CartService.getShoppingCart().then(cart => {
-                        localStorage.setItem('cart', JSON.stringify([...cart]));
-                    });
+                    setTimeout(() => {
+                        CartService.getShoppingCart().then(cart => {
+                            localStorage.setItem('cart', JSON.stringify([...cart]));
+                        });
+                    }, 5000)
                 }
                 return response.data
             });
