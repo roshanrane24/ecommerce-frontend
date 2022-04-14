@@ -20,6 +20,7 @@ import Cart from "./Components/Cart/Cart";
 import Orders from "./Components/Orders/Orders";
 import SearchProvider from "./Context/SearchContext";
 import UserProvider from "./Context/UserContext";
+import Contact from "./Components/Contact";
 
 const theme = createTheme({
     palette: {
@@ -58,6 +59,7 @@ function App() {
                                     <Route path='/wishlist' element={<Wishlist/>}/>
                                     <Route path='/cart' element={<Cart/>}/>
                                     <Route path='/orders' element={<Orders/>}/>
+                                    <Route path='/contact' element={<Contact/>}/>
                                     <Route path='*' element={<NotFound/>}/>
                                 </Route>
                                 <Route path='/login' element={<Login/>}/>
