@@ -140,24 +140,26 @@ export default function AddressForm(props) {
                 }
             )
                 .then(() => {
-                        // Stop Animation
-                        setAddingAddress(false);
+                    // Stop Animation
+                    setAddingAddress(false);
 
-                        // Scroll to top
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth' // for smoothly scrolling
-                        });
+                    // Scroll to top
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth' // for smoothly scrolling
+                    });
 
-                        // Reset Fields
-                        setFullName('');
-                        setAddress1('');
-                        setAddress2('');
-                        setLandmark('');
-                        setCity('');
-                        setPinCode('');
-                        setState('');
-                        setCountry('');
+                    setShow(false);
+
+                    // Reset Fields
+                    setFullName('');
+                    setAddress1('');
+                    setAddress2('');
+                    setLandmark('');
+                    setCity('');
+                    setPinCode('');
+                    setState('');
+                    setCountry('');
                         setMobile('');
 
                         // Show Success
