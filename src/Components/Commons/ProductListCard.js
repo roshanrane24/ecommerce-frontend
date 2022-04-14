@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Box, Paper, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -12,6 +12,7 @@ import WishListService from "../../api/WishListService";
 import Alert from "@mui/material/Alert";
 import Tooltip from "@mui/material/Tooltip";
 import AuthService from "../../api/AuthService";
+import {UserContext} from "../../Context/UserContext";
 
 const ProductListCard = ({product, handlers, order, wishlist, cart, history, outlined}) => {
     // States
@@ -22,6 +23,10 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
     const [message, setMessage] = useState("");
     const [render, setRender] = useState(true);
     const [severity, setSeverity] = useState("info");
+
+
+    // Context
+    const user = useContext(UserContext);
 
     // Cart Handler
     function increaseCart() {
@@ -35,8 +40,10 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                 handlers.changeQuantity(product.id, quantity + 1);
                 setQuantity(quantity => quantity + 1);
                 setCartDisabled(false);
+                user.refresh();
             })
             .catch((error) => {
+                user.refresh();
                 setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured while changing cart quantity");
                 setOpenBar(true);
@@ -61,12 +68,14 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                 }
 
                 setCartDisabled(false);
+                user.refresh();
             })
             .catch((error) => {
                 setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured while changing cart quantity");
                 setOpenBar(true);
                 setCartDisabled(false);
+                user.refresh();
             });
     }
 
@@ -77,12 +86,14 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
             .then(() => {
                 handlers.removeCartItem(product.id);
                 setSaveDisabled(false);
+                user.refresh();
             })
             .catch((error) => {
                 setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error while removing product from cart");
                 setOpenBar(true);
                 setSaveDisabled(false);
+                user.refresh();
             });
     }
 
@@ -94,12 +105,14 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                     .then(() => {
                         handlers.removeCartItem(product.id)
                         setSaveDisabled(false)
+                        user.refresh();
                     })
                     .catch((error) => {
                         setSeverity("warning");
                         setMessage(error.response.data ? error.response.data.message : "Product added to wishlist.\n Error occured while removing product form cat.");
                         setOpenBar(true);
                         setSaveDisabled(false)
+                        user.refresh();
                     });
             })
             .catch(error => {
@@ -107,6 +120,7 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                 setMessage(error.response.data ? error.response.data.message : "Error while adding product in wishlist");
                 setOpenBar(true);
                 setSaveDisabled(false)
+                user.refresh();
             });
     }
 
@@ -119,12 +133,14 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                 handlers.removeWishlistItem(product.id)
                 setRender(false);
                 setSaveDisabled(false);
+                user.refresh();
             })
             .catch((error) => {
                 setSeverity("error");
                 setMessage(error.response.data ? error.response.data.message : "Error occured while removing item from quantity");
                 setOpenBar(true);
                 setSaveDisabled(false);
+                user.refresh();
             });
 
     }
@@ -140,12 +156,14 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                     .then(() => {
                         setSaveDisabled(false);
                         setRender(false);
+                        user.refresh();
                     })
                     .catch(() => {
                         setSeverity("warning");
                         setMessage("Product Added in cart.");
                         setOpenBar(true);
                         setSaveDisabled(false);
+                        user.refresh();
                     });
 
                 setCartDisabled(false);
@@ -155,6 +173,7 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
                 setMessage(error.response.data ? error.response.data.message : "Error occured adding item to quantity");
                 setOpenBar(true);
                 setSaveDisabled(false);
+                user.refresh();
             });
     }
 
@@ -170,11 +189,10 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
     // Init
     useEffect(() => {
         // When out of stock disable button
-        if (AuthService.getUserDetails())
+        if (user.details.get)
             if (cart && !product.isStockAvailable)
                 handlers.setCanCheckout(false);
     }, [cart, handlers, product.isStockAvailable]);
-
 
     if (render) {
         return (

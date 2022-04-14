@@ -1,6 +1,7 @@
 import client from './HttpClient';
 import WishListService from "./WishListService";
 import CartService from "./CartService";
+import authHeader from "./AuthHeader";
 
 
 class AuthService {
@@ -54,6 +55,10 @@ class AuthService {
 
     getUserDetails() {
         return JSON.parse(localStorage.getItem('user'))
+    }
+
+    isSessionAvailable() {
+        return client.get('/test/user', {headers: authHeader()})
     }
 }
 

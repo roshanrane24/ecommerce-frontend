@@ -83,7 +83,7 @@ class WishListService {
         // Check if wishlist present
         wishlist = wishlist ? new Set(JSON.parse(wishlist)) : new Set();
 
-        return wishlist.size;
+        return (wishlist.size);
     }
 }
 
