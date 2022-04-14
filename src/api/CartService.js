@@ -177,10 +177,10 @@ class CartService {
         let tcart = localStorage.getItem('tcart');
 
         // Check if cart present
-        return cart ? JSON.parse(cart).length : tcart ? JSON.parse(cart).length : 0;
+        return cart ? JSON.parse(cart).length : tcart ? JSON.parse(tcart).length : 0;
     }
 
-// Remove a single product form cart
+    // Remove a single product form cart
     removeProductFromCart(productId) {
 
         if (AuthService.getUserDetails()) {
