@@ -82,7 +82,6 @@ const SearchBox = (props) => {
             >
                 <Search/>
             </IconButton>
-
         </>
     );
 }

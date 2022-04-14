@@ -9,11 +9,15 @@ import ListItemText from "@mui/material/ListItemText";
 import {Box} from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import OrderService from "../../api/OrderService";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const OrderCard = ({order}) => {
     // States
     const [loading, setLoading] = useState(false);
     const [noInvoice, setNoInvoice] = useState(false);
+    const [message, setMessage] = useState("");
+    const [open, setOpen] = useState(false);
 
     // Get order status chip
     const getOrderStatus = useCallback((orderStatus) => {
@@ -47,6 +51,11 @@ const OrderCard = ({order}) => {
                 // Open invoice in new tab
                 await window.open(invoiceURL, `INVOICE_${order.id}`);
                 setLoading(false)
+            })
+            .catch(error => {
+                setMessage(error.response.data ? error.response.data.message : "Error getting invoice.");
+                setOpen(true);
+                setLoading(false);
             });
     }, [order.id])
 
@@ -62,13 +71,20 @@ const OrderCard = ({order}) => {
         }
     }, [order.orderStatus]);
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway')
+            return;
+
+        setOpen(false);
+    };
+
     return (
-        <Paper
-            sx={{
-                width: "100%",
-                p: 1,
-            }}
-        >
+        <Paper sx={{width: "100%", p: 1,}}>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{width: '100%'}}>
+                    {message}
+                </Alert>
+            </Snackbar>
             <Stack
                 direction="row"
                 sx={{
@@ -119,9 +135,7 @@ const OrderCard = ({order}) => {
                     <LoadingButton
                         disabled={noInvoice}
                         size={"small"}
-                        sx={{
-                            flexGrow: 1
-                        }}
+                        sx={{flexGrow: 1}}
                         loading={loading}
                         onClick={downloadInvoice}
                     >

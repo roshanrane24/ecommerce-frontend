@@ -5,7 +5,6 @@ import AuthService from "./AuthService";
 class CartService {
     // Add to cart
     addToCart(product) {
-
         if (AuthService.getUserDetails()) {
             return client.post('/shopping-cart/add', {
                 quantity: product.quantity,

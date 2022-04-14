@@ -34,6 +34,7 @@ import WishListService from "../../api/WishListService";
 import CartService from "../../api/CartService";
 import Tooltip from "@mui/material/Tooltip";
 import LoadingButton from "@mui/lab/LoadingButton";
+import {UserContext} from "../../Context/UserContext";
 
 
 const ProductPage = () => {
@@ -56,6 +57,7 @@ const ProductPage = () => {
 
     // Context
     const checkout = useContext(CheckOutContext);
+    const user = useContext(UserContext);
 
     // Routing
     const navigate = useNavigate();
@@ -88,7 +90,7 @@ const ProductPage = () => {
     // Wishlist handler
     const toggleWishList = () => {
         // Authenticated user
-        if (AuthService.getUserDetails()) {
+        if (user.details.get) {
             // disable button
             setWishlistButtonState(true);
 
@@ -98,9 +100,10 @@ const ProductPage = () => {
                     .then(() => {
                         setWishlistIcon(<FavoriteBorder/>)
                         setWishlistButtonState(false);
+                        user.refresh();
                     })
-                    .catch((error) => {
-                        console.log(error.response);
+                    .catch(() => {
+                        user.refresh();
                         setWishlistButtonState(false);
                     });
             } else {
@@ -110,9 +113,10 @@ const ProductPage = () => {
                     .then(() => {
                         setWishlistIcon(<Favorite sx={{color: ThemeButton.palette.primary.main}}/>);
                         setWishlistButtonState(false);
+                        user.refresh();
                     })
-                    .catch((error) => {
-                        console.log(error.response);
+                    .catch(() => {
+                        user.refresh();
                         setWishlistButtonState(false);
                     });
             }
@@ -140,6 +144,7 @@ const ProductPage = () => {
 
                 // Enable Button
                 setCartButtonState(false);
+                user.refresh();
             })
             .catch((error) => {
                 // show failed alert

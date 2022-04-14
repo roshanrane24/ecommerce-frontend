@@ -1,14 +1,17 @@
-import { Button, Menu, MenuItem, Typography } from "@mui/material";
-import { KeyboardArrowDown } from "@mui/icons-material";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {Button, Menu, MenuItem, Typography} from "@mui/material";
+import {KeyboardArrowDown} from "@mui/icons-material";
+import React, {useContext, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import AuthService from "../../api/AuthService";
+import {UserContext} from "../../Context/UserContext";
 
 const UserButton = () => {
     // Hooks
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
-    const [userDetails, setUserDetails] = useState(AuthService.getUserDetails());
+
+    // State
+    const user = useContext(UserContext);
 
     // Handler Function
     const handleMenu = event => {
@@ -22,7 +25,7 @@ const UserButton = () => {
     return (
         <>
             {
-                userDetails &&
+                user.details.get &&
                 <>
                     <Button
                         size="medium"
@@ -31,7 +34,7 @@ const UserButton = () => {
                         aria-haspopup="true"
                         onClick={handleMenu}
                         color="inherit"
-                        endIcon={<KeyboardArrowDown />}
+                        endIcon={<KeyboardArrowDown/>}
                     >
                         <Typography
                             variant={'subtitle1'}
@@ -40,7 +43,7 @@ const UserButton = () => {
                                 marginLeft: 1
                             }}
                         >
-                            {userDetails.firstname}
+                            {user.details.get.firstname}
                         </Typography>
                     </Button>
                     <Menu
@@ -65,14 +68,16 @@ const UserButton = () => {
 
                         <MenuItem onClick={() => {
                             handleClose();
+                            user.refresh();
                             navigate('/profile')
                         }}>My Profile</MenuItem>
 
                         <MenuItem onClick={() => {
                             AuthService.logout();
                             handleClose();
-                            setUserDetails(null);
+                            user.details.set(null);
                             navigate('/');
+                            user.refresh();
                         }}>
                             Logout
                         </MenuItem>
@@ -80,11 +85,12 @@ const UserButton = () => {
                 </>
             }
             {
-                !userDetails &&
+                !user.details.get &&
                 <Button
                     size="medium"
                     color="inherit"
                     onClick={() => {
+                        user.refresh();
                         navigate('/login');
                     }}
                     sx={{

@@ -1,6 +1,7 @@
 import client from './HttpClient';
 import WishListService from "./WishListService";
 import CartService from "./CartService";
+import authHeader from "./AuthHeader";
 
 
 class AuthService {
@@ -12,11 +13,6 @@ class AuthService {
                 if (response.data.token) {
                     // Save user
                     localStorage.setItem('user', JSON.stringify(response.data));
-
-                    // fetch wishlist
-                    WishListService.getWishList().then(wishlist => {
-                        localStorage.setItem('wishlist', JSON.stringify(wishlist.map(item => item.id)));
-                    });
 
                     // Check local cart
                     let tcart = localStorage.getItem('tcart');
@@ -32,10 +28,19 @@ class AuthService {
                         localStorage.removeItem('tcart');
                     }
 
+                    // fetch wishlist
+                    setTimeout(() => {
+                        WishListService.getWishList().then(wishlist => {
+                            localStorage.setItem('wishlist', JSON.stringify(wishlist.map(item => item.id)));
+                        })
+                    }, 5000)
+
                     // fetch cart
-                    CartService.getShoppingCart().then(cart => {
-                        localStorage.setItem('cart', JSON.stringify([...cart]));
-                    });
+                    setTimeout(() => {
+                        CartService.getShoppingCart().then(cart => {
+                            localStorage.setItem('cart', JSON.stringify([...cart]));
+                        });
+                    }, 5000)
                 }
                 return response.data
             });
@@ -54,6 +59,10 @@ class AuthService {
 
     getUserDetails() {
         return JSON.parse(localStorage.getItem('user'))
+    }
+
+    isSessionAvailable() {
+        return client.get('/test/user', {headers: authHeader()})
     }
 }
 

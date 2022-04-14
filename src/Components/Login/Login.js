@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,14 +16,14 @@ import IconButton from "@mui/material/IconButton";
 import Copyright from "../Commons/Copyright";
 import CloseIcon from '@mui/icons-material/Close';
 import AuthService from "../../api/AuthService";
-import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
 import useTheme from "@mui/material/styles/useTheme";
+import {UserContext} from "../../Context/UserContext";
 
 
 const Login = () => {
-    // Theme
+    // Context
     const theme = useTheme();
+    const user = useContext(UserContext);
 
     // states
     const [email, setEmail] = useState("");
@@ -31,9 +31,6 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [passwordHelperText, setPasswordHelperText] = useState("");
     const [loginIn, setLoginIn] = useState(false);
-    const [message, setMessage] = useState(null);
-    const [open, setOpen] = useState(false);
-    const [severity, setSeverity] = useState("info");
     const [searchParams,] = useSearchParams();
 
     // Navigation
@@ -52,7 +49,6 @@ const Login = () => {
 
         // When validated
         if (validateEmail(data.email) && validatePassword(data.password)) {
-
             // animations
             setLoginIn(true);
 
@@ -60,14 +56,17 @@ const Login = () => {
             AuthService.login(data)
                 .then(() => {
                     // Show Alert
-                    setSeverity("success");
-                    setMessage("You have successfully logged in.");
-                    setOpen(true);
+                    user.bar.setSeverity("success");
+                    user.bar.setMessage("You have successfully logged in.");
+                    user.bar.setOpen(true);
 
                     setLoginIn(false);
 
                     // Redirection
                     setTimeout(() => {
+                        // refresh context
+                        user.refresh();
+
                         // check if to redirect
                         if (searchParams.get('ref')) {
                             navigate(searchParams.get('ref'));
@@ -76,6 +75,10 @@ const Login = () => {
                         // Redirect to Home
                         navigate('/');
                     }, 1000);
+
+                    setTimeout(() => {
+                        user.refresh();
+                    }, 5000);
                 })
                 .catch(error => {
                     // Stop loading animation
@@ -90,9 +93,9 @@ const Login = () => {
                         err.message = "Error has occured while Login";
 
                     // Set Alert
-                    setSeverity("error");
-                    setMessage(err.message);
-                    setOpen(true);
+                    user.bar.setSeverity("error");
+                    user.bar.setMessage(err.message);
+                    user.bar.setOpen(true);
                 });
         }
     };
@@ -128,16 +131,6 @@ const Login = () => {
         return true;
     }
 
-    // Snackbar
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway')
-            return;
-
-        setOpen(false);
-        setSeverity("info");
-    };
-
-
     return (
         <>
             <Stack direction="row"
@@ -152,11 +145,6 @@ const Login = () => {
             </Stack>
             <Container component="main" maxWidth="xs">
                 <CssBaseline/>
-                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                    <Alert onClose={handleClose} severity={severity} sx={{width: '100%'}}>
-                        {message}
-                    </Alert>
-                </Snackbar>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -220,6 +208,7 @@ const Login = () => {
                             Sign In
                         </LoadingButton>
                         <Grid container>
+                            {/*
                             <Grid item xs>
                                 <RouterLink
                                     to='/forgot'
@@ -228,6 +217,7 @@ const Login = () => {
                                     Forgot password?
                                 </RouterLink>
                             </Grid>
+*/}
                             <Grid item>
                                 <RouterLink
                                     to={`/signup${searchParams.get('ref') ? `?ref=${searchParams.get('ref')}` : ''}`}

@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Box, Button, Container, Modal, Paper, Stack, TextField} from '@mui/material'
 import UserService from '../../api/UserService';
-import AddressCard from '../Checkout/AddressCard';
 import Typography from "@mui/material/Typography";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Snackbar from "@mui/material/Snackbar";
@@ -11,8 +10,13 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Grid from "@mui/material/Grid";
+import {UserContext} from "../../Context/UserContext";
+import ProfileAddress from "./ProfileAddress";
+import AddAddress from "./AddAddress";
 
 const Profile = () => {
+    // Context
+    const user = useContext(UserContext);
 
     // States
     // Change password form
@@ -24,13 +28,13 @@ const Profile = () => {
     const [passwordLoading, setPasswordLoading] = useState(false);
 
     // User Details Form
-    const [userDetails, setUserDetails] = useState({});
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [loading, setLoading] = useState(false);
 
     // User Address
     const [userAddress, setUserAddress] = useState({});
+    const [openAddress, setOpenAddress] = useState(false);
 
     // Modal
     const [edit, setEdit] = useState(true)
@@ -89,6 +93,15 @@ const Profile = () => {
                 lastname: lastName
             })
                 .then(() => {
+                        // Change Details
+                        let details = user.details.get;
+                        details.firstname = firstName;
+                        details.lastname = lastName;
+
+                        // Save details
+                        localStorage.setItem('user', JSON.stringify(details));
+                        user.details.set(details);
+
                         // Success alert
                         setSeverity("success");
                         setMessage("Successfully updated user details.")
@@ -126,27 +139,15 @@ const Profile = () => {
 
     // Init
     useEffect(() => {
-        // Fetch user details
-        UserService.getUserDetails()
-            .then(user => {
-                setUserDetails(user);
-            })
-            .catch(error => {
-                // Failed alert
-                setSeverity("error");
-                setMessage(error.response.data ? error.response.data.message : "Error while fetching user details.")
-                setOpenBar(true)
-            })
-
         updateUserAddresses();
     }, []);
 
     useEffect(() => {
-        if (userDetails.firstname && userDetails.lastname) {
-            setFirstName(userDetails.firstname)
-            setLastName(userDetails.lastname)
+        if (user.details.get && user.details) {
+            setFirstName(user.details.get.firstname)
+            setLastName(user.details.get.lastname)
         }
-    }, [userDetails]);
+    }, [user.details.get]);
 
     // Snackbar
     const handleSnackbarClose = (event, reason) => {
@@ -156,25 +157,6 @@ const Profile = () => {
         setOpenBar(false);
         setSeverity("info");
     };
-
-    // Delete address
-    function deleteAddress(addressId) {
-        UserService.deleteAddress(addressId)
-            .then(() => {
-                updateUserAddresses();
-
-                // Success alert
-                setSeverity("success");
-                setMessage("Successfully deleted address.")
-                setOpenBar(true)
-            })
-            .catch(error => {
-                // Success alert
-                setSeverity("error");
-                setMessage(error.response.data ? error.response.data.message : "Successfully deleted address.")
-                setOpenBar(true)
-            })
-    }
 
     const handleChangePassword = () => {
         setPasswordLoading(true);
@@ -201,6 +183,8 @@ const Profile = () => {
                 setPasswordLoading(false);
             })
     }
+
+    const handlers = {setOpenBar, setMessage, setSeverity, updateUserAddresses};
 
     return (
         <Container maxWidth="md">
@@ -290,20 +274,18 @@ const Profile = () => {
                     <AccordionDetails>
                         <Grid container>
                             {
-                                Object.keys(userAddress).map((key, index) =>
+                                Object.keys(userAddress).map((id, index) =>
                                     <Grid item sm={4} key={index}>
-                                        <AddressCard address={userAddress[key]}/>
-                                        <Button
-                                            size="small"
-                                            variant="text"
-                                            onClick={() => deleteAddress(key)}
-                                        >
-                                            Delete
-                                        </Button>
+                                        <ProfileAddress address={userAddress[id]} handlers={handlers}/>
                                     </Grid>
                                 )
                             }
                         </Grid>
+                        <Stack direction="row" sx={{justifyContent: 'center', p: 2}}>
+                            <Button variant="contained" onClick={() => setOpenAddress(a => !a)}>
+                                Add Address
+                            </Button>
+                        </Stack>
                     </AccordionDetails>
                 </Accordion>
 
@@ -388,11 +370,21 @@ const Profile = () => {
                     </Box>
                 </Modal>
 
-            </Stack>
-            <Stack sx={{
-                width: "25%",
-                p: 2
-            }}>
+                {/* Add Address */}
+                <Modal
+                    open={openAddress}
+                    onClose={() => setOpenAddress(false)}
+                    aria-labelledby="address-modal-title"
+                >
+                    <Box sx={{py: 1, px: 50}}>
+                        <Paper sx={{p: 2}} elevation={10}>
+                            <Typography id="address-modal-title" variant="h6" component="h2" gutterBottom>
+                                Add Address
+                            </Typography>
+                            <AddAddress close={() => setOpenAddress(false)} update={updateUserAddresses}/>
+                        </Paper>
+                    </Box>
+                </Modal>
             </Stack>
         </Container>
     );

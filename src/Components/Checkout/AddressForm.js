@@ -140,24 +140,26 @@ export default function AddressForm(props) {
                 }
             )
                 .then(() => {
-                        // Stop Animation
-                        setAddingAddress(false);
+                    // Stop Animation
+                    setAddingAddress(false);
 
-                        // Scroll to top
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth' // for smoothly scrolling
-                        });
+                    // Scroll to top
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth' // for smoothly scrolling
+                    });
 
-                        // Reset Fields
-                        setFullName('');
-                        setAddress1('');
-                        setAddress2('');
-                        setLandmark('');
-                        setCity('');
-                        setPinCode('');
-                        setState('');
-                        setCountry('');
+                    setShow(false);
+
+                    // Reset Fields
+                    setFullName('');
+                    setAddress1('');
+                    setAddress2('');
+                    setLandmark('');
+                    setCity('');
+                    setPinCode('');
+                    setState('');
+                    setCountry('');
                         setMobile('');
 
                         // Show Success
@@ -430,7 +432,7 @@ export default function AddressForm(props) {
                                 validateCity(event.target.value);
                             }}
                             helperText={cityHelperText}
-                            error={cityHelperText}
+                            error={!!cityHelperText}
                             value={city}
                         />
                     </Grid>
@@ -447,7 +449,7 @@ export default function AddressForm(props) {
                                 validateState(event.target.value);
                             }}
                             helperText={stateHelperText}
-                            error={stateHelperText}
+                            error={!!stateHelperText}
                             value={state}
                         />
                     </Grid>
@@ -465,7 +467,7 @@ export default function AddressForm(props) {
                                 validatePincode(event.target.value);
                             }}
                             helperText={pinCodeHelperText}
-                            error={pinCodeHelperText}
+                            error={!!pinCodeHelperText}
                             value={pinCode}
                         />
                     </Grid>

@@ -19,6 +19,8 @@ import Wishlist from "./Components/Wishlist/Wishlist";
 import Cart from "./Components/Cart/Cart";
 import Orders from "./Components/Orders/Orders";
 import SearchProvider from "./Context/SearchContext";
+import UserProvider from "./Context/UserContext";
+import Contact from "./Components/Contact";
 
 const theme = createTheme({
     palette: {
@@ -43,28 +45,31 @@ const theme = createTheme({
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <CheckOutProvider>
-                <SearchProvider>
-                    <CssBaseline/>
-                    <ErrorBoundary>
-                        <Routes>
-                            <Route path='/' element={<Header/>}>
-                                <Route index element={<Home/>}/>
-                                <Route path='/product/:product_id' element={<ProductPage/>}/>
-                                <Route path='/search' element={<Search/>}/>
-                                <Route path='/profile' element={<Profile/>}/>
-                                <Route path='/wishlist' element={<Wishlist/>}/>
-                                <Route path='/cart' element={<Cart/>}/>
-                                <Route path='/orders' element={<Orders/>}/>
-                                <Route path='*' element={<NotFound/>}/>
-                            </Route>
-                            <Route path='/login' element={<Login/>}/>
-                            <Route path='/signup' element={<SignUp/>}/>
-                            <Route path='/checkout' element={<Checkout/>}/>
-                        </Routes>
-                    </ErrorBoundary>
-                </SearchProvider>
-            </CheckOutProvider>
+            <ErrorBoundary>
+                <CheckOutProvider>
+                    <SearchProvider>
+                        <UserProvider>
+                            <CssBaseline/>
+                            <Routes>
+                                <Route path='/' element={<Header/>}>
+                                    <Route index element={<Home/>}/>
+                                    <Route path='/product/:product_id' element={<ProductPage/>}/>
+                                    <Route path='/search' element={<Search/>}/>
+                                    <Route path='/profile' element={<Profile/>}/>
+                                    <Route path='/wishlist' element={<Wishlist/>}/>
+                                    <Route path='/cart' element={<Cart/>}/>
+                                    <Route path='/orders' element={<Orders/>}/>
+                                    <Route path='/contact' element={<Contact/>}/>
+                                    <Route path='*' element={<NotFound/>}/>
+                                </Route>
+                                <Route path='/login' element={<Login/>}/>
+                                <Route path='/signup' element={<SignUp/>}/>
+                                <Route path='/checkout' element={<Checkout/>}/>
+                            </Routes>
+                        </UserProvider>
+                    </SearchProvider>
+                </CheckOutProvider>
+            </ErrorBoundary>
         </ThemeProvider>
     );
 }

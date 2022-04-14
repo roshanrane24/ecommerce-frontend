@@ -27,6 +27,8 @@ import client from "../../api/HttpClient";
 import Avatar from "@mui/material/Avatar";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Divider from "@mui/material/Divider";
+import CartService from "../../api/CartService";
+import {UserContext} from "../../Context/UserContext";
 
 // TODO Try completed payment status step
 const steps = ['Select Address', 'Review your order', "Process Payment", "Order Status"];
@@ -41,6 +43,7 @@ export default function Checkout() {
 
     // Context
     const checkout = useContext(CheckOutContext);
+    const user = useContext(UserContext);
 
     // states
     const [activeStep, setActiveStep] = useState(0);
@@ -147,8 +150,11 @@ export default function Checkout() {
                 // Switch to payment step
                 setActiveStep(2);
 
-                if (sessionStorage.getItem('co') === "cart")
+                if (sessionStorage.getItem('co') === "cart") {
                     localStorage.removeItem('cart');
+                    CartService.emptyCart();
+                    user.refresh();
+                }
 
                 //stop animation
                 setIsLoading(false);
@@ -156,7 +162,7 @@ export default function Checkout() {
             .catch(error => {
                 // Show Error
                 setSeverity('error');
-                setMessage(error.response.data);
+                setMessage(error.response.data ? error.response.data.message : "Failed to create order.");
                 setOpen(true);
 
                 //stop animation
@@ -172,7 +178,6 @@ export default function Checkout() {
         switch (activeStep) {
             case 0:
                 if (activeStep === 0 && checkout.address.get === {}) {
-                    // TODO Add Alert
                     setSeverity('error');
                     setMessage("Please Select Address");
                     setOpen(true);
@@ -266,11 +271,13 @@ export default function Checkout() {
                     </Stack>
                     <Divider sx={{my: 1}}/>
                     <Stepper activeStep={activeStep} sx={{pt: 3, pb: 5}}>
-                        {steps.map((label) => (
-                            <Step key={label}>
-                                <StepLabel>{label}</StepLabel>
-                            </Step>
-                        ))}
+                        {
+                            steps.map((label) => (
+                                <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                </Step>
+                            ))
+                        }
                     </Stepper>
                     <>
                         {/*Main Components*/}
