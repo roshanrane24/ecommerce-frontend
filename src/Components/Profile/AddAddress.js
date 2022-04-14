@@ -8,7 +8,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import UserService from "../../api/UserService";
 import {UserContext} from "../../Context/UserContext";
 
-const AddAddress = ({close}) => {
+const AddAddress = ({close, update}) => {
     // Context
     const user = useContext(UserContext);
 
@@ -139,6 +139,9 @@ const AddAddress = ({close}) => {
                         user.bar.setSeverity("success");
                         user.bar.setMessage("Successfully added address");
                         user.bar.setOpen(true);
+
+                        close();
+                        update();
                     }
                 )
                 .catch(error => {

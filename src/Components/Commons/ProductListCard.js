@@ -130,7 +130,7 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
 
         WishListService.removeFromWishList(product.id)
             .then(() => {
-                handlers.removeWishlistItem(product.id)
+                handlers.removeWishlistItem(product.id);
                 setRender(false);
                 setSaveDisabled(false);
                 user.refresh();
@@ -150,11 +150,13 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
 
         let newProduct = product;
         newProduct.quantity = 1;
+
         CartService.addToCart(newProduct)
             .then(() => {
                 WishListService.removeFromWishList(product.id)
                     .then(() => {
                         setSaveDisabled(false);
+                        handlers.removeWishlistItem(product.id);
                         setRender(false);
                         user.refresh();
                     })

@@ -381,7 +381,7 @@ const Profile = () => {
                             <Typography id="address-modal-title" variant="h6" component="h2" gutterBottom>
                                 Add Address
                             </Typography>
-                            <AddAddress close={() => setOpenAddress(false)}/>
+                            <AddAddress close={() => setOpenAddress(false)} update={updateUserAddresses}/>
                         </Paper>
                     </Box>
                 </Modal>
