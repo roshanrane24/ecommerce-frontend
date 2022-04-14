@@ -23,6 +23,12 @@ const Wishlist = () => {
             });
     }, []);
 
+    // Handlers
+    // Remove item from cart
+    const removeWishlistItem = product_id => {
+        setWishlistItems(wishlistItems.filter(item => item.id !== product_id));
+    };
+
     return (
         <>
             {
@@ -57,11 +63,13 @@ const Wishlist = () => {
                             }}
                         >
                             {
-                                wishlistItems.length > 0 ? (wishlistItems.map((product, idx) =>
-                                    <Box width='100%' sx={{px: 2}} key={idx}>
-                                        <ProductListCard product={product} wishlist/>
-                                    </Box>
-                                )) : ("Wishlist is empty")
+                                wishlistItems.length > 0 ? (
+                                    wishlistItems.map((product, idx) =>
+                                        <Box width='100%' sx={{px: 2}} key={idx}>
+                                            <ProductListCard product={product} handlers={{removeWishlistItem}}
+                                                             wishlist/>
+                                        </Box>
+                                    )) : ("Wishlist is empty")
 
                             }
                         </Stack>
@@ -82,7 +90,6 @@ const Wishlist = () => {
                 )
             }
         </>
-
     );
 };
 

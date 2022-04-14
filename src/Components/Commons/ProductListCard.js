@@ -116,6 +116,7 @@ const ProductListCard = ({product, handlers, order, wishlist, cart, history, out
 
         WishListService.removeFromWishList(product.id)
             .then(() => {
+                handlers.removeWishlistItem(product.id)
                 setRender(false);
                 setSaveDisabled(false);
             })
