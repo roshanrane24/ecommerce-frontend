@@ -229,7 +229,7 @@ const Cart = () => {
                                     <LoadingButton
                                         loading={loadingCheckout}
                                         size="small"
-                                        disabled={!canCheckout}
+                                        disabled={!canCheckout || cartItems.length <= 0}
                                         variant="contained"
                                         endIcon={<ShoppingCartIcon/>}
                                         onClick={proceedToCheckout}
