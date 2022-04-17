@@ -151,7 +151,6 @@ export default function Checkout() {
                 setActiveStep(2);
 
                 if (sessionStorage.getItem('co') === "cart") {
-                    localStorage.removeItem('cart');
                     CartService.emptyCart();
                     user.refresh();
                 }
