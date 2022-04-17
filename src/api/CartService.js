@@ -249,11 +249,15 @@ class CartService {
         if (AuthService.getUserDetails()) {
             return client.delete('/shopping-cart/remove-all',
                 {headers: authHeader()})
-                .then(response => response.data);
+                .then(response => {
+                    localStorage.removeItem('cart');
+
+                    return response.data;
+                });
         }
 
         return new Promise(resolve => {
-            localStorage.removeItem('tcart', null);
+            localStorage.removeItem('tcart');
             resolve();
         });
     }
